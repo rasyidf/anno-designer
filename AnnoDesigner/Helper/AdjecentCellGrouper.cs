@@ -26,24 +26,30 @@ namespace AnnoDesigner.Helper
                 if (largest.Width * largest.Height > 1)
                 {
                     for (var x = 0; x < largest.Width; x++)
+                    {
                         for (var y = 0; y < largest.Height; y++)
                         {
-                            items.Add(cells[(int)largest.X + x][(int)largest.Y + y]);
+                            _ = items.Add(cells[(int)largest.X + x][(int)largest.Y + y]);
                             cells[(int)largest.X + x][(int)largest.Y + y] = default;
                         }
+                    }
 
                     yield return new CellGroup<T>(largest, items);
                 }
                 else if (returnSingleCells && largest.Width * largest.Height > 0)
                 {
                     for (var x = 0; x < cells.Length; x++)
+                    {
                         for (var y = 0; y < cells[x].Length; y++)
+                        {
                             if (!EqualityComparer<T>.Default.Equals(cells[x][y], default))
                             {
-                                items.Add(cells[x][y]);
+                                _ = items.Add(cells[x][y]);
                                 cells[x][y] = default;
                                 yield return new CellGroup<T>(new Rect(x, y, 1, 1), items);
                             }
+                        }
+                    }
 
                     yield break;
                 }
@@ -51,7 +57,7 @@ namespace AnnoDesigner.Helper
                 {
                     yield break;
                 }
-                items = new HashSet<T>();
+                items = [];
             }
         }
 
@@ -64,17 +70,21 @@ namespace AnnoDesigner.Helper
         private Rect FindLargestGroup<T>(T[][] cells)
         {
             var largest = new Rect();
-            
+
             var column = new int[cells.Max(c => c.Length)];
             for (var x = 0; x < cells.Length; x++)
             {
                 for (var y = 0; y < cells[x].Length; y++)
+                {
                     column[y] = !EqualityComparer<T>.Default.Equals(cells[x][y], default) ? column[y] + 1 : 0;
+                }
 
                 var area = FindLargestAreaUnderHistogram(column);
 
                 if (largest.Width * largest.Height < area.width * area.height)
+                {
                     largest = new Rect(x - area.width + 1, area.y, area.width, area.height);
+                }
             }
 
             return largest;
@@ -104,7 +114,7 @@ namespace AnnoDesigner.Helper
         /// |------------
         /// </remarks>
         /// <returns>Tuple (start index of largest area under histogram, max width, max height)</returns>
-        private (int y, int width, int height) FindLargestAreaUnderHistogram(int[] column)
+        private static (int y, int width, int height) FindLargestAreaUnderHistogram(int[] column)
         {
             var maxY = 0;
             var maxWidth = 0;

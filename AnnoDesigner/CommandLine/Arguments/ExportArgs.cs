@@ -30,7 +30,7 @@ namespace AnnoDesigner.CommandLine.Arguments
             public Binder(IFileSystem fileSystem)
             {
                 layoutFilepath = new Argument<IFileInfo>("layoutPath",
-                    parse: arg => fileSystem.FileInfo.FromFileName(arg.Tokens.First().Value),
+                    parse: arg => fileSystem.FileInfo.New(arg.Tokens.First().Value),
                     description: "Path to layout file (*.ad)")
                     .ExistingOnly(fileSystem);
 
@@ -44,7 +44,7 @@ namespace AnnoDesigner.CommandLine.Arguments
                 });
 
                 imageFilepath = new Argument<IFileInfo>("imagePath",
-                    parse: arg => fileSystem.FileInfo.FromFileName(arg.Tokens.First().Value),
+                    parse: arg => fileSystem.FileInfo.New(arg.Tokens.First().Value),
                     description: "Path for exported image file (*.png)")
                     .LegalFilePathsOnly();
 
@@ -62,7 +62,7 @@ namespace AnnoDesigner.CommandLine.Arguments
                 gridSize.AddValidator(parseResults =>
                 {
                     var value = parseResults.GetValueOrDefault<int>();
-                    if (value < Constants.GridStepMin || value > Constants.GridStepMax)
+                    if (value is < Constants.GridStepMin or > Constants.GridStepMax)
                     {
                         parseResults.ErrorMessage = $"{gridSize.Name} must be between {Constants.GridStepMin} and {Constants.GridStepMax}";
                     }

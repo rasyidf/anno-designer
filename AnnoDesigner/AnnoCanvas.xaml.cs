@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -268,7 +269,7 @@ namespace AnnoDesigner
         /// <summary>
         /// Backing field of the CurrentObject property
         /// </summary>
-        private List<LayoutObject> _currentObjects = new List<LayoutObject>();
+        private List<LayoutObject> _currentObjects = [];
 
         /// <summary>
         /// Current object to be placed. Fires an event when changed.
@@ -368,8 +369,7 @@ namespace AnnoDesigner
         private readonly ILocalizationHelper _localizationHelper;
 
         private const string IDENTIFIER_SKYSCRAPER = "A7_residence_SkyScraper_";
-        private readonly Regex _regex_panorama = new Regex($"{IDENTIFIER_SKYSCRAPER}(?<tier>[45])lvl(?<level>[1-5])",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.CultureInvariant);//RegexOptions.IgnoreCase -> slow in < .NET 5 (triggers several calls to ToLower)
+        private readonly Regex _regex_panorama = SkyScraperRegex();//RegexOptions.IgnoreCase -> slow in < .NET 5 (triggers several calls to ToLower)
 
         /// <summary>
         /// States the mode of mouse interaction.
@@ -418,7 +418,7 @@ namespace AnnoDesigner
         /// <summary>
         /// The current mouse position.
         /// </summary>
-        private Point _mousePosition = new Point(double.NaN, double.NaN);
+        private Point _mousePosition = new(double.NaN, double.NaN);
 
         /// <summary>
         /// The position where the mouse button was pressed.
@@ -484,7 +484,7 @@ namespace AnnoDesigner
         /// <summary>
         /// The typeface used when rendering text on the canvas.
         /// </summary>
-        private readonly Typeface TYPEFACE = new Typeface("Verdana");
+        private readonly Typeface TYPEFACE = new("Verdana");
 
         /// <summary>
         /// Does currently selected objects contain object which is not ignored from rendering?
@@ -558,17 +558,14 @@ namespace AnnoDesigner
         private readonly bool _debugShowLayoutRectCoordinates = true;
         private readonly bool _debugShowMouseGridCoordinates = true;
         private readonly bool _debugShowObjectCount = true;
-
         #endregion
-
         #region Constructor
         /// <summary>
         /// Constructor
         /// </summary>
         public AnnoCanvas() : this(null, null)
-        {
+        { 
         }
-
         public AnnoCanvas(BuildingPresets presetsToUse,
             Dictionary<string, IconImage> iconsToUse,
             IAppSettings appSettingsToUse = null,
@@ -605,8 +602,8 @@ namespace AnnoDesigner
             //initialize
             CurrentMode = MouseMode.Standard;
             PlacedObjects = new QuadTree<LayoutObject>(new Rect(-128, -128, 256, 256));
-            SelectedObjects = new HashSet<LayoutObject>();
-            _oldObjectPositions = new List<(LayoutObject Item, Rect OldBounds)>();
+            SelectedObjects = [];
+            _oldObjectPositions = [];
             _statisticsCalculationHelper = new StatisticsCalculationHelper();
             _viewport = new Viewport();
             _viewportTransform = new TranslateTransform(0d, 0d);
@@ -788,15 +785,15 @@ namespace AnnoDesigner
         }
 
         private Rect _lastViewPortAbsolute = default;
-        private List<LayoutObject> _lastObjectsToDraw = new List<LayoutObject>();
-        private List<LayoutObject> _lastBorderlessObjectsToDraw = new List<LayoutObject>();
-        private List<LayoutObject> _lastBorderedObjectsToDraw = new List<LayoutObject>();
+        private List<LayoutObject> _lastObjectsToDraw = [];
+        private List<LayoutObject> _lastBorderlessObjectsToDraw = [];
+        private List<LayoutObject> _lastBorderedObjectsToDraw = [];
         private QuadTree<LayoutObject> _lastPlacedObjects = null;
 
-        private DrawingGroup _drawingGroupGridLines = new DrawingGroup();
-        private DrawingGroup _drawingGroupObjects = new DrawingGroup();
-        private DrawingGroup _drawingGroupSelectedObjectsInfluence = new DrawingGroup();
-        private DrawingGroup _drawingGroupInfluence = new DrawingGroup();
+        private DrawingGroup _drawingGroupGridLines = new();
+        private DrawingGroup _drawingGroupObjects = new();
+        private DrawingGroup _drawingGroupSelectedObjectsInfluence = new();
+        private DrawingGroup _drawingGroupInfluence = new();
         private int _lastGridSize = -1;
         private double _lastWidth = -1;
         private double _lastHeight = -1;
@@ -905,7 +902,7 @@ namespace AnnoDesigner
             var objectsToDraw = _lastObjectsToDraw;
             var borderlessObjects = _lastBorderlessObjectsToDraw;
             var borderedObjects = _lastBorderedObjectsToDraw;
-            bool objectsChanged = false;
+            var objectsChanged = false;
 
             if (_isRenderingForced ||
                 _lastViewPortAbsolute != viewPortAbsolute ||
@@ -1238,7 +1235,7 @@ namespace AnnoDesigner
             _isRenderingForced = false;
         }
 
-        private DrawingGroup _drawingGroupPanoramaText = new DrawingGroup();
+        private DrawingGroup _drawingGroupPanoramaText = new();
 
         private void RenderPanoramaText(DrawingContext drawingContext, List<LayoutObject> placedObjects, bool forceRedraw)
         {
@@ -1375,7 +1372,6 @@ namespace AnnoDesigner
         /// Renders the given AnnoObject to the given DrawingContext.
         /// </summary>
         /// <param name="drawingContext">context used for rendering</param>
-        /// <param name="obj">object to render</param>
         private void RenderObjectList(DrawingContext drawingContext, List<LayoutObject> objects, bool useTransparency)
         {
             if (objects.Count == 0)
@@ -1491,8 +1487,8 @@ namespace AnnoDesigner
             }
         }
 
-        private DrawingGroup _drawingGroupObjectSelection = new DrawingGroup();
-        private ICollection<LayoutObject> _lastSelectedObjects = new List<LayoutObject>();
+        private DrawingGroup _drawingGroupObjectSelection = new();
+        private ICollection<LayoutObject> _lastSelectedObjects = [];
         private int _lastObjectSelectionGridSize = -1;
         private Rect _lastSelectionRect;
 
@@ -1500,10 +1496,9 @@ namespace AnnoDesigner
         /// Renders a selection highlight on the specified object.
         /// </summary>
         /// <param name="drawingContext">context used for rendering</param>
-        /// <param name="obj">object to render as selected</param>
         private bool RenderObjectSelection(DrawingContext drawingContext, ICollection<LayoutObject> objects)
         {
-            bool wasRedrawn = false;
+            var wasRedrawn = false;
             if (_lastSelectionRect == _selectionRect && objects.Count == 0)
             {
                 return wasRedrawn;
@@ -1547,7 +1542,6 @@ namespace AnnoDesigner
         /// Renders the influence radius of the given object and highlights other objects within range.
         /// </summary>
         /// <param name="drawingContext">context used for rendering</param>
-        /// <param name="obj">object which's influence is rendered</param>
         private void RenderObjectInfluenceRadius(DrawingContext drawingContext, ICollection<LayoutObject> objects)
         {
             if (objects.Count == 0)
@@ -1617,7 +1611,7 @@ namespace AnnoDesigner
                 }
 
                 gridDictionary = RoadSearchHelper.PrepareGridDictionary(placedAnnoObjects);
-                RoadSearchHelper.BreadthFirstSearch(
+                _ = RoadSearchHelper.BreadthFirstSearch(
                     placedAnnoObjects,
                     objects.Select(o => o.WrappedAnnoObject).Where(o => o.InfluenceRange > 0.5),
                     o => (int)o.InfluenceRange + 1,// increase distance to get objects that are touching even the last road cell in influence range
@@ -1626,7 +1620,7 @@ namespace AnnoDesigner
             }
 
             var geometries = new ConcurrentBag<(long index, StreamGeometry geometry)>();
-            Parallel.ForEach(objects, (curLayoutObject, _, index) =>
+            _ = Parallel.ForEach(objects, (curLayoutObject, _, index) =>
             {
                 if (curLayoutObject.WrappedAnnoObject.InfluenceRange > 0.5)
                 {
@@ -1837,7 +1831,7 @@ namespace AnnoDesigner
         /// Add the objects to SelectedObjects, optionally also add all objects which match one of their identifiers.
         /// </summary>
         /// <param name="includeSameObjects"> 
-        /// If <see langword="true"> then apply to objects whose identifier matches one of those in <see cref="objectsToAdd">.
+        /// If <see langword="true"> then apply to objects whose identifier matches one of those in <see cref="objectsToAdd"/>.
         /// </param>
         private void AddSelectedObjects(IEnumerable<LayoutObject> objectsToAdd, bool includeSameObjects)
         {
@@ -1856,14 +1850,14 @@ namespace AnnoDesigner
         /// Remove the objects from SelectedObjects, optionally also remove all objects which match one of their identifiers.
         /// </summary>
         /// <param name="includeSameObjects"> 
-        /// If <see langword="true"> then apply to objects whose identifier matches one of those in <see cref="objectsToRemove">.
+        /// If <see langword="true"/> then apply to objects whose identifier matches one of those in <see cref="objectsToRemove"/>.
         /// </param>
         private void RemoveSelectedObjects(IEnumerable<LayoutObject> objectsToRemove, bool includeSameObjects)
         {
             if (includeSameObjects)
             {
                 // Exclude any selected objects whose identifier matches any of those in the objectsToRemove.
-                SelectedObjects.RemoveWhere(placed => objectsToRemove.Any(toRemove => toRemove.Identifier.Equals(placed.Identifier, StringComparison.OrdinalIgnoreCase)));
+                _ = SelectedObjects.RemoveWhere(placed => objectsToRemove.Any(toRemove => toRemove.Identifier.Equals(placed.Identifier, StringComparison.OrdinalIgnoreCase)));
             }
             else
             {
@@ -1876,7 +1870,7 @@ namespace AnnoDesigner
         /// </summary>
         private void RemoveSelectedObjects(Predicate<LayoutObject> predicate)
         {
-            SelectedObjects.RemoveWhere(predicate);
+            _ = SelectedObjects.RemoveWhere(predicate);
         }
 
         /// <summary>
@@ -1887,7 +1881,7 @@ namespace AnnoDesigner
         /// </param>
         private void AddSelectedObject(LayoutObject objectToAdd, bool includeSameObjects = false)
         {
-            AddSelectedObjects(new List<LayoutObject>() { objectToAdd }, includeSameObjects);
+            AddSelectedObjects([objectToAdd], includeSameObjects);
         }
 
         /// <summary>
@@ -1898,7 +1892,7 @@ namespace AnnoDesigner
         /// </param>
         private void RemoveSelectedObject(LayoutObject objectToRemove, bool includeSameObjects = false)
         {
-            RemoveSelectedObjects(new List<LayoutObject>() { objectToRemove }, includeSameObjects);
+            RemoveSelectedObjects([objectToRemove], includeSameObjects);
         }
 
         private void RecalculateSelectionContainsNotIgnoredObject()
@@ -2030,7 +2024,7 @@ namespace AnnoDesigner
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
             //We subtract from ZoomSensitivitySliderMaximum here to get the inverse of the value (e.g 100(%) becomes 1(%), and 1(%) becomes 100(%))
-            var zoomFactor = (((Constants.ZoomSensitivitySliderMaximum + 1) - _appSettings.ZoomSensitivityPercentage) * Constants.ZoomSensitivityCoefficient) + Constants.ZoomSensitivityMinimum;
+            var zoomFactor = ((Constants.ZoomSensitivitySliderMaximum + 1 - _appSettings.ZoomSensitivityPercentage) * Constants.ZoomSensitivityCoefficient) + Constants.ZoomSensitivityMinimum;
             var change = (int)(e.Delta / zoomFactor);
             //change by at least 1
             if (change == 0)
@@ -2065,7 +2059,7 @@ namespace AnnoDesigner
 
         private void HandleMouse(MouseEventArgs e)
         {
-            Focus();
+            _ = Focus();
             // refresh retrieved mouse position
             _mousePosition = e.GetPosition(this);
             MoveCurrentObjectsToMouse();
@@ -2079,7 +2073,7 @@ namespace AnnoDesigner
         {
             if (!IsFocused)
             {
-                Focus();
+                _ = Focus();
             }
 
             HandleMouse(e);
@@ -2107,7 +2101,7 @@ namespace AnnoDesigner
             else if (e.LeftButton == MouseButtonState.Pressed && CurrentObjects.Count != 0)
             {
                 // place new object
-                TryPlaceCurrentObjects(isContinuousDrawing: false);
+                _ = TryPlaceCurrentObjects(isContinuousDrawing: false);
             }
             else if (e.LeftButton == MouseButtonState.Pressed && CurrentObjects.Count == 0)
             {
@@ -2195,7 +2189,7 @@ namespace AnnoDesigner
                 {
                     CurrentMode = MouseMode.PlaceObjects;
                     // place new object
-                    TryPlaceCurrentObjects(isContinuousDrawing: true);
+                    _ = TryPlaceCurrentObjects(isContinuousDrawing: true);
                 }
                 else
                 {
@@ -2526,7 +2520,7 @@ namespace AnnoDesigner
         /// Checks whether actions should affect all objects with the same identifier.
         /// </summary>
         /// <returns><see langword="true"> if all objects with same identifier should be affected, otherwise <see langword="false">.</returns>
-        private bool ShouldAffectObjectsWithIdentifier()
+        private static bool ShouldAffectObjectsWithIdentifier()
         {
             return IsShiftPressed() && IsControlPressed();
         }
@@ -2543,7 +2537,7 @@ namespace AnnoDesigner
         /// <param name="a">first object</param>
         /// <param name="b">second object</param>
         /// <returns>true if there is a collision, otherwise false</returns>
-        private bool ObjectIntersectionExists(LayoutObject a, LayoutObject b)
+        private static bool ObjectIntersectionExists(LayoutObject a, LayoutObject b)
         {
             return a.CollisionRect.IntersectsWith(b.CollisionRect);
         }
@@ -2554,7 +2548,7 @@ namespace AnnoDesigner
         /// <param name="a">List of objects</param>
         /// <param name="b">second object</param>
         /// <returns>true if there is a collision, otherwise false</returns>
-        private bool ObjectIntersectionExists(IEnumerable<LayoutObject> a, LayoutObject b)
+        private static bool ObjectIntersectionExists(IEnumerable<LayoutObject> a, LayoutObject b)
         {
             return a.Any(_ => _.CollisionRect.IntersectsWith(b.CollisionRect));
         }
@@ -2610,7 +2604,7 @@ namespace AnnoDesigner
             return false;
         }
 
-        private Size _intersectingRectSize = new Size(1, 1);
+        private Size _intersectingRectSize = new(1, 1);
 
         /// <summary>
         /// Retrieves the object at the given position given in screen coordinates.
@@ -2765,7 +2759,7 @@ namespace AnnoDesigner
 
                 if (save)
                 {
-                    SaveAs();
+                    _ = SaveAs();
                 }
             }
         }
@@ -2918,9 +2912,9 @@ namespace AnnoDesigner
         /// <param name="e"></param>
         private static void ExecuteCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            if (sender is AnnoCanvas canvas && CommandExecuteMappings.ContainsKey(e.Command))
+            if (sender is AnnoCanvas canvas && CommandExecuteMappings.TryGetValue(e.Command, out var value))
             {
-                CommandExecuteMappings[e.Command].Invoke(canvas);
+                value.Invoke(canvas);
                 e.Handled = true;
             }
         }
@@ -3005,14 +2999,14 @@ namespace AnnoDesigner
         {
             UndoManager.RegisterOperation(new RemoveObjectsOperation<LayoutObject>()
             {
-                Objects = SelectedObjects.ToList(),
+                Objects = [.. SelectedObjects],
                 Collection = PlacedObjects
             });
 
             // remove all currently selected objects from the grid and clear selection    
             foreach (var item in SelectedObjects)
             {
-                PlacedObjects.Remove(item);
+                _ = PlacedObjects.Remove(item);
             }
             SelectedObjects.Clear();
             StatisticsUpdated?.Invoke(this, UpdateStatisticsEventArgs.All);
@@ -3044,14 +3038,14 @@ namespace AnnoDesigner
                     // Remove object, only ever remove a single object this way.
                     UndoManager.RegisterOperation(new RemoveObjectsOperation<LayoutObject>()
                     {
-                        Objects = new List<LayoutObject>()
-                        {
+                        Objects =
+                        [
                             obj
-                        },
+                        ],
                         Collection = PlacedObjects
                     });
 
-                    PlacedObjects.Remove(obj);
+                    _ = PlacedObjects.Remove(obj);
                     RemoveSelectedObject(obj);
                     RecalculateSelectionContainsNotIgnoredObject();
                     StatisticsUpdated?.Invoke(this, UpdateStatisticsEventArgs.All);
@@ -3117,8 +3111,8 @@ namespace AnnoDesigner
 
         #region Helper methods
 
-        private List<LayoutObject> CloneLayoutObjects(ICollection<LayoutObject> list)
-        {
+        private List<LayoutObject> CloneLayoutObjects(HashSet<LayoutObject> list)
+        { 
             return list.Select(x => new LayoutObject(new AnnoObject(x.WrappedAnnoObject), _coordinateHelper, _brushCache, _penCache)).ToListWithCapacity(list.Count);
         }
 
@@ -3173,14 +3167,9 @@ namespace AnnoDesigner
         {
             get
             {
-                if (_appSettings.InvertScrollingDirection)
-                {
-                    return (_scrollableBounds.Left - _viewport.Left) + (_scrollableBounds.Width - _viewport.Width);
-                }
-                else
-                {
-                    return _viewport.Left - _scrollableBounds.Left;
-                }
+                return _appSettings.InvertScrollingDirection
+                    ? _scrollableBounds.Left - _viewport.Left + (_scrollableBounds.Width - _viewport.Width)
+                    : _viewport.Left - _scrollableBounds.Left;
             }
         }
 
@@ -3188,14 +3177,9 @@ namespace AnnoDesigner
         {
             get
             {
-                if (_appSettings.InvertScrollingDirection)
-                {
-                    return (_scrollableBounds.Top - _viewport.Top) + (_scrollableBounds.Height - _viewport.Height);
-                }
-                else
-                {
-                    return _viewport.Top - _scrollableBounds.Top;
-                }
+                return _appSettings.InvertScrollingDirection
+                    ? _scrollableBounds.Top - _viewport.Top + (_scrollableBounds.Height - _viewport.Height)
+                    : _viewport.Top - _scrollableBounds.Top;
             }
         }
 
@@ -3310,14 +3294,9 @@ namespace AnnoDesigner
             //handle when offset is +/- infinity (when scrolling to top/bottom using the end and home keys)
             offset = Math.Max(offset, 0d);
             offset = Math.Min(offset, _scrollableBounds.Width);
-            if (_appSettings.InvertScrollingDirection)
-            {
-                _viewport.Left = (_scrollableBounds.Left - offset) + (_scrollableBounds.Width - _viewport.Width);
-            }
-            else
-            {
-                _viewport.Left = _scrollableBounds.Left + offset;
-            }
+            _viewport.Left = _appSettings.InvertScrollingDirection
+                ? _scrollableBounds.Left - offset + (_scrollableBounds.Width - _viewport.Width)
+                : _scrollableBounds.Left + offset;
             _viewport.Left = _scrollableBounds.Left + offset;
             InvalidateScroll();
             InvalidateVisual();
@@ -3328,14 +3307,9 @@ namespace AnnoDesigner
             //handle when offset is +/- infinity (when scrolling to top/bottom using the end and home keys)
             offset = Math.Max(offset, 0d);
             offset = Math.Min(offset, _scrollableBounds.Height);
-            if (_appSettings.InvertScrollingDirection)
-            {
-                _viewport.Top = (_scrollableBounds.Top - offset) + (_scrollableBounds.Height - _viewport.Height);
-            }
-            else
-            {
-                _viewport.Top = _scrollableBounds.Top + offset;
-            }
+            _viewport.Top = _appSettings.InvertScrollingDirection
+                ? _scrollableBounds.Top - offset + (_scrollableBounds.Height - _viewport.Height)
+                : _scrollableBounds.Top + offset;
             InvalidateScroll();
             InvalidateVisual();
         }
@@ -3344,6 +3318,9 @@ namespace AnnoDesigner
         {
             return _viewport.Absolute;
         }
+
+        [GeneratedRegex("A7_residence_SkyScraper_(?<tier>[45])lvl(?<level>[1-5])", RegexOptions.ExplicitCapture | RegexOptions.Compiled | RegexOptions.CultureInvariant)]
+        private static partial Regex SkyScraperRegex();
 
         #endregion
     }

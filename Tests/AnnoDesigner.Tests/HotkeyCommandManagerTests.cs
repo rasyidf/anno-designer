@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Input;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
-using System.Reflection;
 using Moq;
 using Xunit;
-using AnnoDesigner.Localization;
 
 namespace AnnoDesigner.Tests
 {
@@ -21,7 +14,7 @@ namespace AnnoDesigner.Tests
         public HotkeyCommandManagerTests() { }
 
         private static readonly Action<object> emptyAction = (o) => { };
-        private static readonly RelayCommand emptyCommand = new RelayCommand(emptyAction);
+        private static readonly RelayCommand emptyCommand = new(emptyAction);
 
         /// <summary>
         /// Returns a <see cref="HotkeyCommandManager"/> instance, a <see cref="string"/> for an id, and a <see cref="PolyBinding{T}"/>.
@@ -92,14 +85,14 @@ namespace AnnoDesigner.Tests
         {
             get
             {
-                return new List<object[]>()
-                {
+                return
+                [
                     new object[] { "Keybind1", GetInputBinding(Key.A) },
                     new object[] { "Keybind2", GetInputBinding(Key.B, ModifierKeys.Alt | ModifierKeys.Control) },
                     new object[] { "Keybind3", GetInputBinding(Key.C, ModifierKeys.Shift) },
                     new object[] { "Keybind4", GetInputBinding(ExtendedMouseAction.LeftClick) },
                     new object[] { "Keybind5", GetInputBinding(ExtendedMouseAction.RightDoubleClick, ModifierKeys.Control) }
-                };
+                ];
             }
         }
         [Theory]
@@ -132,8 +125,8 @@ namespace AnnoDesigner.Tests
         {
             get
             {
-                return new List<object[]>()
-                {
+                return
+                [
                     new object[]
                     {
                         "Keybind1",
@@ -166,7 +159,7 @@ namespace AnnoDesigner.Tests
                         ModifierKeys.Control | ModifierKeys.Alt,
                         default(MouseAction)
                     },
-                };
+                ];
             }
         }
 
@@ -185,14 +178,7 @@ namespace AnnoDesigner.Tests
             gesture.ModifierKeys = expectedModifierKeys;
             gesture.MouseAction = expectedMouseAction;
 
-            if (expectedMouseAction != default)
-            {
-                gesture.Type = GestureType.MouseGesture;
-            }
-            else
-            {
-                gesture.Type = GestureType.KeyGesture;
-            }
+            gesture.Type = expectedMouseAction != default ? GestureType.MouseGesture : GestureType.KeyGesture;
 
             //if (expectedBinding is KeyBinding keyBinding)
             //{
@@ -261,7 +247,7 @@ namespace AnnoDesigner.Tests
             //Arrange
             var (hotkeyCommandManager, id, binding) = GetDefaultSetup(true);
             //Act and assert
-            Assert.Throws<ArgumentException>(() => hotkeyCommandManager.AddHotkey(id, binding));
+            _ = Assert.Throws<ArgumentException>(() => hotkeyCommandManager.AddHotkey(id, binding));
         }
 
         [Fact]
@@ -270,7 +256,7 @@ namespace AnnoDesigner.Tests
             //Arrange
             var (hotkeyCommandManager, id, binding) = GetDefaultSetup(true);
             //Act and assert
-            Assert.Throws<KeyNotFoundException>(() => hotkeyCommandManager.RemoveHotkey(""));
+            _ = Assert.Throws<KeyNotFoundException>(() => hotkeyCommandManager.RemoveHotkey(""));
         }
 
         [Fact]
@@ -279,7 +265,7 @@ namespace AnnoDesigner.Tests
             //Arrange
             var (hotkeyCommandManager, id, binding) = GetDefaultSetup(false);
             //Act and assert
-            Assert.Throws<KeyNotFoundException>(() => hotkeyCommandManager.GetHotkey(id));
+            _ = Assert.Throws<KeyNotFoundException>(() => hotkeyCommandManager.GetHotkey(id));
         }
 
         [Fact]
@@ -315,8 +301,8 @@ namespace AnnoDesigner.Tests
         {
             get
             {
-                return new List<object[]>()
-                {
+                return
+                [
                     new object[]
                     {
                         "Keybind1",
@@ -362,7 +348,7 @@ namespace AnnoDesigner.Tests
                         ExtendedMouseAction.RightClick,
                         GestureType.MouseGesture
                     },
-                };
+                ];
             }
         }
 
@@ -426,8 +412,8 @@ namespace AnnoDesigner.Tests
         {
             get
             {
-                return new List<object[]>()
-                {
+                return
+                [
                     new object[]
                     {
                         "Keybind1",
@@ -478,7 +464,7 @@ namespace AnnoDesigner.Tests
                         GestureType.MouseGesture,
                         0
                     },
-                };
+                ];
             }
         }
 

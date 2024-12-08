@@ -39,14 +39,14 @@ namespace AnnoDesigner.Tests
             _mockedFileSystem = new MockFileSystem();
 
             var commonsMock = new Mock<ICommons>();
-            commonsMock.SetupGet(x => x.CurrentLanguage).Returns(() => "English");
-            commonsMock.SetupGet(x => x.CurrentLanguageCode).Returns(() => "eng");
-            commonsMock.SetupGet(x => x.LanguageCodeMap).Returns(() => new Dictionary<string, string>());
+            _ = commonsMock.SetupGet(x => x.CurrentLanguage).Returns(() => "English");
+            _ = commonsMock.SetupGet(x => x.CurrentLanguageCode).Returns(() => "eng");
+            _ = commonsMock.SetupGet(x => x.LanguageCodeMap).Returns(() => []);
             _mockedCommons = commonsMock.Object;
 
             var mockedLocalizationHelper = new Mock<ILocalizationHelper>();
-            mockedLocalizationHelper.Setup(x => x.GetLocalization(It.IsAny<string>())).Returns<string>(x => x);
-            mockedLocalizationHelper.Setup(x => x.GetLocalization(It.IsAny<string>(), It.IsAny<string>())).Returns((string value, string langauge) => value);
+            _ = mockedLocalizationHelper.Setup(x => x.GetLocalization(It.IsAny<string>())).Returns<string>(x => x);
+            _ = mockedLocalizationHelper.Setup(x => x.GetLocalization(It.IsAny<string>(), It.IsAny<string>())).Returns((string value, string langauge) => value);
             _mockedLocalizationHelper = mockedLocalizationHelper.Object;
 
             Localization.Localization.Init(_mockedCommons);
@@ -54,10 +54,10 @@ namespace AnnoDesigner.Tests
             _mockedAppSettings = new Mock<IAppSettings>().Object;
 
             var annoCanvasMock = new Mock<IAnnoCanvas>();
-            annoCanvasMock.SetupAllProperties();
+            _ = annoCanvasMock.SetupAllProperties();
             //The QuadTree does not have a default constructor, so we need to explicitly set up the property
-            annoCanvasMock.SetupGet(x => x.UndoManager).Returns(Mock.Of<IUndoManager>());
-            annoCanvasMock.Setup(x => x.PlacedObjects).Returns(new Core.DataStructures.QuadTree<LayoutObject>(new Rect(-100, -100, 200, 200)));
+            _ = annoCanvasMock.SetupGet(x => x.UndoManager).Returns(Mock.Of<IUndoManager>());
+            _ = annoCanvasMock.Setup(x => x.PlacedObjects).Returns(new Core.DataStructures.QuadTree<LayoutObject>(new Rect(-100, -100, 200, 200)));
             _mockedAnnoCanvas = annoCanvasMock.Object;
 
             _inMemoryRecentFilesHelper = new RecentFilesHelper(new RecentFilesInMemorySerializer(), new MockFileSystem());
@@ -222,7 +222,7 @@ namespace AnnoDesigner.Tests
             var viewModel = GetViewModel();
 
             // Act/Assert
-            Assert.Raises<EventArgs>(
+            _ = Assert.Raises<EventArgs>(
                 x => viewModel.ShowStatisticsChanged += x,
                 x => viewModel.ShowStatisticsChanged -= x,
                 () => viewModel.ShowStatisticsCommand.Execute(null));
@@ -237,7 +237,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var expectedMainWindowHeight = 42.4;
 
@@ -257,7 +257,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var expectedMainMainWindowWidth = 42.4;
 
@@ -277,7 +277,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var expectedMainMainWindowLeft = 42.4;
 
@@ -297,7 +297,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var expectedMainMainWindowTop = 42.4;
 
@@ -319,7 +319,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.MainWindowWindowState = expectedMainMainWindowWindowState;
@@ -339,7 +339,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.CanvasShowGrid = expectedShowGrid;
@@ -359,7 +359,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.CanvasShowIcons = expectedShowIcons;
@@ -379,7 +379,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.CanvasShowLabels = expectedShowLabels;
@@ -399,7 +399,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.CanvasShowInfluences = expectedShowInfluences;
@@ -419,7 +419,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.CanvasShowTrueInfluenceRange = expectedShowTrueInfluenceRange;
@@ -439,7 +439,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.PreferencesUpdateViewModel.AutomaticUpdateCheck = expectedEnableAutomaticUpdateCheck;
@@ -459,7 +459,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.UseCurrentZoomOnExportedImageValue = expectedUseCurrentZoomOnExportedImageValue;
@@ -479,7 +479,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.RenderSelectionHighlightsOnExportedImageValue = expectedRenderSelectionHighlightsOnExportedImageValue;
@@ -499,7 +499,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.RenderVersionOnExportedImageValue = expectedRenderVersionOnExportedImageValue;
@@ -519,15 +519,15 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var presets = new BuildingPresets
             {
-                Buildings = new List<BuildingInfo>()
+                Buildings = []
             };
 
             var canvas = new Mock<IAnnoCanvas>();
-            canvas.SetupGet(x => x.BuildingPresets).Returns(() => presets);
+            _ = canvas.SetupGet(x => x.BuildingPresets).Returns(() => presets);
 
             var viewModel = GetViewModel(null, appSettings.Object, annoCanvasToUse: canvas.Object);
             viewModel.BuildingSettingsViewModel.IsPavedStreet = expectedIsPavedStreet;
@@ -547,7 +547,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.StatisticsViewModel.IsVisible = expectedStatsShowStats;
@@ -567,7 +567,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.StatisticsViewModel.ShowStatisticsBuildingCount = expectedStatsShowBuildingCount;
@@ -589,7 +589,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.PresetsTreeSearchViewModel.SearchText = expectedTreeViewSearchText;
@@ -615,7 +615,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.PresetsTreeViewModel.FilterGameVersion = expectedPresetsTreeGameVersionFilter;
@@ -635,7 +635,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var command = Mock.Of<ICommand>(c => c.CanExecute(It.IsAny<object>()) == true);
 
@@ -664,8 +664,8 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
-            appSettings.Setup(x => x.ShowInfluences).Returns(() => expectedShowInfluences);
+            _ = appSettings.SetupAllProperties();
+            _ = appSettings.Setup(x => x.ShowInfluences).Returns(() => expectedShowInfluences);
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.CanvasShowInfluences = !expectedShowInfluences;
@@ -684,8 +684,8 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
-            appSettings.Setup(x => x.ShowGrid).Returns(() => expectedShowGrid);
+            _ = appSettings.SetupAllProperties();
+            _ = appSettings.Setup(x => x.ShowGrid).Returns(() => expectedShowGrid);
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.CanvasShowGrid = !expectedShowGrid;
@@ -704,8 +704,8 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
-            appSettings.Setup(x => x.ShowIcons).Returns(() => expectedShowIcons);
+            _ = appSettings.SetupAllProperties();
+            _ = appSettings.Setup(x => x.ShowIcons).Returns(() => expectedShowIcons);
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.CanvasShowIcons = !expectedShowIcons;
@@ -724,8 +724,8 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
-            appSettings.Setup(x => x.ShowLabels).Returns(() => expectedShowLabels);
+            _ = appSettings.SetupAllProperties();
+            _ = appSettings.Setup(x => x.ShowLabels).Returns(() => expectedShowLabels);
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.CanvasShowLabels = !expectedShowLabels;
@@ -744,8 +744,8 @@ namespace AnnoDesigner.Tests
             var expectedMainWindowHeight = 42.4;
 
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
-            appSettings.Setup(x => x.MainWindowHeight).Returns(() => expectedMainWindowHeight);
+            _ = appSettings.SetupAllProperties();
+            _ = appSettings.Setup(x => x.MainWindowHeight).Returns(() => expectedMainWindowHeight);
 
             var viewModel = GetViewModel(null, appSettings.Object);
 
@@ -763,8 +763,8 @@ namespace AnnoDesigner.Tests
             var expectedMainWindowWidth = 42.4;
 
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
-            appSettings.Setup(x => x.MainWindowWidth).Returns(() => expectedMainWindowWidth);
+            _ = appSettings.SetupAllProperties();
+            _ = appSettings.Setup(x => x.MainWindowWidth).Returns(() => expectedMainWindowWidth);
 
             var viewModel = GetViewModel(null, appSettings.Object);
 
@@ -782,8 +782,8 @@ namespace AnnoDesigner.Tests
             var expectedMainWindowLeft = 42.4;
 
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
-            appSettings.Setup(x => x.MainWindowLeft).Returns(() => expectedMainWindowLeft);
+            _ = appSettings.SetupAllProperties();
+            _ = appSettings.Setup(x => x.MainWindowLeft).Returns(() => expectedMainWindowLeft);
 
             var viewModel = GetViewModel(null, appSettings.Object);
 
@@ -801,8 +801,8 @@ namespace AnnoDesigner.Tests
             var expectedMainWindowTop = 42.4;
 
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
-            appSettings.Setup(x => x.MainWindowTop).Returns(() => expectedMainWindowTop);
+            _ = appSettings.SetupAllProperties();
+            _ = appSettings.Setup(x => x.MainWindowTop).Returns(() => expectedMainWindowTop);
 
             var viewModel = GetViewModel(null, appSettings.Object);
 
@@ -820,8 +820,8 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
-            appSettings.Setup(x => x.MainWindowWindowState).Returns(() => expectedMainMainWindowWindowState);
+            _ = appSettings.SetupAllProperties();
+            _ = appSettings.Setup(x => x.MainWindowWindowState).Returns(() => expectedMainMainWindowWindowState);
 
             var viewModel = GetViewModel(null, appSettings.Object);
 
@@ -839,8 +839,8 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
-            appSettings.Setup(x => x.EnableAutomaticUpdateCheck).Returns(() => expectedEnableAutomaticUpdateCheck);
+            _ = appSettings.SetupAllProperties();
+            _ = appSettings.Setup(x => x.EnableAutomaticUpdateCheck).Returns(() => expectedEnableAutomaticUpdateCheck);
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.PreferencesUpdateViewModel.AutomaticUpdateCheck = !expectedEnableAutomaticUpdateCheck;
@@ -859,8 +859,8 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
-            appSettings.Setup(x => x.UseCurrentZoomOnExportedImageValue).Returns(() => expectedUseCurrentZoomOnExportedImageValue);
+            _ = appSettings.SetupAllProperties();
+            _ = appSettings.Setup(x => x.UseCurrentZoomOnExportedImageValue).Returns(() => expectedUseCurrentZoomOnExportedImageValue);
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.UseCurrentZoomOnExportedImageValue = !expectedUseCurrentZoomOnExportedImageValue;
@@ -879,8 +879,8 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
-            appSettings.Setup(x => x.RenderSelectionHighlightsOnExportedImageValue).Returns(() => expectedRenderSelectionHighlightsOnExportedImageValue);
+            _ = appSettings.SetupAllProperties();
+            _ = appSettings.Setup(x => x.RenderSelectionHighlightsOnExportedImageValue).Returns(() => expectedRenderSelectionHighlightsOnExportedImageValue);
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.RenderSelectionHighlightsOnExportedImageValue = !expectedRenderSelectionHighlightsOnExportedImageValue;
@@ -899,8 +899,8 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
-            appSettings.Setup(x => x.RenderVersionOnExportedImageValue).Returns(() => expectedRenderVersionOnExportedImageValue);
+            _ = appSettings.SetupAllProperties();
+            _ = appSettings.Setup(x => x.RenderVersionOnExportedImageValue).Returns(() => expectedRenderVersionOnExportedImageValue);
 
             var viewModel = GetViewModel(null, appSettings.Object);
             viewModel.RenderVersionOnExportedImageValue = !expectedRenderVersionOnExportedImageValue;
@@ -920,12 +920,12 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var command = Mock.Of<ICommand>(c => c.CanExecute(It.IsAny<object>()) == true);
 
             var viewModel = GetViewModel(null, appSettings.Object);
-            appSettings.Setup(x => x.HotkeyMappings).Returns(settingsString);
+            _ = appSettings.Setup(x => x.HotkeyMappings).Returns(settingsString);
 
             // Act
             viewModel.LoadSettings();
@@ -976,8 +976,8 @@ namespace AnnoDesigner.Tests
             var languageBeforeChange = "English";
 
             var commons = new Mock<ICommons>();
-            commons.SetupAllProperties();
-            commons.SetupGet(x => x.LanguageCodeMap).Returns(() => new Dictionary<string, string>());
+            _ = commons.SetupAllProperties();
+            _ = commons.SetupGet(x => x.LanguageCodeMap).Returns(() => []);
             commons.Object.CurrentLanguage = languageBeforeChange;
 
             var viewModel = GetViewModel(commons.Object, null);
@@ -1000,8 +1000,8 @@ namespace AnnoDesigner.Tests
             var languageBeforeChange = "English";
 
             var commons = new Mock<ICommons>();
-            commons.SetupAllProperties();
-            commons.SetupGet(x => x.LanguageCodeMap).Returns(() => new Dictionary<string, string>());
+            _ = commons.SetupAllProperties();
+            _ = commons.SetupGet(x => x.LanguageCodeMap).Returns(() => []);
             commons.Object.CurrentLanguage = languageBeforeChange;
 
             var viewModel = GetViewModel(commons.Object, null);
@@ -1022,8 +1022,8 @@ namespace AnnoDesigner.Tests
             var languageBeforeChange = "English";
 
             var commons = new Mock<ICommons>();
-            commons.SetupAllProperties();
-            commons.SetupGet(x => x.LanguageCodeMap).Returns(() => new Dictionary<string, string>());
+            _ = commons.SetupAllProperties();
+            _ = commons.SetupGet(x => x.LanguageCodeMap).Returns(() => []);
             commons.Object.CurrentLanguage = languageBeforeChange;
 
             var viewModel = GetViewModel(commons.Object, null);
@@ -1048,7 +1048,7 @@ namespace AnnoDesigner.Tests
             // Arrange
             var roads = new List<LayoutObject>()
             {
-                new LayoutObject(
+                new(
                     new AnnoObject()
                     {
                         Position = new Point(1, 1),
@@ -1057,7 +1057,7 @@ namespace AnnoDesigner.Tests
                         Color = new SerializableColor(255, 0, 0, 0),
                         Borderless = false
                     }, null, null, null),
-                new LayoutObject(
+                new(
                     new AnnoObject()
                     {
                         Position = new Point(2, 1),
@@ -1066,7 +1066,7 @@ namespace AnnoDesigner.Tests
                         Color = new SerializableColor(255, 0, 0, 0),
                         Borderless = true
                     }, null, null, null),
-                new LayoutObject(
+                new(
                     new AnnoObject()
                     {
                         Position = new Point(3, 1),
@@ -1119,7 +1119,7 @@ namespace AnnoDesigner.Tests
         public void SaveFile_ShouldNormalizeCanvas()
         {
             // Arrange
-            int calledBorderWidth = -1;
+            var calledBorderWidth = -1;
             var mockedCanvas = new Mock<IAnnoCanvas>();
             _ = mockedCanvas.Setup(x => x.Normalize(It.IsAny<int>()))
                 .Callback<int>(x => calledBorderWidth = x);
@@ -1168,8 +1168,8 @@ namespace AnnoDesigner.Tests
 
             var mockedAnnoCanvas = new Mock<IAnnoCanvas>();
             var mockedUndoManager = new Mock<IUndoManager>();
-            mockedAnnoCanvas.SetupAllProperties();
-            mockedAnnoCanvas.SetupGet(x => x.UndoManager).Returns(mockedUndoManager.Object);
+            _ = mockedAnnoCanvas.SetupAllProperties();
+            _ = mockedAnnoCanvas.SetupGet(x => x.UndoManager).Returns(mockedUndoManager.Object);
             var viewModel = GetViewModel(annoCanvasToUse: mockedAnnoCanvas.Object);
 
             // Act

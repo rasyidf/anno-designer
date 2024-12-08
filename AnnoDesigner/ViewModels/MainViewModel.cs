@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,7 +25,6 @@ using AnnoDesigner.Core.Layout.Helper;
 using AnnoDesigner.Core.Layout.Models;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Helper;
-using AnnoDesigner.Core.Presets.Loader;
 using AnnoDesigner.Core.Presets.Models;
 using AnnoDesigner.Core.Services;
 using AnnoDesigner.CustomEventArgs;
@@ -84,10 +84,10 @@ namespace AnnoDesigner.ViewModels
         private WindowState _minWindowWindowState;
         private HotkeyCommandManager _hotkeyCommandManager;
         private ObservableCollection<RecentFileItem> _recentFiles;
-        private TreeLocalizationContainer _treeLocalizationContainer;
+        private readonly TreeLocalizationContainer _treeLocalizationContainer;
 
         //for identifier checking process
-        private static readonly List<string> IconFieldNamesCheck = new List<string> { "icon_116_22", "icon_27_6", "field", "general_module" };
+        private static readonly List<string> IconFieldNamesCheck = ["icon_116_22", "icon_27_6", "field", "general_module"];
         private readonly IconImage _noIconItem;
 
         public MainViewModel(ICommons commonsToUse,
@@ -132,7 +132,7 @@ namespace AnnoDesigner.ViewModels
             // load tree localization            
             try
             {
-                _treeLocalizationContainer = treeLocalizationLoader.LoadFromFile(Path.Combine(App.ApplicationPath, CoreConstants.PresetsFiles.TreeLocalizationFile));
+                _treeLocalizationContainer = treeLocalizationLoader.LoadFromFile(_fileSystem.Path.Combine(App.ApplicationPath, CoreConstants.PresetsFiles.TreeLocalizationFile));
             }
             catch (Exception ex)
             {
@@ -177,39 +177,41 @@ namespace AnnoDesigner.ViewModels
             ShowLicensesWindowCommand = new RelayCommand(ExecuteShowLicensesWindow);
             OpenRecentFileCommand = new RelayCommand(ExecuteOpenRecentFile);
 
-            AvailableIcons = new ObservableCollection<IconImage>();
+            AvailableIcons = [];
             _noIconItem = GenerateNoIconItem();
             AvailableIcons.Add(_noIconItem);
             SelectedIcon = _noIconItem;
 
-            RecentFiles = new ObservableCollection<RecentFileItem>();
+            RecentFiles = [];
             _recentFilesHelper.Updated += RecentFilesHelper_Updated;
 
-            Languages = new ObservableCollection<SupportedLanguage>();
-            Languages.Add(new SupportedLanguage("English")
-            {
-                FlagPath = "Flags/United Kingdom.png"
-            });
-            Languages.Add(new SupportedLanguage("Deutsch")
-            {
-                FlagPath = "Flags/Germany.png"
-            });
-            Languages.Add(new SupportedLanguage("Français")
-            {
-                FlagPath = "Flags/France.png"
-            });
-            Languages.Add(new SupportedLanguage("Polski")
-            {
-                FlagPath = "Flags/Poland.png"
-            });
-            Languages.Add(new SupportedLanguage("Русский")
-            {
-                FlagPath = "Flags/Russia.png"
-            });
-            Languages.Add(new SupportedLanguage("Español")
-            {
-                FlagPath = "Flags/Spain.png"
-            });
+            Languages =
+            [
+                new SupportedLanguage("English")
+                {
+                    FlagPath = "Flags/United Kingdom.png"
+                },
+                new SupportedLanguage("Deutsch")
+                {
+                    FlagPath = "Flags/Germany.png"
+                },
+                new SupportedLanguage("Français")
+                {
+                    FlagPath = "Flags/France.png"
+                },
+                new SupportedLanguage("Polski")
+                {
+                    FlagPath = "Flags/Poland.png"
+                },
+                new SupportedLanguage("Русский")
+                {
+                    FlagPath = "Flags/Russia.png"
+                },
+                new SupportedLanguage("Español")
+                {
+                    FlagPath = "Flags/Spain.png"
+                },
+            ];
             //Languages.Add(new SupportedLanguage("Italiano"));
             //Languages.Add(new SupportedLanguage("český"));
 
@@ -363,8 +365,8 @@ namespace AnnoDesigner.ViewModels
         private void ApplyCurrentObject()
         {
             // parse user inputs and create new object
-            string RenameBuildingIdentifier = BuildingSettingsViewModel.BuildingName;
-            string TextBoxText = "UnknownObject";
+            var RenameBuildingIdentifier = BuildingSettingsViewModel.BuildingName;
+            var TextBoxText = "UnknownObject";
             var obj = new AnnoObject
             {
                 Size = new Size(BuildingSettingsViewModel.BuildingWidth, BuildingSettingsViewModel.BuildingHeight),
@@ -447,7 +449,6 @@ namespace AnnoDesigner.ViewModels
         /// <summary>
         /// Fired on the OnCurrentObjectChanged event
         /// </summary>
-        /// <param name="obj"></param>
         private void UpdateUIFromObject(LayoutObject layoutObject)
         {
             var obj = layoutObject?.WrappedAnnoObject;
@@ -477,7 +478,7 @@ namespace AnnoDesigner.ViewModels
                 }
                 else
                 {
-                    var foundIconImage = AvailableIcons.SingleOrDefault(x => x.Name.Equals(Path.GetFileNameWithoutExtension(obj.Icon), StringComparison.OrdinalIgnoreCase));
+                    var foundIconImage = AvailableIcons.SingleOrDefault(x => x.Name.Equals(_fileSystem.Path.GetFileNameWithoutExtension(obj.Icon), StringComparison.OrdinalIgnoreCase));
                     SelectedIcon = foundIconImage ?? _noIconItem;
                 }
             }
@@ -497,7 +498,7 @@ namespace AnnoDesigner.ViewModels
             }
             else
             {
-                BuildingSettingsViewModel.GetDistanceRange(true, AnnoCanvas.BuildingPresets.Buildings.FirstOrDefault(_ => _.Identifier == BuildingSettingsViewModel.BuildingIdentifier));
+                _ = BuildingSettingsViewModel.GetDistanceRange(true, AnnoCanvas.BuildingPresets.Buildings.FirstOrDefault(_ => _.Identifier == BuildingSettingsViewModel.BuildingIdentifier));
             }
 
             //Set Influence Type
@@ -547,12 +548,12 @@ namespace AnnoDesigner.ViewModels
             var layoutVersion = args.Layout?.LayoutVersion ?? LayoutSettingsViewModel.LayoutVersion;
             if (!string.IsNullOrWhiteSpace(args.FilePath) && layoutVersion != default)
             {
-                fileName = $"{Path.GetFileName(args.FilePath)} ({layoutVersion})";
+                fileName = $"{_fileSystem.Path.GetFileName(args.FilePath)} ({layoutVersion})";
                 LayoutSettingsViewModel.LayoutVersion = layoutVersion;
             }
             else if (!string.IsNullOrWhiteSpace(args.FilePath))
             {
-                fileName = Path.GetFileName(args.FilePath);
+                fileName = _fileSystem.Path.GetFileName(args.FilePath);
             }
 
             MainWindowTitle = string.IsNullOrEmpty(fileName) ? "Anno Designer" : string.Format("{0} - Anno Designer", fileName);
@@ -577,13 +578,10 @@ namespace AnnoDesigner.ViewModels
 
         public Task UpdateStatisticsAsync(UpdateMode mode)
         {
-            if (StatisticsViewModel is null || AnnoCanvas is null)
-            {
-                return Task.CompletedTask;
-            }
-
-            return StatisticsViewModel.UpdateStatisticsAsync(mode,
-                AnnoCanvas.PlacedObjects.ToList(),
+            return StatisticsViewModel is null || AnnoCanvas is null
+                ? Task.CompletedTask
+                : StatisticsViewModel.UpdateStatisticsAsync(mode,
+                [.. AnnoCanvas.PlacedObjects],
                 AnnoCanvas.SelectedObjects,
                 AnnoCanvas.BuildingPresets);
         }
@@ -613,7 +611,7 @@ namespace AnnoDesigner.ViewModels
 
         public void LoadSettings()
         {
-            StatisticsViewModel.ToggleBuildingList(_appSettings.StatsShowBuildingCount, AnnoCanvas.PlacedObjects.ToList(), AnnoCanvas.SelectedObjects, AnnoCanvas.BuildingPresets);
+            StatisticsViewModel.ToggleBuildingList(_appSettings.StatsShowBuildingCount, [.. AnnoCanvas.PlacedObjects], AnnoCanvas.SelectedObjects, AnnoCanvas.BuildingPresets);
 
             PreferencesUpdateViewModel.AutomaticUpdateCheck = _appSettings.EnableAutomaticUpdateCheck;
             PreferencesUpdateViewModel.UpdateSupportsPrerelease = _appSettings.UpdateSupportsPrerelease;
@@ -721,9 +719,9 @@ namespace AnnoDesigner.ViewModels
                 //if all games were deselected on last app run, now select all
                 if (parsedValue == CoreConstants.GameVersion.Unknown)
                 {
-                    foreach (CoreConstants.GameVersion curGameVersion in Enum.GetValues(typeof(CoreConstants.GameVersion)))
+                    foreach (var curGameVersion in Enum.GetValues<CoreConstants.GameVersion>())
                     {
-                        if (curGameVersion == CoreConstants.GameVersion.Unknown || curGameVersion == CoreConstants.GameVersion.All)
+                        if (curGameVersion is CoreConstants.GameVersion.Unknown or CoreConstants.GameVersion.All)
                         {
                             continue;
                         }
@@ -740,9 +738,9 @@ namespace AnnoDesigner.ViewModels
                 //if saved value is not known, now select all
                 parsedValue = CoreConstants.GameVersion.Unknown;
 
-                foreach (CoreConstants.GameVersion curGameVersion in Enum.GetValues(typeof(CoreConstants.GameVersion)))
+                foreach (var curGameVersion in Enum.GetValues<CoreConstants.GameVersion>())
                 {
-                    if (curGameVersion == CoreConstants.GameVersion.Unknown || curGameVersion == CoreConstants.GameVersion.All)
+                    if (curGameVersion is CoreConstants.GameVersion.Unknown or CoreConstants.GameVersion.All)
                     {
                         continue;
                     }
@@ -816,7 +814,7 @@ namespace AnnoDesigner.ViewModels
             }
             LayoutSettingsViewModel.LayoutVersion = layout.LayoutVersion;
 
-            AnnoCanvas.ComputeBoundingRect(layoutObjects);
+            _ = AnnoCanvas.ComputeBoundingRect(layoutObjects);
             AnnoCanvas.PlacedObjects.AddRange(layoutObjects);
 
             AnnoCanvas.Normalize(1);
@@ -891,7 +889,7 @@ namespace AnnoDesigner.ViewModels
             get { return _canvasShowGrid; }
             set
             {
-                UpdateProperty(ref _canvasShowGrid, value);
+                _ = UpdateProperty(ref _canvasShowGrid, value);
                 if (AnnoCanvas != null)
                 {
                     AnnoCanvas.RenderGrid = _canvasShowGrid;
@@ -904,7 +902,7 @@ namespace AnnoDesigner.ViewModels
             get { return _canvasShowIcons; }
             set
             {
-                UpdateProperty(ref _canvasShowIcons, value);
+                _ = UpdateProperty(ref _canvasShowIcons, value);
                 if (AnnoCanvas != null)
                 {
                     AnnoCanvas.RenderIcon = _canvasShowIcons;
@@ -917,7 +915,7 @@ namespace AnnoDesigner.ViewModels
             get { return _canvasShowLabels; }
             set
             {
-                UpdateProperty(ref _canvasShowLabels, value);
+                _ = UpdateProperty(ref _canvasShowLabels, value);
                 if (AnnoCanvas != null)
                 {
                     AnnoCanvas.RenderLabel = _canvasShowLabels;
@@ -930,7 +928,7 @@ namespace AnnoDesigner.ViewModels
             get { return _canvasShowTrueInfluenceRange; }
             set
             {
-                UpdateProperty(ref _canvasShowTrueInfluenceRange, value);
+                _ = UpdateProperty(ref _canvasShowTrueInfluenceRange, value);
                 if (AnnoCanvas != null)
                 {
                     AnnoCanvas.RenderTrueInfluenceRange = _canvasShowTrueInfluenceRange;
@@ -943,7 +941,7 @@ namespace AnnoDesigner.ViewModels
             get { return _canvasShowInfluences; }
             set
             {
-                UpdateProperty(ref _canvasShowInfluences, value);
+                _ = UpdateProperty(ref _canvasShowInfluences, value);
                 if (AnnoCanvas != null)
                 {
                     AnnoCanvas.RenderInfluences = _canvasShowInfluences;
@@ -956,7 +954,7 @@ namespace AnnoDesigner.ViewModels
             get { return _canvasShowHarborBlockedArea; }
             set
             {
-                UpdateProperty(ref _canvasShowHarborBlockedArea, value);
+                _ = UpdateProperty(ref _canvasShowHarborBlockedArea, value);
                 if (AnnoCanvas != null)
                 {
                     AnnoCanvas.RenderHarborBlockedArea = _canvasShowHarborBlockedArea;
@@ -969,7 +967,7 @@ namespace AnnoDesigner.ViewModels
             get { return _canvasShowPanorama; }
             set
             {
-                UpdateProperty(ref _canvasShowPanorama, value);
+                _ = UpdateProperty(ref _canvasShowPanorama, value);
                 if (AnnoCanvas != null)
                 {
                     AnnoCanvas.RenderPanorama = _canvasShowPanorama;
@@ -980,43 +978,43 @@ namespace AnnoDesigner.ViewModels
         public bool UseCurrentZoomOnExportedImageValue
         {
             get { return _useCurrentZoomOnExportedImageValue; }
-            set { UpdateProperty(ref _useCurrentZoomOnExportedImageValue, value); }
+            set { _ = UpdateProperty(ref _useCurrentZoomOnExportedImageValue, value); }
         }
 
         public bool RenderSelectionHighlightsOnExportedImageValue
         {
             get { return _renderSelectionHighlightsOnExportedImageValue; }
-            set { UpdateProperty(ref _renderSelectionHighlightsOnExportedImageValue, value); }
+            set { _ = UpdateProperty(ref _renderSelectionHighlightsOnExportedImageValue, value); }
         }
 
         public bool RenderVersionOnExportedImageValue
         {
             get { return _renderVersionOnExportedImageValue; }
-            set { UpdateProperty(ref _renderVersionOnExportedImageValue, value); }
+            set { _ = UpdateProperty(ref _renderVersionOnExportedImageValue, value); }
         }
 
         public bool IsLanguageChange
         {
             get { return _isLanguageChange; }
-            set { UpdateProperty(ref _isLanguageChange, value); }
+            set { _ = UpdateProperty(ref _isLanguageChange, value); }
         }
 
         public bool IsBusy
         {
             get { return _isBusy; }
-            set { UpdateProperty(ref _isBusy, value); }
+            set { _ = UpdateProperty(ref _isBusy, value); }
         }
 
         public string StatusMessage
         {
             get { return _statusMessage; }
-            set { UpdateProperty(ref _statusMessage, value); }
+            set { _ = UpdateProperty(ref _statusMessage, value); }
         }
 
         public ObservableCollection<SupportedLanguage> Languages
         {
             get { return _languages; }
-            set { UpdateProperty(ref _languages, value); }
+            set { _ = UpdateProperty(ref _languages, value); }
         }
 
         private void InitLanguageMenu(string selectedLanguage)
@@ -1031,61 +1029,61 @@ namespace AnnoDesigner.ViewModels
         public ObservableCollection<IconImage> AvailableIcons
         {
             get { return _availableIcons; }
-            set { UpdateProperty(ref _availableIcons, value); }
+            set { _ = UpdateProperty(ref _availableIcons, value); }
         }
 
         public IconImage SelectedIcon
         {
             get { return _selectedIcon; }
-            set { UpdateProperty(ref _selectedIcon, value); }
+            set { _ = UpdateProperty(ref _selectedIcon, value); }
         }
 
         public string MainWindowTitle
         {
             get { return _mainWindowTitle; }
-            set { UpdateProperty(ref _mainWindowTitle, value); }
+            set { _ = UpdateProperty(ref _mainWindowTitle, value); }
         }
 
         public string PresetsSectionHeader
         {
             get { return _presetsSectionHeader; }
-            set { UpdateProperty(ref _presetsSectionHeader, value); }
+            set { _ = UpdateProperty(ref _presetsSectionHeader, value); }
         }
 
         public double MainWindowHeight
         {
             get { return _mainWindowHeight; }
-            set { UpdateProperty(ref _mainWindowHeight, value); }
+            set { _ = UpdateProperty(ref _mainWindowHeight, value); }
         }
 
         public double MainWindowWidth
         {
             get { return _mainWindowWidth; }
-            set { UpdateProperty(ref _mainWindowWidth, value); }
+            set { _ = UpdateProperty(ref _mainWindowWidth, value); }
         }
 
         public double MainWindowLeft
         {
             get { return _mainWindowLeft; }
-            set { UpdateProperty(ref _mainWindowLeft, value); }
+            set { _ = UpdateProperty(ref _mainWindowLeft, value); }
         }
 
         public double MainWindowTop
         {
             get { return _mainWindowTop; }
-            set { UpdateProperty(ref _mainWindowTop, value); }
+            set { _ = UpdateProperty(ref _mainWindowTop, value); }
         }
 
         public WindowState MainWindowWindowState
         {
             get { return _minWindowWindowState; }
-            set { UpdateProperty(ref _minWindowWindowState, value); }
+            set { _ = UpdateProperty(ref _minWindowWindowState, value); }
         }
 
         public HotkeyCommandManager HotkeyCommandManager
         {
             get { return _hotkeyCommandManager; }
-            set { UpdateProperty(ref _hotkeyCommandManager, value); }
+            set { _ = UpdateProperty(ref _hotkeyCommandManager, value); }
         }
 
         public ObservableCollection<RecentFileItem> RecentFiles
@@ -1113,7 +1111,26 @@ namespace AnnoDesigner.ViewModels
 
         private void OpenProjectHomepage(object param)
         {
-            Process.Start("https://github.com/AnnoDesigner/anno-designer/");
+            try
+            {
+                var url = "https://github.com/AnnoDesigner/anno-designer/";
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    _ = Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    _ = Process.Start("xdg-open", url);
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    _ = Process.Start("open", url);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Error opening project homepage.");
+            }
         }
 
         public ICommand CloseWindowCommand { get; private set; }
@@ -1149,7 +1166,10 @@ namespace AnnoDesigner.ViewModels
             var roadColorGroups = AnnoCanvas.PlacedObjects.Where(p => p.WrappedAnnoObject.Road).GroupBy(p => (p.WrappedAnnoObject.Borderless, p.Color));
             foreach (var roadColorGroup in roadColorGroups)
             {
-                if (roadColorGroup.Count() <= 1) continue;
+                if (roadColorGroup.Count() <= 1)
+                {
+                    continue;
+                }
 
                 var bounds = (Rect)new StatisticsCalculationHelper().CalculateStatistics(roadColorGroup.Select(p => p.WrappedAnnoObject));
 
@@ -1171,7 +1191,7 @@ namespace AnnoDesigner.ViewModels
                     var oldObjects = groups.SelectMany(g => g.Items).ToList();
                     foreach (var item in oldObjects)
                     {
-                        AnnoCanvas.PlacedObjects.Remove(item);
+                        _ = AnnoCanvas.PlacedObjects.Remove(item);
                     }
                     var newObjects = groups
                         .Select(g => new LayoutObject(
@@ -1223,23 +1243,21 @@ namespace AnnoDesigner.ViewModels
                 if (!string.IsNullOrWhiteSpace(jsonString))
                 {
                     var jsonArray = Encoding.UTF8.GetBytes(jsonString);
-                    using (var ms = new MemoryStream(jsonArray))
+                    using var ms = new MemoryStream(jsonArray);
+                    var loadedLayout = _layoutLoader.LoadLayout(ms, forceLoad);
+                    if (loadedLayout != null)
                     {
-                        var loadedLayout = _layoutLoader.LoadLayout(ms, forceLoad);
-                        if (loadedLayout != null)
-                        {
-                            AnnoCanvas.SelectedObjects.Clear();
-                            AnnoCanvas.PlacedObjects.Clear();
-                            AnnoCanvas.PlacedObjects.AddRange(loadedLayout.Objects.Select(x => new LayoutObject(x, _coordinateHelper, _brushCache, _penCache)));
+                        AnnoCanvas.SelectedObjects.Clear();
+                        AnnoCanvas.PlacedObjects.Clear();
+                        AnnoCanvas.PlacedObjects.AddRange(loadedLayout.Objects.Select(x => new LayoutObject(x, _coordinateHelper, _brushCache, _penCache)));
 
-                            AnnoCanvas.UndoManager.Clear();
+                        AnnoCanvas.UndoManager.Clear();
 
-                            AnnoCanvas.LoadedFile = string.Empty;
-                            AnnoCanvas.Normalize(1);
-                            AnnoCanvas.ResetViewport();
+                        AnnoCanvas.LoadedFile = string.Empty;
+                        AnnoCanvas.Normalize(1);
+                        AnnoCanvas.ResetViewport();
 
-                            _ = UpdateStatisticsAsync(UpdateMode.All);
-                        }
+                        _ = UpdateStatisticsAsync(UpdateMode.All);
                     }
                 }
             }
@@ -1266,14 +1284,17 @@ namespace AnnoDesigner.ViewModels
 
         private void UnregisterExtension(object param)
         {
-            var regCheckADFileExtension = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Default).OpenSubKey(@"Software\Classes\anno_designer", false);
-            if (regCheckADFileExtension != null)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                // removes the registry entries when exists          
-                Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\anno_designer");
-                Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\.ad");
+                var regCheckADFileExtension = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Default).OpenSubKey(@"Software\Classes\anno_designer", false);
+                if (regCheckADFileExtension != null)
+                {
+                    // removes the registry entries when exists          
+                    Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\anno_designer");
+                    Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\.ad");
 
-                ShowRegistrationMessageBox(isDeregistration: true);
+                    ShowRegistrationMessageBox(isDeregistration: true);
+                }
             }
         }
 
@@ -1281,18 +1302,26 @@ namespace AnnoDesigner.ViewModels
 
         private void RegisterExtension(object param)
         {
-            // registers the anno_designer class type and adds the correct command string to pass a file argument to the application
-            Registry.SetValue(Constants.FileAssociationRegistryKey, null, string.Format("\"{0}\" open \"%1\"", App.ExecutablePath));
-            Registry.SetValue(@"HKEY_CURRENT_USER\Software\Classes\anno_designer\DefaultIcon", null, string.Format("\"{0}\",0", App.ExecutablePath));
-            // registers the .ad file extension to the anno_designer class
-            Registry.SetValue(@"HKEY_CURRENT_USER\Software\Classes\.ad", null, "anno_designer");
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // registers the anno_designer class type and adds the correct command string to pass a file argument to the application
+                Registry.SetValue(Constants.FileAssociationRegistryKey, null, string.Format("\"{0}\" open \"%1\"", App.ExecutablePath));
+                Registry.SetValue(@"HKEY_CURRENT_USER\Software\Classes\anno_designer\DefaultIcon", null, string.Format("\"{0}\",0", App.ExecutablePath));
+                // registers the .ad file extension to the anno_designer class
+                Registry.SetValue(@"HKEY_CURRENT_USER\Software\Classes\.ad", null, "anno_designer");
 
-            ShowRegistrationMessageBox(isDeregistration: false);
+                ShowRegistrationMessageBox(isDeregistration: false);
+            }
         }
 
-        public void UpdateRegisteredExtension()
+        public static void UpdateRegisteredExtension()
         {
-            if (string.Format("\"{0}\" \"%1\"", App.ExecutablePath).Equals(Registry.GetValue(Constants.FileAssociationRegistryKey, null, null)))
+
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return;
+            }
+                if (string.Format("\"{0}\" \"%1\"", App.ExecutablePath).Equals(Registry.GetValue(Constants.FileAssociationRegistryKey, null, null)))
             {
                 Registry.SetValue(Constants.FileAssociationRegistryKey, null, string.Format("\"{0}\" open \"%1\"", App.ExecutablePath));
             }
@@ -1328,7 +1357,7 @@ namespace AnnoDesigner.ViewModels
             if (!string.IsNullOrEmpty(AnnoCanvas.LoadedFile))
             {
                 // default the filename to the same name as the saved layout
-                dialog.FileName = Path.GetFileNameWithoutExtension(AnnoCanvas.LoadedFile);
+                dialog.FileName = _fileSystem.Path.GetFileNameWithoutExtension(AnnoCanvas.LoadedFile);
             }
 
             if (dialog.ShowDialog() == true)
@@ -1394,9 +1423,12 @@ namespace AnnoDesigner.ViewModels
             var thread = new Thread(renderThread);
             thread.IsBackground = true;
             thread.Name = "exportImage";
-            thread.SetApartmentState(ApartmentState.STA);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                thread.SetApartmentState(ApartmentState.STA);
+            }
             thread.Start();
-            thread.Join(TimeSpan.FromSeconds(10));
+            _ = thread.Join(TimeSpan.FromSeconds(10));
         }
 
         public FrameworkElement PrepareCanvasForRender(
@@ -1474,7 +1506,7 @@ namespace AnnoDesigner.ViewModels
             if (renderSettings.RenderStatistics)
             {
                 var exportStatisticsViewModel = new StatisticsViewModel(_localizationHelper, _commons, _appSettings);
-                _ = exportStatisticsViewModel.UpdateStatisticsAsync(UpdateMode.All, target.PlacedObjects.ToList(), target.SelectedObjects, target.BuildingPresets);
+                _ = exportStatisticsViewModel.UpdateStatisticsAsync(UpdateMode.All, [.. target.PlacedObjects], target.SelectedObjects, target.BuildingPresets);
                 exportStatisticsViewModel.ShowBuildingList = StatisticsViewModel.ShowBuildingList;
 
                 var exportStatisticsView = new StatisticsView()
@@ -1523,19 +1555,17 @@ namespace AnnoDesigner.ViewModels
         {
             try
             {
-                using (var ms = new MemoryStream())
-                {
-                    AnnoCanvas.Normalize(1);
-                    var layoutToSave = new LayoutFile(AnnoCanvas.PlacedObjects.Select(x => x.WrappedAnnoObject));
-                    _layoutLoader.SaveLayout(layoutToSave, ms);
+                using var ms = new MemoryStream();
+                AnnoCanvas.Normalize(1);
+                var layoutToSave = new LayoutFile(AnnoCanvas.PlacedObjects.Select(x => x.WrappedAnnoObject));
+                _layoutLoader.SaveLayout(layoutToSave, ms);
 
-                    var jsonString = Encoding.UTF8.GetString(ms.ToArray());
+                var jsonString = Encoding.UTF8.GetString(ms.ToArray());
 
-                    Clipboard.SetText(jsonString, TextDataFormat.UnicodeText);
+                Clipboard.SetText(jsonString, TextDataFormat.UnicodeText);
 
-                    _messageBoxService.ShowMessage(_localizationHelper.GetLocalization("ClipboardContainsLayoutAsJson"),
-                        _localizationHelper.GetLocalization("Successful"));
-                }
+                _messageBoxService.ShowMessage(_localizationHelper.GetLocalization("ClipboardContainsLayoutAsJson"),
+                    _localizationHelper.GetLocalization("Successful"));
             }
             catch (Exception ex)
             {
@@ -1557,7 +1587,7 @@ namespace AnnoDesigner.ViewModels
             {
                 IsLanguageChange = true;
 
-                if (!(param is SupportedLanguage selectedLanguage))
+                if (param is not SupportedLanguage selectedLanguage)
                 {
                     return;
                 }
@@ -1582,7 +1612,7 @@ namespace AnnoDesigner.ViewModels
             };
 
             aboutWindow.DataContext = AboutViewModel;
-            aboutWindow.ShowDialog();
+            _ = aboutWindow.ShowDialog();
         }
 
         public ICommand ShowWelcomeWindowCommand { get; private set; }
@@ -1608,7 +1638,7 @@ namespace AnnoDesigner.ViewModels
 
         private void ExecuteShowStatisticsBuildingCount(object param)
         {
-            StatisticsViewModel.ToggleBuildingList(StatisticsViewModel.ShowStatisticsBuildingCount, AnnoCanvas.PlacedObjects.ToList(), AnnoCanvas.SelectedObjects, AnnoCanvas.BuildingPresets);
+            StatisticsViewModel.ToggleBuildingList(StatisticsViewModel.ShowStatisticsBuildingCount, [.. AnnoCanvas.PlacedObjects], AnnoCanvas.SelectedObjects, AnnoCanvas.BuildingPresets);
         }
 
         public ICommand PlaceBuildingCommand { get; private set; }
@@ -1669,14 +1699,14 @@ namespace AnnoDesigner.ViewModels
             {
                 Owner = Application.Current.MainWindow
             };
-            LicensesWindow.ShowDialog();
+            _ = LicensesWindow.ShowDialog();
         }
 
         public ICommand OpenRecentFileCommand { get; private set; }
 
         private void ExecuteOpenRecentFile(object param)
         {
-            if (!(param is RecentFileItem recentFile))
+            if (param is not RecentFileItem recentFile)
             {
                 return;
             }

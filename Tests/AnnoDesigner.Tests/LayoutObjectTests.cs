@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Helper;
 using AnnoDesigner.Models;
@@ -42,7 +37,7 @@ namespace AnnoDesigner.Tests
 
             // Assert
             Assert.Equal(annoObject.Position, influenceRangeRect.Location);
-            Assert.Equal(default(Size), influenceRangeRect.Size);
+            Assert.Equal(default, influenceRangeRect.Size);
         }
 
         #endregion

@@ -21,7 +21,7 @@ namespace AnnoDesigner.Core.Helper
             _serializer = serializerToUse ?? throw new ArgumentNullException(nameof(serializerToUse));
             _fileSystem = fileSystemToUse ?? throw new ArgumentNullException(nameof(fileSystemToUse));
 
-            RecentFiles = new List<RecentFile>();
+            RecentFiles = [];
             _maximumItemCount = maxItemCount;
             Load();
         }

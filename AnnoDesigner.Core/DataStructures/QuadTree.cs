@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using AnnoDesigner.Core.Models;
 
@@ -71,34 +70,29 @@ namespace AnnoDesigner.Core.DataStructures
                 var oldHeight = new Vector(0, quadrant.Extent.Height);
                 var newSize = new Size(quadrant.Extent.Width * 2, quadrant.Extent.Height * 2);
 
-                switch (direction)
+                return direction switch
                 {
-                    case ResizeDirection.TopRight:
-                        return new Quadrant(new Rect(quadrant.Extent.TopLeft - oldHeight, newSize))
-                        {
-                            BottomLeft = quadrant,
-                            Count = quadrant.Count
-                        };
-                    case ResizeDirection.TopLeft:
-                        return new Quadrant(new Rect(quadrant.Extent.TopLeft - oldHeight - oldWidth, newSize))
-                        {
-                            BottomRight = quadrant,
-                            Count = quadrant.Count
-                        };
-                    case ResizeDirection.BottomLeft:
-                        return new Quadrant(new Rect(quadrant.Extent.TopLeft - oldWidth, newSize))
-                        {
-                            TopRight = quadrant,
-                            Count = quadrant.Count
-                        };
-                    case ResizeDirection.BottomRight:
-                    default:
-                        return new Quadrant(new Rect(quadrant.Extent.TopLeft, newSize))
-                        {
-                            TopLeft = quadrant,
-                            Count = quadrant.Count
-                        };
-                }
+                    ResizeDirection.TopRight => new Quadrant(new Rect(quadrant.Extent.TopLeft - oldHeight, newSize))
+                    {
+                        BottomLeft = quadrant,
+                        Count = quadrant.Count
+                    },
+                    ResizeDirection.TopLeft => new Quadrant(new Rect(quadrant.Extent.TopLeft - oldHeight - oldWidth, newSize))
+                    {
+                        BottomRight = quadrant,
+                        Count = quadrant.Count
+                    },
+                    ResizeDirection.BottomLeft => new Quadrant(new Rect(quadrant.Extent.TopLeft - oldWidth, newSize))
+                    {
+                        TopRight = quadrant,
+                        Count = quadrant.Count
+                    },
+                    _ => new Quadrant(new Rect(quadrant.Extent.TopLeft, newSize))
+                    {
+                        TopLeft = quadrant,
+                        Count = quadrant.Count
+                    },
+                };
             }
 
             public void Add(T item) => Add(item, item.Bounds);
@@ -156,24 +150,20 @@ namespace AnnoDesigner.Core.DataStructures
                 {
                     removed = TopRight.Remove(item, bounds);
                 }
-                else if (TopLeft != null && topLeftBounds.Contains(bounds))
-                {
-                    removed = TopLeft.Remove(item, bounds);
-                }
-                else if (BottomRight != null && bottomRightBounds.Contains(bounds))
-                {
-                    removed = BottomRight.Remove(item, bounds);
-                }
-                else if (BottomLeft != null && bottomLeftBounds.Contains(bounds))
-                {
-                    removed = BottomLeft.Remove(item, bounds);
-                }
                 else
                 {
-                    removed = ItemsInQuadrant.Remove(item);
+                    removed = TopLeft != null && topLeftBounds.Contains(bounds)
+                        ? TopLeft.Remove(item, bounds)
+                        : BottomRight != null && bottomRightBounds.Contains(bounds)
+                                            ? BottomRight.Remove(item, bounds)
+                                            : BottomLeft != null && bottomLeftBounds.Contains(bounds) ? BottomLeft.Remove(item, bounds) : ItemsInQuadrant.Remove(item);
                 }
 
-                if (removed) Count--;
+                if (removed)
+                {
+                    Count--;
+                }
+
                 return removed;
             }
 
@@ -196,10 +186,10 @@ namespace AnnoDesigner.Core.DataStructures
             public bool Contains(T item)
             {
                 var bounds = item.Bounds;
-                return TopRight != null && TopRight.Extent.IntersectsWith(bounds) && TopRight.Contains(item) ||
-                       TopLeft != null && TopLeft.Extent.IntersectsWith(bounds) && TopLeft.Contains(item) ||
-                       BottomRight != null && BottomRight.Extent.IntersectsWith(bounds) && BottomRight.Contains(item) ||
-                       BottomLeft != null && BottomLeft.Extent.IntersectsWith(bounds) && BottomLeft.Contains(item) ||
+                return (TopRight != null && TopRight.Extent.IntersectsWith(bounds) && TopRight.Contains(item)) ||
+                       (TopLeft != null && TopLeft.Extent.IntersectsWith(bounds) && TopLeft.Contains(item)) ||
+                       (BottomRight != null && BottomRight.Extent.IntersectsWith(bounds) && BottomRight.Contains(item)) ||
+                       (BottomLeft != null && BottomLeft.Extent.IntersectsWith(bounds) && BottomLeft.Contains(item)) ||
                        ItemsInQuadrant.Contains(item);
             }
 
@@ -339,7 +329,6 @@ namespace AnnoDesigner.Core.DataStructures
             /// Retrieves a list of Rects that make up this quadrant and the quadrants beneath it.
             /// Used when debugging to draw quadrants to a canvas.
             /// </summary>
-            /// <param name="rects"></param>
             public IEnumerable<Rect> GetQuadrantRects()
             {
                 yield return Extent;
@@ -496,7 +485,7 @@ namespace AnnoDesigner.Core.DataStructures
         {
             if (root.GetContainingQuadrant(item.Bounds) != root.GetContainingQuadrant(oldBounds))
             {
-                root.Remove(item, oldBounds);
+                _ = root.Remove(item, oldBounds);
                 root.Add(item);
             }
         }

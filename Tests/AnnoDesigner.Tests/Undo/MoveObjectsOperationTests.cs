@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows;
 using AnnoDesigner.Core.DataStructures;
 using AnnoDesigner.Core.Models;
@@ -12,7 +11,7 @@ namespace AnnoDesigner.Tests.Undo
 {
     public class MoveObjectsOperationTests
     {
-        private QuadTree<LayoutObject> Collection => new QuadTree<LayoutObject>(new Rect(-16, -16, 32, 32));
+        private QuadTree<LayoutObject> Collection => new(new Rect(-16, -16, 32, 32));
 
         private LayoutObject CreateLayoutObject(double x, double y, double width, double height)
         {

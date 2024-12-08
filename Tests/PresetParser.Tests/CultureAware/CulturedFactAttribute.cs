@@ -1,6 +1,7 @@
+using Xunit;
 using Xunit.Sdk;
 
-namespace Xunit
+namespace PresetParser.Tests.CultureAware
 {
     [XunitTestCaseDiscoverer("PresetParser.Tests.CultureAware.CulturedFactAttributeDiscoverer", "PresetParser.Tests")]
     public sealed class CulturedFactAttribute : FactAttribute

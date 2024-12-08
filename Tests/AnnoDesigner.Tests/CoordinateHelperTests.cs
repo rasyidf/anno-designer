@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-using System.Windows;
-using AnnoDesigner.Helper;
+﻿using System.Windows;
 using AnnoDesigner.Core.Models;
+using AnnoDesigner.Helper;
+using Xunit;
 
 namespace AnnoDesigner.Tests
 {

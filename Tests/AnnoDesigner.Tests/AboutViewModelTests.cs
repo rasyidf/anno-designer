@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnnoDesigner.Core.Models;
-using AnnoDesigner.Models;
+﻿using AnnoDesigner.Core.Models;
 using AnnoDesigner.ViewModels;
 using Moq;
 using Xunit;

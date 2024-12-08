@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using AnnoDesigner.Core.Models;
 
@@ -17,8 +11,8 @@ namespace AnnoDesigner.Models
     public class Hotkey : Notify
     {
         private Hotkey() { }
-        public Hotkey(string hotkeyId, InputBinding binding):this(hotkeyId, binding, null, null) { }
-        public Hotkey(string hotkeyId, InputBinding binding, string localizationKey):this(hotkeyId, binding, localizationKey, null) { }
+        public Hotkey(string hotkeyId, InputBinding binding) : this(hotkeyId, binding, null, null) { }
+        public Hotkey(string hotkeyId, InputBinding binding, string localizationKey) : this(hotkeyId, binding, localizationKey, null) { }
         public Hotkey(string hotkeyId, InputBinding binding, string localizationKey, string description)
         {
             HotkeyId = hotkeyId;
@@ -45,7 +39,7 @@ namespace AnnoDesigner.Models
             get => _binding;
             set
             {
-                UpdateProperty(ref _binding, value);
+                _ = UpdateProperty(ref _binding, value);
                 //Check that a PolyGesture is still being used
                 _ = GetGestureOrThrow();
             }
@@ -101,7 +95,7 @@ namespace AnnoDesigner.Models
         /// <returns></returns>
         public bool IsRemapped()
         {
-            var gesture = GetGestureOrThrow(); 
+            var gesture = GetGestureOrThrow();
             return !(gesture.Type == defaultType && gesture.Key == defaultKey && gesture.ModifierKeys == defaultModifiers && gesture.MouseAction == defaultMouseAction);
         }
 
@@ -129,7 +123,6 @@ namespace AnnoDesigner.Models
         /// <summary>
         /// Updates a hotkey and based on the given information
         /// </summary>
-        /// <param name="information"></param>
         public void UpdateHotkey(Key key, ExtendedMouseAction mouseAction, ModifierKeys modifiers, GestureType type)
         {
             if (PolyGesture.IsDefinedGestureType(type))

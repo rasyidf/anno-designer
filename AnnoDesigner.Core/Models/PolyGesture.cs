@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace AnnoDesigner.Core.Models
@@ -68,14 +64,9 @@ namespace AnnoDesigner.Core.Models
             get => _gestureType;
             set
             {
-                if (IsDefinedGestureType(value))
-                {
-                    UpdateProperty(ref _gestureType, value);
-                }
-                else
-                {
-                    throw new ArgumentException($"Value provided is not valid for enum {nameof(GestureType)}", nameof(Type));
-                }
+                _ = IsDefinedGestureType(value)
+                    ? UpdateProperty(ref _gestureType, value)
+                    : throw new ArgumentException($"Value provided is not valid for enum {nameof(GestureType)}", nameof(Type));
             }
         }
 
@@ -87,14 +78,7 @@ namespace AnnoDesigner.Core.Models
         /// <returns>True if the gesture matches, false otherwise</returns>
         public override bool Matches(object targetElement, InputEventArgs inputEventArgs)
         {
-            if (_gestureType == GestureType.MouseGesture)
-            {
-                return MatchMouseGesture(inputEventArgs);
-            }
-            else
-            {
-                return MatchKeyGesture(inputEventArgs);
-            }
+            return _gestureType == GestureType.MouseGesture ? MatchMouseGesture(inputEventArgs) : MatchKeyGesture(inputEventArgs);
         }
 
         /// <summary>
@@ -105,11 +89,7 @@ namespace AnnoDesigner.Core.Models
         private bool MatchMouseGesture(InputEventArgs inputEventArgs)
         {
             var mouseAction = GetExtendedMouseAction(inputEventArgs);
-            if (mouseAction != ExtendedMouseAction.None)
-            {
-                return MouseAction == mouseAction && ModifierKeys == Keyboard.Modifiers;
-            }
-            return false;
+            return mouseAction != ExtendedMouseAction.None && MouseAction == mouseAction && ModifierKeys == Keyboard.Modifiers;
         }
 
         /// <summary>
@@ -120,11 +100,8 @@ namespace AnnoDesigner.Core.Models
         private bool MatchKeyGesture(InputEventArgs inputEventArgs)
         {
             //never match Key.None
-            if (inputEventArgs is KeyEventArgs eventArgs && eventArgs.Key != Key.None)
-            {
-                return Key == eventArgs.Key && ModifierKeys == Keyboard.Modifiers;
-            }
-            return false;
+            return inputEventArgs is KeyEventArgs eventArgs && eventArgs.Key != Key.None
+&& Key == eventArgs.Key && ModifierKeys == Keyboard.Modifiers;
         }
 
         private Key _key;

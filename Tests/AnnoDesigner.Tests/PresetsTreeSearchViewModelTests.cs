@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnnoDesigner.Models;
+﻿using AnnoDesigner.Models;
 using AnnoDesigner.ViewModels;
 using Xunit;
 
@@ -170,7 +165,7 @@ namespace AnnoDesigner.Tests
             var result = viewModel.SelectedGameVersionFilters;
 
             // Assert
-            Assert.Single(result);
+            _ = Assert.Single(result);
         }
 
         #endregion

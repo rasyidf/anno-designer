@@ -11,7 +11,7 @@ namespace AnnoDesigner.Core.Presets.Loader
     {
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private IFileSystem _fileSystem;
+        private readonly IFileSystem _fileSystem;
 
         public TreeLocalizationLoader(IFileSystem fileSystemToUse)
         {
@@ -39,8 +39,7 @@ namespace AnnoDesigner.Core.Presets.Loader
                 throw new ArgumentNullException(nameof(jsonString));
             }
 
-            TreeLocalizationContainer result = null;
-
+            TreeLocalizationContainer result;
             try
             {
                 var sw = Stopwatch.StartNew();

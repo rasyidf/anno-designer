@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.IO.Abstractions;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using Newtonsoft.Json;
@@ -8,18 +9,18 @@ namespace AnnoDesigner.Core.Helper
 {
     public static class SerializationHelper
     {
+        private static readonly IFileSystem _fileSystem;
         private static readonly JsonConverter[] _converter;
-
         static SerializationHelper()
         {
             _converter = new JsonConverter[]
             {
-                new VersionConverter(),
-                new IsoDateTimeConverter(),
-                new StringEnumConverter()
+        new VersionConverter(),
+        new IsoDateTimeConverter(),
+        new StringEnumConverter()
             };
+            _fileSystem = new FileSystem();
         }
-
         private static JsonSerializer GetSerializer()
         {
             var serializer = new JsonSerializer();
@@ -39,7 +40,7 @@ namespace AnnoDesigner.Core.Helper
         /// <param name="filename">output JSON filename</param>
         public static void SaveToFile<T>(T obj, string filename)
         {
-            File.WriteAllText(filename, SaveToJsonString(obj));
+            _fileSystem.File.WriteAllText(filename, SaveToJsonString(obj));
         }
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace AnnoDesigner.Core.Helper
         /// <returns>deserialized object</returns>
         public static T LoadFromFile<T>(string filename)
         {
-            var fileContents = File.ReadAllText(filename);
+            var fileContents = _fileSystem.File.ReadAllText(filename);
             return LoadFromJsonString<T>(fileContents);
         }
 
@@ -98,25 +99,18 @@ namespace AnnoDesigner.Core.Helper
         /// Deserializes the given JSON string to an object of type <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">type of object being deserialized</typeparam>
-        /// <param name="s">JSON string to deserialize</param>
         /// <exception cref="Newtonsoft.Json.JsonSerializationException">If <paramref name="jsonString"/> 
         /// is null or empty, or the json is not valid for the given object.</exception>
         /// <returns>deserialized object</returns>
         public static T LoadFromJsonString<T>(string jsonString)
         {
-            if (string.IsNullOrWhiteSpace(jsonString))
-            {
-                return default;
-            }
-
-            return JsonConvert.DeserializeObject<T>(jsonString, _converter);
+            return string.IsNullOrWhiteSpace(jsonString) ? default : JsonConvert.DeserializeObject<T>(jsonString, _converter);
         }
 
         /// <summary>
         /// Legacy deserialization method for deserializing layout files <see cref="CoreConstants.LayoutFileVersion"/> 3 or older.
         /// </summary>
         /// <typeparam name="T">type of object being deserialized</typeparam>
-        /// <param name="s">JSON string to deserialize</param>
         /// <returns>deserialized object</returns>
         public static T LoadFromJsonStringLegacy<T>(string jsonString)
         {

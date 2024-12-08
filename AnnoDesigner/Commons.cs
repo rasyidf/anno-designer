@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Abstractions;
 using AnnoDesigner.Models;
 using NLog;
 
@@ -9,6 +10,7 @@ namespace AnnoDesigner
 {
     public class Commons : ICommons
     {
+        private readonly IFileSystem _fileSystem;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private static string _currentLanguage;
 
@@ -16,16 +18,16 @@ namespace AnnoDesigner
 
         #region ctor
 
-        private static readonly Lazy<Commons> lazy = new Lazy<Commons>(() => new Commons());
+        private static readonly Lazy<Commons> lazy = new(() => new Commons());
 
         public static Commons Instance
         {
             get { return lazy.Value; }
         }
-
         private Commons()
-        { }
-
+        {
+            _fileSystem = new FileSystem();
+        }
         #endregion
 
         public string CurrentLanguage
@@ -49,7 +51,7 @@ namespace AnnoDesigner
 
         public string CurrentLanguageCode => LanguageCodeMap[CurrentLanguage];
 
-        public Dictionary<string, string> LanguageCodeMap => new Dictionary<string, string>()
+        public Dictionary<string, string> LanguageCodeMap => new()
         {
             { "English", "eng" },
             { "Deutsch", "ger" },
@@ -74,11 +76,11 @@ namespace AnnoDesigner
                 }
 
                 var testFile = Path.Combine(folderPathToCheck, "test.test");
-                File.WriteAllText(testFile, "test");
+                _fileSystem.File.WriteAllText(testFile, "test");
 
-                if (File.Exists(testFile))
+                if (_fileSystem.File.Exists(testFile))
                 {
-                    File.Delete(testFile);
+                    _fileSystem.File.Delete(testFile);
                 }
 
                 result = true;
@@ -119,7 +121,7 @@ namespace AnnoDesigner
 
             var process = new Process();
             process.StartInfo = psi;
-            process.Start();
+            _ = process.Start();
 
             Environment.Exit(-1);
             //Application.Current.Shutdown();//sometimes hangs

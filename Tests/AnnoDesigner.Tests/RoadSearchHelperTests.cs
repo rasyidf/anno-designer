@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
-using System.Windows;
 using AnnoDesigner.Core.Layout;
 using AnnoDesigner.Core.Layout.Models;
 using AnnoDesigner.Core.Models;
@@ -13,16 +13,16 @@ namespace AnnoDesigner.Tests
 {
     public class RoadSearchHelperTests
     {
+        private static readonly IFileSystem _fileSystem = new FileSystem();
         private static readonly LayoutFile defaultObjectList;
-
         static RoadSearchHelperTests()
         {
-            defaultObjectList = new LayoutLoader().LoadLayout(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", "RoadSearchHelper", "BreadthFirstSearch_FindBuildingInfluenceRange.ad"), true);
-        }
+            defaultObjectList = new LayoutLoader().LoadLayout(_fileSystem.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", "RoadSearchHelper", "BreadthFirstSearch_FindBuildingInfluenceRange.ad"), true);
 
+        }
         private string GetTestDataFile(string testCase)
         {
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", "RoadSearchHelper", $"{testCase}.ad");
+            return _fileSystem.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", "RoadSearchHelper", $"{testCase}.ad");
         }
 
         [Fact]
@@ -155,10 +155,10 @@ namespace AnnoDesigner.Tests
 
             // Act
             var objectsInInfluence = new List<AnnoObject>();
-            RoadSearchHelper.BreadthFirstSearch(placedObjects, startObjects, o => (int)o.InfluenceRange + 1, inRangeAction: o => objectsInInfluence.Add(o));
+            _ = RoadSearchHelper.BreadthFirstSearch(placedObjects, startObjects, o => (int)o.InfluenceRange + 1, inRangeAction: objectsInInfluence.Add);
 
             // Assert
-            Assert.Equal(placedObjects.Where(o => o.Label == "TargetIn").ToHashSet(), objectsInInfluence.ToHashSet());
+            Assert.Equal(placedObjects.Where(o => o.Label == "TargetIn").ToHashSet(), [.. objectsInInfluence]);
             Assert.True(placedObjects.Where(o => o.Label == "TargetOut").All(o => !objectsInInfluence.Contains(o)));
         }
 
@@ -170,7 +170,7 @@ namespace AnnoDesigner.Tests
             var startObjects = placedObjects.Where(o => o.Label == "Start").ToList();
             foreach (var startObject in startObjects)
             {
-                var expectedCount = 4 * Enumerable.Range(1, (int)startObject.InfluenceRange).Sum() + 1;
+                var expectedCount = (4 * Enumerable.Range(1, (int)startObject.InfluenceRange).Sum()) + 1;
 
                 // Act
                 var visitedCells = RoadSearchHelper.BreadthFirstSearch(placedObjects, new[] { startObject }, o => (int)o.InfluenceRange);

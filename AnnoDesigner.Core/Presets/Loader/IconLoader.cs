@@ -1,30 +1,31 @@
-﻿using AnnoDesigner.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Abstractions;
+using System.Linq;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Models;
 using NLog;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AnnoDesigner.Core.Presets.Loader
 {
     public class IconLoader
     {
+        private readonly FileSystem _fileSystem;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-
+        public IconLoader()
+        {
+            _fileSystem = new FileSystem();
+        }
         public Dictionary<string, IconImage> Load(string pathToIconFolder, IconMappingPresets iconNameMapping)
         {
             Dictionary<string, IconImage> result = null;
 
             try
             {
-                result = new Dictionary<string, IconImage>();
+                result = [];
 
-                foreach (var path in Directory.EnumerateFiles(pathToIconFolder, CoreConstants.IconFolderFilter))
+                foreach (var path in _fileSystem.Directory.EnumerateFiles(pathToIconFolder, CoreConstants.IconFolderFilter))
                 {
                     var filenameWithoutExt = Path.GetFileNameWithoutExtension(path);
                     if (string.IsNullOrWhiteSpace(filenameWithoutExt))

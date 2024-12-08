@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using static AnnoDesigner.Core.CoreConstants;
 
 namespace AnnoDesigner.Models.PresetsTree
@@ -22,7 +16,7 @@ namespace AnnoDesigner.Models.PresetsTree
         public GameVersion GameVersion
         {
             get { return _gameVersion; }
-            set { UpdateProperty(ref _gameVersion, value); }
+            set { _ = UpdateProperty(ref _gameVersion, value); }
         }
     }
 }

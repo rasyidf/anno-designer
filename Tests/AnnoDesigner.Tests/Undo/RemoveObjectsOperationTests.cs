@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using AnnoDesigner.Core.DataStructures;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
@@ -11,7 +10,7 @@ namespace AnnoDesigner.Tests.Undo
 {
     public class RemoveObjectsOperationTests
     {
-        private QuadTree<LayoutObject> Collection => new QuadTree<LayoutObject>(new Rect(-16, -16, 32, 32));
+        private QuadTree<LayoutObject> Collection => new(new Rect(-16, -16, 32, 32));
 
         private LayoutObject CreateLayoutObject(double x, double y, double width, double height)
         {
@@ -34,17 +33,17 @@ namespace AnnoDesigner.Tests.Undo
             var operation = new RemoveObjectsOperation<LayoutObject>()
             {
                 Collection = collection,
-                Objects = new List<LayoutObject>()
-                {
+                Objects =
+                [
                     obj
-                }
+                ]
             };
 
             // Act
             operation.Undo();
 
             // Assert
-            Assert.Single(collection);
+            _ = Assert.Single(collection);
         }
 
         [Fact]
@@ -57,11 +56,11 @@ namespace AnnoDesigner.Tests.Undo
             var operation = new RemoveObjectsOperation<LayoutObject>()
             {
                 Collection = collection,
-                Objects = new List<LayoutObject>()
-                {
+                Objects =
+                [
                     obj1,
                     obj2
-                }
+                ]
             };
 
             // Act
@@ -85,10 +84,10 @@ namespace AnnoDesigner.Tests.Undo
             var operation = new RemoveObjectsOperation<LayoutObject>()
             {
                 Collection = collection,
-                Objects = new List<LayoutObject>()
-                {
+                Objects =
+                [
                     obj
-                }
+                ]
             };
 
             // Act
@@ -110,11 +109,11 @@ namespace AnnoDesigner.Tests.Undo
             var operation = new RemoveObjectsOperation<LayoutObject>()
             {
                 Collection = collection,
-                Objects = new List<LayoutObject>()
-                {
+                Objects =
+                [
                     obj1,
                     obj2
-                }
+                ]
             };
 
             // Act

@@ -62,7 +62,7 @@ namespace AnnoDesigner.Tests
             var parsedArguments = GetParser().Parse(Enumerable.Empty<string>());
 
             // Assert
-            Assert.IsType<EmptyArgs>(parsedArguments);
+            _ = Assert.IsType<EmptyArgs>(parsedArguments);
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace AnnoDesigner.Tests
             var parsedArguments = GetParser().Parse(new[] { "askAdmin" });
 
             // Assert
-            Assert.IsType<AdminRestartArgs>(parsedArguments);
+            _ = Assert.IsType<AdminRestartArgs>(parsedArguments);
         }
 
         #endregion

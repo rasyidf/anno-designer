@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnnoDesigner.Core.Models;
+﻿using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
 using AnnoDesigner.ViewModels;
 using Moq;
@@ -87,7 +82,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange
             var commons = new Mock<ICommons>();
-            commons.SetupAllProperties();
+            _ = commons.SetupAllProperties();
 
             var viewModel = GetViewModel(commons.Object);
             viewModel.SelectedItem = viewModel.Languages[1];
@@ -106,10 +101,10 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var commons = new Mock<ICommons>();
-            commons.SetupAllProperties();
+            _ = commons.SetupAllProperties();
 
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(commons.Object, appSettings.Object);
             viewModel.SelectedItem = viewModel.Languages[1];
@@ -128,7 +123,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange            
             var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            _ = appSettings.SetupAllProperties();
 
             var viewModel = GetViewModel(_mockedCommons, appSettings.Object);
             viewModel.SelectedItem = viewModel.Languages[1];

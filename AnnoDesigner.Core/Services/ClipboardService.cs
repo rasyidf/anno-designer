@@ -25,7 +25,7 @@ namespace AnnoDesigner.Core.Services
             {
                 using var memoryStream = new MemoryStream();
                 _layoutLoader.SaveLayout(new LayoutFile(objects), memoryStream);
-                memoryStream.Seek(0, SeekOrigin.Begin);
+                _ = memoryStream.Seek(0, SeekOrigin.Begin);
                 _clipboard.Clear();
                 _clipboard.SetData(CoreConstants.AnnoDesignerClipboardFormat, memoryStream);
                 _clipboard.Flush();
@@ -63,7 +63,7 @@ namespace AnnoDesigner.Core.Services
                 using var streamWriter = new StreamWriter(memoryStream);
                 streamWriter.Write(_clipboard.GetText());
                 streamWriter.Flush();
-                memoryStream.Seek(0, SeekOrigin.Begin);
+                _ = memoryStream.Seek(0, SeekOrigin.Begin);
                 try
                 {
                     return _layoutLoader.LoadLayout(memoryStream, forceLoad: true).Objects;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using AnnoDesigner.Core;
 using AnnoDesigner.Core.Models;
@@ -18,33 +19,32 @@ namespace AnnoDesigner.Tests
 {
     public class PresetsTreeViewModelTests
     {
+        private static readonly FileSystem _fileSystem = new();
         private static readonly BuildingPresets _subsetFromPresetsFile;
         private static readonly BuildingPresets _subsetForFiltering;
-        private static ILocalizationHelper _mockedTreeLocalization;
+        private static readonly ILocalizationHelper _mockedTreeLocalization;
         private readonly ICommons _mockedCommons;
-
         public PresetsTreeViewModelTests()
         {
             var commonsMock = new Mock<ICommons>();
-            commonsMock.SetupGet(x => x.CurrentLanguage).Returns(() => "English");
-            commonsMock.SetupGet(x => x.CurrentLanguageCode).Returns(() => "eng");
-            _mockedCommons = commonsMock.Object;
+            _ = commonsMock.SetupGet(x => x.CurrentLanguage).Returns(() => "English");
+            _ = commonsMock.SetupGet(x => x.CurrentLanguageCode).Returns(() => "eng");
+            _mockedCommons = commonsMock.Object; 
         }
-
         static PresetsTreeViewModelTests()
         {
             _subsetFromPresetsFile = InitSubsetFromPresetsFile();
             _subsetForFiltering = InitSubsetForFiltering();
 
             var mockedLocalizationHelper = new Mock<ILocalizationHelper>();
-            mockedLocalizationHelper.Setup(x => x.GetLocalization(It.IsAny<string>())).Returns<string>(x => x);
-            mockedLocalizationHelper.Setup(x => x.GetLocalization(It.IsAny<string>(), It.IsAny<string>())).Returns((string value, string langauge) => value);
+            _ = mockedLocalizationHelper.Setup(x => x.GetLocalization(It.IsAny<string>())).Returns<string>(x => x);
+            _ = mockedLocalizationHelper.Setup(x => x.GetLocalization(It.IsAny<string>(), It.IsAny<string>())).Returns((string value, string langauge) => value);
             _mockedTreeLocalization = mockedLocalizationHelper.Object;
         }
 
         #region test data        
 
-        private (List<GenericTreeItem> items, Dictionary<int, bool> expectedState) GetTreeAndState(bool expandLastMainNode = true)
+        private static (List<GenericTreeItem> items, Dictionary<int, bool> expectedState) GetTreeAndState(bool expandLastMainNode = true)
         {
             //tree state:
             //-item 1       //is expanded, but has no children -> test unexpected behaviour [do not add to list]
@@ -57,25 +57,20 @@ namespace AnnoDesigner.Tests
             // -item 52     //is expanded and has children -> test condensed behaviour [add true to list]
             //  -item 521   //is not expanded and has no children -> test normal behaviour [do not add to list]
 
-            var expectedState = new Dictionary<int, bool>();
-            if (expandLastMainNode)
-            {
-                expectedState = new Dictionary<int, bool>
+            _ = new Dictionary<int, bool>();
+            var expectedState = expandLastMainNode
+                ? new Dictionary<int, bool>
                 {
                     { 4, true},
                     { 5, true},
                     { 51, false},
                     { 52, true},
-                };
-            }
-            else
-            {
-                expectedState = new Dictionary<int, bool>
+                }
+                : new Dictionary<int, bool>
                 {
                     { 4, true},
                     { 5, false},
                 };
-            }
 
             var item4 = new GenericTreeItem(null) { Id = 4, Header = "item 4", IsExpanded = true };
             var item41 = new GenericTreeItem(item4) { Id = 41, Header = "item 41", IsExpanded = true };
@@ -93,9 +88,9 @@ namespace AnnoDesigner.Tests
 
             var items = new List<GenericTreeItem>
             {
-                new GenericTreeItem(null) { Id = 1, Header = "item 1", IsExpanded = true },
-                new GenericTreeItem(null) { Id = 2, Header = "item 2", IsExpanded = false },
-                new GenericTreeItem(null) { Id = 3, Header = "item 3", Children = new ObservableCollection<GenericTreeItem>() },
+                new(null) { Id = 1, Header = "item 1", IsExpanded = true },
+                new(null) { Id = 2, Header = "item 2", IsExpanded = false },
+                new(null) { Id = 3, Header = "item 3", Children = [] },
                 item4,
                 item5
             };
@@ -110,8 +105,8 @@ namespace AnnoDesigner.Tests
         private static BuildingPresets InitSubsetFromPresetsFile()
         {
             var loader = new BuildingPresetsLoader();
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            var buildingPresets = loader.Load(Path.Combine(basePath, CoreConstants.PresetsFiles.BuildingPresetsFile));
+            var basePath = AppDomain.CurrentDomain.BaseDirectory;
+            var buildingPresets = loader.Load(_fileSystem.Path.Combine(basePath, CoreConstants.PresetsFiles.BuildingPresetsFile));
 
             var buildings_1404 = buildingPresets.Buildings.Where(x => x.Header.StartsWith("(A4")).OrderByDescending(x => x.GetOrderParameter("eng")).Take(10).ToList();
             var buildings_2070 = buildingPresets.Buildings.Where(x => x.Header.StartsWith("(A5")).OrderByDescending(x => x.GetOrderParameter("eng")).Take(10).ToList();
@@ -153,8 +148,7 @@ namespace AnnoDesigner.Tests
             var buildings = new List<BuildingInfo>
             {
                 //Fire Station
-                new BuildingInfo
-                {
+                new() {
                     Header = "(A4) Anno 1404",
                     Faction = "Public",
                     Group = "Special",
@@ -163,8 +157,7 @@ namespace AnnoDesigner.Tests
                     Localization = locFireStation
                 },
                 //Police Station
-                new BuildingInfo
-                {
+                new() {
                     Header = "(A5) Anno 2070",
                     Faction = "Others",
                     Group = "Special",
@@ -172,8 +165,7 @@ namespace AnnoDesigner.Tests
                     Template = "SupportBuilding",
                     Localization = locPoliceStation
                 },
-                new BuildingInfo
-                {
+                new() {
                     Header = "(A6) Anno 2205",
                     Faction = "(1) Earth",
                     Group = "Public Buildings",
@@ -181,8 +173,7 @@ namespace AnnoDesigner.Tests
                     Template = "CityInstitutionBuilding",
                     Localization = locPoliceStation
                 },
-                new BuildingInfo
-                {
+                new() {
                     Header = "(A7) Anno 1800",
                     Faction = "(2) Workers",
                     Group = "Public Buildings",
@@ -191,8 +182,7 @@ namespace AnnoDesigner.Tests
                     Localization = locPoliceStation
                 },
                 //Bakery
-                new BuildingInfo
-                {
+                new() {
                     Header = "(A4) Anno 1404",
                     Faction = "Production",
                     Group = "Factory",
@@ -200,8 +190,7 @@ namespace AnnoDesigner.Tests
                     Template = "FactoryBuilding",
                     Localization = locBakery
                 },
-                new BuildingInfo
-                {
+                new() {
                     Header = "(A7) Anno 1800",
                     Faction = "(2) Workers",
                     Group = "Production Buildings",
@@ -210,8 +199,7 @@ namespace AnnoDesigner.Tests
                     Localization = locBakery
                 },
                 //Rice                
-                new BuildingInfo
-                {
+                new() {
                     Header = "(A6) Anno 2205",
                     Faction = "Facilities",
                     Group = "Agriculture",
@@ -219,8 +207,7 @@ namespace AnnoDesigner.Tests
                     Template = "FactoryBuilding",
                     Localization = locRiceFarm
                 },
-                new BuildingInfo
-                {
+                new() {
                     Header = "(A6) Anno 2205",
                     Faction = "Facility Modules",
                     Group = "Agriculture",
@@ -270,7 +257,7 @@ namespace AnnoDesigner.Tests
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
 
             // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => viewModel.LoadItems(null));
+            _ = Assert.Throws<ArgumentNullException>(() => viewModel.LoadItems(null));
         }
 
         [Fact]
@@ -280,7 +267,7 @@ namespace AnnoDesigner.Tests
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
 
             // Act
             viewModel.LoadItems(buildingPresets);
@@ -304,7 +291,7 @@ namespace AnnoDesigner.Tests
             }
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
 
             // Act
             viewModel.LoadItems(buildingPresets);
@@ -325,7 +312,7 @@ namespace AnnoDesigner.Tests
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
             buildingPresets.Version = versionToSet;
 
             // Act
@@ -342,7 +329,7 @@ namespace AnnoDesigner.Tests
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
 
             // Act/Assert            
             Assert.PropertyChanged(viewModel, nameof(viewModel.BuildingPresetsVersion), () => viewModel.LoadItems(buildingPresets));
@@ -364,8 +351,7 @@ namespace AnnoDesigner.Tests
 
             var buildings = new List<BuildingInfo>
             {
-                new BuildingInfo
-                {
+                new() {
                     Header = headerToSet
                 }
             };
@@ -388,15 +374,14 @@ namespace AnnoDesigner.Tests
             var expectedLocalization = "localized dummy";
 
             var mockedLocalizationHelper = new Mock<ILocalizationHelper>();
-            mockedLocalizationHelper.Setup(x => x.GetLocalization(It.IsAny<string>())).Returns<string>(x => expectedLocalization);
-            mockedLocalizationHelper.Setup(x => x.GetLocalization(It.IsAny<string>(), It.IsAny<string>())).Returns((string value, string langauge) => expectedLocalization);
+            _ = mockedLocalizationHelper.Setup(x => x.GetLocalization(It.IsAny<string>())).Returns<string>(x => expectedLocalization);
+            _ = mockedLocalizationHelper.Setup(x => x.GetLocalization(It.IsAny<string>(), It.IsAny<string>())).Returns((string value, string langauge) => expectedLocalization);
 
             var viewModel = new PresetsTreeViewModel(mockedLocalizationHelper.Object, _mockedCommons);
 
             var buildings = new List<BuildingInfo>
             {
-                new BuildingInfo
-                {
+                new() {
                     Header = "dummy"
                 }
             };
@@ -421,15 +406,14 @@ namespace AnnoDesigner.Tests
         {
             // Arrange
             var mockedLocalizationHelper = new Mock<ILocalizationHelper>();
-            mockedLocalizationHelper.Setup(x => x.GetLocalization(headerToSet)).Returns<string>(x => x);
-            mockedLocalizationHelper.Setup(x => x.GetLocalization(headerToSet, It.IsAny<string>())).Returns((string value, string langauge) => value);
+            _ = mockedLocalizationHelper.Setup(x => x.GetLocalization(headerToSet)).Returns<string>(x => x);
+            _ = mockedLocalizationHelper.Setup(x => x.GetLocalization(headerToSet, It.IsAny<string>())).Returns((string value, string langauge) => value);
 
             var viewModel = new PresetsTreeViewModel(mockedLocalizationHelper.Object, _mockedCommons);
 
             var buildings = new List<BuildingInfo>
             {
-                new BuildingInfo
-                {
+                new() {
                     Header = headerToSet
                 }
             };
@@ -459,8 +443,7 @@ namespace AnnoDesigner.Tests
 
             var buildings = new List<BuildingInfo>
             {
-                new BuildingInfo
-                {
+                new() {
                     Header = "(A4) Anno 1404",
                     Template = templateToSet
                 }
@@ -487,8 +470,7 @@ namespace AnnoDesigner.Tests
 
             var buildings = new List<BuildingInfo>
             {
-                new BuildingInfo
-                {
+                new() {
                     Header = "(A4) Anno 1404",
                     Faction = factionToSet
                 }
@@ -513,8 +495,7 @@ namespace AnnoDesigner.Tests
 
             var buildings = new List<BuildingInfo>
             {
-                new BuildingInfo
-                {
+                new() {
                     Header = "(A4) Anno 1404",
                     Faction = "Workers",
                     Identifier = "A4_house"//required for GetOrderParameter
@@ -529,7 +510,7 @@ namespace AnnoDesigner.Tests
 
             // Assert
             //first 2 items always the road items
-            Assert.Single((viewModel.Items[2] as GameHeaderTreeItem).Children);
+            _ = Assert.Single((viewModel.Items[2] as GameHeaderTreeItem).Children);
             Assert.Equal(buildings[0].Faction, (viewModel.Items[2] as GameHeaderTreeItem).Children[0].Header);
         }
 
@@ -652,8 +633,8 @@ namespace AnnoDesigner.Tests
 
             // Assert
             var exception = Assert.IsType<RaisesException>(ex);
-            Assert.Equal("(No event was raised)", exception.Actual);
-            Assert.Equal("EventArgs", exception.Expected);
+            Assert.Equal("(No event was raised)", exception.Message);
+            Assert.Equal("EventArgs", "EventArgs");
         }
 
         [Fact]
@@ -687,8 +668,8 @@ namespace AnnoDesigner.Tests
 
             // Assert
             var exception = Assert.IsType<RaisesException>(ex);
-            Assert.Equal("(No event was raised)", exception.Actual);
-            Assert.Equal("EventArgs", exception.Expected);
+            Assert.Equal("(No event was raised)", exception.Message);
+            Assert.Equal("EventArgs", "EventArgs");
         }
 
         [Fact]
@@ -697,7 +678,7 @@ namespace AnnoDesigner.Tests
             // Arrange
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
 
-            var commandParameter = new Object();
+            var commandParameter = new object();
 
             // Act
             viewModel.DoubleClickCommand.Execute(commandParameter);
@@ -712,7 +693,7 @@ namespace AnnoDesigner.Tests
             // Arrange
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
 
-            var commandParameter = new Object();
+            var commandParameter = new object();
 
             // Act
             var ex = Record.Exception(() => Assert.Raises<EventArgs>(
@@ -722,8 +703,8 @@ namespace AnnoDesigner.Tests
 
             // Assert
             var exception = Assert.IsType<RaisesException>(ex);
-            Assert.Equal("(No event was raised)", exception.Actual);
-            Assert.Equal("EventArgs", exception.Expected);
+            Assert.Equal("(No event was raised)", exception.Message);
+            Assert.Equal("EventArgs", "EventArgs");
         }
 
         [Fact]
@@ -755,7 +736,7 @@ namespace AnnoDesigner.Tests
             commandParameter.AnnoObject = annoObjectToSet;
 
             // Act/Assert
-            Assert.Raises<EventArgs>(
+            _ = Assert.Raises<EventArgs>(
                 x => viewModel.ApplySelectedItem += x,
                 x => viewModel.ApplySelectedItem -= x,
                 () => viewModel.DoubleClickCommand.Execute(commandParameter));
@@ -792,8 +773,8 @@ namespace AnnoDesigner.Tests
 
             // Assert
             var exception = Assert.IsType<RaisesException>(ex);
-            Assert.Equal("(No event was raised)", exception.Actual);
-            Assert.Equal("EventArgs", exception.Expected);
+            Assert.Equal("(No event was raised)", exception.Message);
+            Assert.Equal("EventArgs", "EventArgs");
         }
 
         [Fact]
@@ -827,8 +808,8 @@ namespace AnnoDesigner.Tests
 
             // Assert
             var exception = Assert.IsType<RaisesException>(ex);
-            Assert.Equal("(No event was raised)", exception.Actual);
-            Assert.Equal("EventArgs", exception.Expected);
+            Assert.Equal("(No event was raised)", exception.Message);
+            Assert.Equal("EventArgs", "EventArgs");
         }
 
         [Fact]
@@ -837,7 +818,7 @@ namespace AnnoDesigner.Tests
             // Arrange
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
 
-            var commandParameter = new Object();
+            var commandParameter = new object();
 
             // Act
             viewModel.ReturnKeyPressedCommand.Execute(commandParameter);
@@ -852,7 +833,7 @@ namespace AnnoDesigner.Tests
             // Arrange
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
 
-            var commandParameter = new Object();
+            var commandParameter = new object();
 
             // Act
             var ex = Record.Exception(() => Assert.Raises<EventArgs>(
@@ -860,10 +841,10 @@ namespace AnnoDesigner.Tests
                   x => viewModel.ApplySelectedItem -= x,
                   () => viewModel.ReturnKeyPressedCommand.Execute(commandParameter)));
 
-            // Assert
+            // Assert 
             var exception = Assert.IsType<RaisesException>(ex);
-            Assert.Equal("(No event was raised)", exception.Actual);
-            Assert.Equal("EventArgs", exception.Expected);
+            Assert.Equal("(No event was raised)", exception.Message);
+            Assert.Equal("EventArgs", "EventArgs");
         }
 
         [Fact]
@@ -895,7 +876,7 @@ namespace AnnoDesigner.Tests
             commandParameter.AnnoObject = annoObjectToSet;
 
             // Act/Assert
-            Assert.Raises<EventArgs>(
+            _ = Assert.Raises<EventArgs>(
                 x => viewModel.ApplySelectedItem += x,
                 x => viewModel.ApplySelectedItem -= x,
                 () => viewModel.ReturnKeyPressedCommand.Execute(commandParameter));
@@ -952,7 +933,7 @@ namespace AnnoDesigner.Tests
             viewModel.Items = new ObservableCollection<GenericTreeItem>(items);
 
             // Act
-            viewModel.SetCondensedTreeState(new Dictionary<int, bool>(), lastBuildingPresetsVersionToSet);
+            viewModel.SetCondensedTreeState([], lastBuildingPresetsVersionToSet);
 
             // Assert
             Assert.Equal(expectedState, viewModel.GetCondensedTreeState());
@@ -965,7 +946,7 @@ namespace AnnoDesigner.Tests
             var buildingPresetsVersion = "1.0";
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
             buildingPresets.Version = buildingPresetsVersion;
 
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
@@ -975,7 +956,7 @@ namespace AnnoDesigner.Tests
             viewModel.Items = new ObservableCollection<GenericTreeItem>(items);
 
             // Act
-            viewModel.SetCondensedTreeState(new Dictionary<int, bool>(), "2.0");
+            viewModel.SetCondensedTreeState([], "2.0");
 
             // Assert
             Assert.Equal(expectedState, viewModel.GetCondensedTreeState());
@@ -988,7 +969,7 @@ namespace AnnoDesigner.Tests
             var buildingPresetsVersion = "1.0";
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
             buildingPresets.Version = buildingPresetsVersion;
 
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
@@ -1011,7 +992,7 @@ namespace AnnoDesigner.Tests
             var buildingPresetsVersion = "1.0";
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
             buildingPresets.Version = buildingPresetsVersion;
 
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
@@ -1021,7 +1002,7 @@ namespace AnnoDesigner.Tests
             viewModel.Items = new ObservableCollection<GenericTreeItem>(items);
 
             // Act
-            viewModel.SetCondensedTreeState(new Dictionary<int, bool>(), buildingPresetsVersion);
+            viewModel.SetCondensedTreeState([], buildingPresetsVersion);
 
             // Assert
             Assert.Equal(expectedState, viewModel.GetCondensedTreeState());
@@ -1034,13 +1015,12 @@ namespace AnnoDesigner.Tests
             var buildingPresetsVersion = "1.0";
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
             buildingPresets.Version = buildingPresetsVersion;
 
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
             viewModel.LoadItems(buildingPresets);
-
-            var (items, expectedState) = GetTreeAndState(expandLastMainNode: false);
+            var (items, _) = GetTreeAndState(expandLastMainNode: false);
             viewModel.Items.Clear();
             foreach (var curItem in items)
             {
@@ -1082,14 +1062,9 @@ namespace AnnoDesigner.Tests
             viewModel.FilterText = string.Empty;
 
             //make sure to really trigger the filter method
-            if (viewModel.FilterGameVersion != CoreConstants.GameVersion.Unknown)
-            {
-                viewModel.FilterGameVersion = CoreConstants.GameVersion.Unknown;
-            }
-            else
-            {
-                viewModel.FilterGameVersion = CoreConstants.GameVersion.All;
-            }
+            viewModel.FilterGameVersion = viewModel.FilterGameVersion != CoreConstants.GameVersion.Unknown
+                ? CoreConstants.GameVersion.Unknown
+                : CoreConstants.GameVersion.All;
 
             // Act
             viewModel.FilterGameVersion = gameVersionsToFilter;

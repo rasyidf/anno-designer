@@ -54,7 +54,7 @@ namespace AnnoDesigner.ViewModels
             ResetMaxRecentFilesCommand = new RelayCommand(ExecuteResetMaxRecentFiles, CanExecuteResetMaxRecentFiles);
             ClearRecentFilesCommand = new RelayCommand(ExecuteClearRecentFiles, CanExecuteClearRecentFiles);
 
-            GridLineColors = new ObservableCollection<UserDefinedColor>();
+            GridLineColors = [];
             RefreshGridLineColors();
             var savedGridLineColor = SerializationHelper.LoadFromJsonString<UserDefinedColor>(_appSettings.ColorGridLines);
             if (savedGridLineColor is null)
@@ -68,7 +68,7 @@ namespace AnnoDesigner.ViewModels
                 SelectedCustomGridLineColor = savedGridLineColor.Color;
             }
 
-            ObjectBorderLineColors = new ObservableCollection<UserDefinedColor>();
+            ObjectBorderLineColors = [];
             RefreshObjectBorderLineColors();
             var savedObjectBorderLineColor = SerializationHelper.LoadFromJsonString<UserDefinedColor>(_appSettings.ColorObjectBorderLines);
             if (savedObjectBorderLineColor is null)
@@ -100,7 +100,7 @@ namespace AnnoDesigner.ViewModels
 
         private void RefreshGridLineColors()
         {
-            foreach (UserDefinedColorType curColorType in Enum.GetValues(typeof(UserDefinedColorType)))
+            foreach (var curColorType in Enum.GetValues<UserDefinedColorType>())
             {
                 GridLineColors.Add(new UserDefinedColor
                 {
@@ -112,7 +112,7 @@ namespace AnnoDesigner.ViewModels
         public ObservableCollection<UserDefinedColor> GridLineColors
         {
             get { return _gridLineColors; }
-            set { UpdateProperty(ref _gridLineColors, value); }
+            set { _ = UpdateProperty(ref _gridLineColors, value); }
         }
 
         public UserDefinedColor SelectedGridLineColor
@@ -150,7 +150,7 @@ namespace AnnoDesigner.ViewModels
         public bool IsGridLineColorPickerVisible
         {
             get { return _isGridLineColorPickerVisible; }
-            set { UpdateProperty(ref _isGridLineColorPickerVisible, value); }
+            set { _ = UpdateProperty(ref _isGridLineColorPickerVisible, value); }
         }
 
         private void UpdateGridLineColorVisibility()
@@ -196,7 +196,7 @@ namespace AnnoDesigner.ViewModels
 
         private void RefreshObjectBorderLineColors()
         {
-            foreach (UserDefinedColorType curColorType in Enum.GetValues(typeof(UserDefinedColorType)))
+            foreach (var curColorType in Enum.GetValues<UserDefinedColorType>())
             {
                 ObjectBorderLineColors.Add(new UserDefinedColor
                 {
@@ -208,7 +208,7 @@ namespace AnnoDesigner.ViewModels
         public ObservableCollection<UserDefinedColor> ObjectBorderLineColors
         {
             get { return _objectBorderLineColors; }
-            set { UpdateProperty(ref _objectBorderLineColors, value); }
+            set { _ = UpdateProperty(ref _objectBorderLineColors, value); }
         }
 
         public UserDefinedColor SelectedObjectBorderLineColor
@@ -246,7 +246,7 @@ namespace AnnoDesigner.ViewModels
         public bool IsObjectBorderLineColorPickerVisible
         {
             get { return _isObjectBorderLineColorPickerVisible; }
-            set { UpdateProperty(ref _isObjectBorderLineColorPickerVisible, value); }
+            set { _ = UpdateProperty(ref _isObjectBorderLineColorPickerVisible, value); }
         }
 
         private void UpdateObjectBorderLineVisibility()

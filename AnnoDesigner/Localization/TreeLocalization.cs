@@ -31,10 +31,7 @@ namespace AnnoDesigner.Localization
         {
             get
             {
-                if (_translations is null)
-                {
-                    _translations = GetTranslationsFromContainer();
-                }
+                _translations ??= GetTranslationsFromContainer();
 
                 return _translations;
             }
@@ -79,14 +76,14 @@ namespace AnnoDesigner.Localization
 
             try
             {
-                if (Translations[languageCode].TryGetValue(valueToTranslate.Replace(" ", string.Empty), out string foundLocalization))
+                if (Translations[languageCode].TryGetValue(valueToTranslate.Replace(" ", string.Empty), out var foundLocalization))
                 {
                     return foundLocalization;
                 }
                 else
                 {
                     _logger.Trace($"try to set localization to english for: \"{valueToTranslate}\"");
-                    if (Translations["eng"].TryGetValue(valueToTranslate.Replace(" ", string.Empty), out string engLocalization))
+                    if (Translations["eng"].TryGetValue(valueToTranslate.Replace(" ", string.Empty), out var engLocalization))
                     {
                         return engLocalization;
                     }

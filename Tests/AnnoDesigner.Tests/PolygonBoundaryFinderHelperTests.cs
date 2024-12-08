@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
+﻿using System.Linq;
 using AnnoDesigner.Helper;
 using Xunit;
 
@@ -25,8 +23,12 @@ namespace AnnoDesigner.Tests
             var postTranspose = Enumerable.Range(0, gridLines.Max(i => i.Length)).Select(i => new bool[gridLines.Length]).ToArray();
 
             for (var i = 0; i < gridLines.Length; i++)
+            {
                 for (var j = 0; j < gridLines[i].Length; j++)
+                {
                     postTranspose[j][i] = preTranspose[i][j];
+                }
+            }
 
             return postTranspose;
         }

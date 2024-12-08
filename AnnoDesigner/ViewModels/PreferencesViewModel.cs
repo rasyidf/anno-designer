@@ -15,7 +15,7 @@ namespace AnnoDesigner.ViewModels
 
         public PreferencesViewModel()
         {
-            Pages = new ObservableCollection<PreferencePage>();
+            Pages = [];
             CloseWindowCommand = new RelayCommand<ICloseable>(CloseWindow);
         }
 
@@ -26,7 +26,7 @@ namespace AnnoDesigner.ViewModels
             get { return _selectedItem; }
             set
             {
-                UpdateProperty(ref _selectedItem, value);
+                _ = UpdateProperty(ref _selectedItem, value);
                 ShowPage(value.Name);
             }
         }

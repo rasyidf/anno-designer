@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Xaml.Behaviors;
@@ -71,7 +64,7 @@ namespace AnnoDesigner.Behaviors
                     _textBox.Clear();
                 }
 
-                _textBox.CaretIndex= _textBox.CaretIndex+1;
+                _textBox.CaretIndex++;
                 _textBox.CaretIndex = _textBox.Text.Length;
                 _textBox.UpdateLayout();
             }

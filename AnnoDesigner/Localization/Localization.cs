@@ -15,7 +15,7 @@ namespace AnnoDesigner.Localization
 
         #region ctor
 
-        private static readonly Lazy<Localization> lazy = new Lazy<Localization>(() => new Localization());
+        private static readonly Lazy<Localization> lazy = new(() => new Localization());
 
         public static Localization Instance
         {
@@ -40,7 +40,7 @@ namespace AnnoDesigner.Localization
 
         public static IDictionary<string, string> Translations => TranslationsRaw[Instance.SelectedLanguageCode];
 
-        public IDictionary<string, string> InstanceTranslations => Translations;
+        public static IDictionary<string, string> InstanceTranslations => Translations;
 
         public static void Init(ICommons commons)
         {
@@ -1312,14 +1312,14 @@ namespace AnnoDesigner.Localization
 
             try
             {
-                if (TranslationsRaw[languageCode].TryGetValue(valueToTranslate.Replace(" ", string.Empty), out string foundLocalization))
+                if (TranslationsRaw[languageCode].TryGetValue(valueToTranslate.Replace(" ", string.Empty), out var foundLocalization))
                 {
                     return foundLocalization;
                 }
                 else
                 {
                     _logger.Trace($"try to set localization to english for: \"{valueToTranslate}\"");
-                    if (TranslationsRaw["eng"].TryGetValue(valueToTranslate.Replace(" ", string.Empty), out string engLocalization))
+                    if (TranslationsRaw["eng"].TryGetValue(valueToTranslate.Replace(" ", string.Empty), out var engLocalization))
                     {
                         return engLocalization;
                     }

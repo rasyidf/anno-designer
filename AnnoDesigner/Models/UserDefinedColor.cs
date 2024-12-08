@@ -25,23 +25,18 @@ namespace AnnoDesigner.Models
         public UserDefinedColorType Type
         {
             get { return _type; }
-            set { UpdateProperty(ref _type, value); }
+            set { _ = UpdateProperty(ref _type, value); }
         }
 
         public string DisplayName()
         {
-            if (_localizationHelper is null)
-            {
-                return Type.ToString();
-            }
-
-            return _localizationHelper.GetLocalization("ColorType" + Type.ToString());
+            return _localizationHelper is null ? Type.ToString() : _localizationHelper.GetLocalization("ColorType" + Type.ToString());
         }
 
         public SerializableColor Color
         {
             get { return _color; }
-            set { UpdateProperty(ref _color, value); }
+            set { _ = UpdateProperty(ref _color, value); }
         }
     }
 }

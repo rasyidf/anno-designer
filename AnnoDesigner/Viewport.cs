@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
+﻿using System.Windows;
 using AnnoDesigner.Core.Helper;
 
 namespace AnnoDesigner
@@ -68,7 +62,7 @@ namespace AnnoDesigner
         /// </summary>
         public Rect Absolute
         {
-            get => new Rect(Left, Top, Width, Height);
+            get => new(Left, Top, Width, Height);
         }
 
         /// <summary>
@@ -84,7 +78,6 @@ namespace AnnoDesigner
         /// <summary>
         /// Converts a <see cref="Point"/> that is relative to the origin to one that is relative to the viewport.
         /// </summary>
-        /// <param name="rect"></param>
         /// <returns></returns>
         public Point OriginToViewport(Point point)
         {

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using AnnoDesigner.Core.Models;
@@ -24,7 +20,7 @@ namespace AnnoDesigner.Core.Tests
             //Arrange
             var p = new PolyGesture(Key.A, ModifierKeys.Control);
             //Act and Assert
-            Assert.Throws<ArgumentException>(() => p.Type = (GestureType)int.MaxValue);
+            _ = Assert.Throws<ArgumentException>(() => p.Type = (GestureType)int.MaxValue);
         }
 
         [Theory]

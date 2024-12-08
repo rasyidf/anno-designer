@@ -35,12 +35,7 @@ namespace AnnoDesigner.Core.Models
         public IReadOnlyList<string> GetFileDropList()
         {
             var clipboardData = Clipboard.GetFileDropList();
-            if (clipboardData is null)
-            {
-                return null;
-            }
-
-            return new ReadOnlyCollection<string>(clipboardData.Cast<string>().ToList());
+            return clipboardData is null ? null : (IReadOnlyList<string>)new ReadOnlyCollection<string>(clipboardData.Cast<string>().ToList());
         }
 
         public string GetText()

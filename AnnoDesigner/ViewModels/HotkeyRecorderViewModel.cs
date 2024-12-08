@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using AnnoDesigner.Core.Controls;
 using AnnoDesigner.Core.Models;
-using AnnoDesigner.Models;
 
 namespace AnnoDesigner.ViewModels
 {
     public class HotkeyRecorderViewModel : Notify
     {
-        public HotkeyRecorderViewModel() 
+        public HotkeyRecorderViewModel()
         {
             SaveCommand = new RelayCommand<Window>(ExecuteSave);
             CancelCommand = new RelayCommand<Window>(ExecuteCancel);

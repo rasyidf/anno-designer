@@ -7,9 +7,9 @@ namespace AnnoDesigner.Undo
 {
     public class UndoManager : Notify, IUndoManager
     {
-        internal Stack<IOperation> UndoStack { get; set; } = new Stack<IOperation>();
-        internal Stack<IOperation> RedoStack { get; set; } = new Stack<IOperation>();
-        internal CompositeOperation CurrentCompositeOperation { get; set; }
+        public Stack<IOperation> UndoStack { get; set; } = new Stack<IOperation>();
+        public Stack<IOperation> RedoStack { get; set; } = new Stack<IOperation>();
+        public CompositeOperation CurrentCompositeOperation { get; set; }
 
         private IOperation lastUndoableOperation;
 
@@ -67,7 +67,10 @@ namespace AnnoDesigner.Undo
 
         public void RegisterOperation(IOperation operation)
         {
-            if (Undoing) return;
+            if (Undoing)
+            {
+                return;
+            }
 
             if (CurrentCompositeOperation != null)
             {

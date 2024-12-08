@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -12,8 +9,8 @@ namespace AnnoDesigner.Core.Models
     {
         #region Fields
 
-        readonly Action<T> _execute = null;
-        readonly Func<T, bool> _canExecute = null;
+        private readonly Action<T> _execute = null;
+        private readonly Func<T, bool> _canExecute = null;
 
         #endregion
 
@@ -36,12 +33,7 @@ namespace AnnoDesigner.Core.Models
         /// <param name="canExecute">The execution status logic.</param>
         public RelayCommand(Action<T> execute, Func<T, bool> canExecute)
         {
-            if (execute == null)
-            {
-                throw new ArgumentNullException(nameof(execute));
-            }
-
-            _execute = execute;
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
         }
 
@@ -58,12 +50,7 @@ namespace AnnoDesigner.Core.Models
         ///</returns>
         public bool CanExecute(object parameter)
         {
-            if (_canExecute == null)
-            {
-                return true;
-            }
-
-            return _canExecute((T)parameter);
+            return _canExecute == null || _canExecute((T)parameter);
         }
 
         ///<summary>
@@ -152,12 +139,7 @@ namespace AnnoDesigner.Core.Models
 
         public bool CanExecute(object parameter)
         {
-            if (canExecute == null)
-            {
-                return true;
-            }
-
-            return canExecute((TArgType)parameter);
+            return canExecute == null || canExecute((TArgType)parameter);
         }
 
         public async void Execute(object parameter)

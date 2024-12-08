@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Media;
 using AnnoDesigner.Models;
 
@@ -14,7 +10,7 @@ namespace AnnoDesigner
 
         static PenCache()
         {
-            _cachedPens = new Dictionary<(Brush brush, double thickness), Pen>();
+            _cachedPens = [];
         }
 
         public Pen GetPen(Brush brush, double thickness)

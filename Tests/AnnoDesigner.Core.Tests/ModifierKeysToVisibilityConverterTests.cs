@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using AnnoDesigner.Core.Converters;
@@ -77,7 +73,7 @@ namespace AnnoDesigner.Core.Tests
             var converter = new ModifierKeysToVisibilityConverter();
 
             // Act/Assert
-            Assert.Throws<NotImplementedException>(() => converter.ConvertBack(ModifierKeys.Control, typeof(Visibility), null, CultureInfo.CurrentCulture));
+            _ = Assert.Throws<NotImplementedException>(() => converter.ConvertBack(ModifierKeys.Control, typeof(Visibility), null, CultureInfo.CurrentCulture));
         }
 
         #endregion

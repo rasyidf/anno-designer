@@ -11,7 +11,7 @@ namespace PresetParser
         {
             var result = (true, new List<string>());
 
-            knownDuplicates ??= new List<string>();
+            knownDuplicates ??= [];
 
             var duplicates = buildingsToCheck.GroupBy(x => x.Identifier).Where(x => x.Count() > 1).Select(x => x.Key).ToList();
             //remove known duplicates from result

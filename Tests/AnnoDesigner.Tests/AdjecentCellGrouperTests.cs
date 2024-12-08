@@ -12,7 +12,7 @@ namespace AnnoDesigner.Tests
             public int Value { get; set; }
         }
 
-        private AdjacentCellGrouper grouper = new AdjacentCellGrouper();
+        private readonly AdjacentCellGrouper grouper = new();
 
         /// <summary>
         /// Returns grid representation of string lines.
@@ -56,7 +56,7 @@ namespace AnnoDesigner.Tests
             var groups = grouper.GroupAdjacentCells(cells, false).ToList();
 
             // Assert
-            Assert.Single(groups);
+            _ = Assert.Single(groups);
             Assert.Equal(new Rect(0, 0, 5, 5), groups[0].Bounds);
         }
 

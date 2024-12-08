@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using AnnoDesigner.Core.Converters;
 using Xunit;
@@ -39,7 +35,7 @@ namespace AnnoDesigner.Core.Tests
             var converter = new KeyToDisplayStringConverter();
 
             // Act/Assert
-            Assert.Throws<ArgumentException>(() => converter.Convert("dummy", typeof(string), null, CultureInfo.CurrentCulture));
+            _ = Assert.Throws<ArgumentException>(() => converter.Convert("dummy", typeof(string), null, CultureInfo.CurrentCulture));
         }
 #else
         [Fact]
@@ -67,7 +63,7 @@ namespace AnnoDesigner.Core.Tests
             var converter = new KeyToDisplayStringConverter();
 
             // Act/Assert
-            Assert.Throws<NotImplementedException>(() => converter.ConvertBack(Key.A, typeof(string), null, CultureInfo.CurrentCulture));
+            _ = Assert.Throws<NotImplementedException>(() => converter.ConvertBack(Key.A, typeof(string), null, CultureInfo.CurrentCulture));
         }
 
         #endregion

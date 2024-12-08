@@ -16,7 +16,7 @@ namespace AnnoDesigner.Core.Tests
 
         static TreeLocalizationLoaderTests()
         {
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            var basePath = AppDomain.CurrentDomain.BaseDirectory;
 
             testData_1language_2translations = System.IO.File.ReadAllText(System.IO.Path.Combine(basePath, "Testdata", "TreeLocalization", "1language_2translations.json"), Encoding.UTF8);
             pathToPresetLocalization = System.IO.Path.Combine(basePath, "Testdata", "TreeLocalization", CoreConstants.PresetsFiles.TreeLocalizationFile);
@@ -51,7 +51,7 @@ namespace AnnoDesigner.Core.Tests
             var loader = new TreeLocalizationLoader(_mockedFileSystem);
 
             // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => loader.LoadFromFile(filePath));
+            _ = Assert.Throws<ArgumentNullException>(() => loader.LoadFromFile(filePath));
         }
 
         [Theory]
@@ -64,7 +64,7 @@ namespace AnnoDesigner.Core.Tests
             var loader = new TreeLocalizationLoader(_mockedFileSystem);
 
             // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => loader.Load(jsonString));
+            _ = Assert.Throws<ArgumentNullException>(() => loader.Load(jsonString));
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace AnnoDesigner.Core.Tests
             var loader = new TreeLocalizationLoader(_mockedFileSystem);
 
             // Act/Assert
-            Assert.ThrowsAny<Exception>(() => loader.Load(jsonString));
+            _ = Assert.ThrowsAny<Exception>(() => loader.Load(jsonString));
         }
 
         [Fact]
@@ -92,7 +92,7 @@ namespace AnnoDesigner.Core.Tests
             var result = loader.LoadFromFile(filePath);
 
             // Assert
-            Assert.Single(result.Languages);
+            _ = Assert.Single(result.Languages);
             Assert.Equal(2, result.Languages[0].Translations.Count);
             Assert.Equal("1.0.0.0", result.Version);
         }
@@ -107,7 +107,7 @@ namespace AnnoDesigner.Core.Tests
             var result = loader.Load(testData_1language_2translations);
 
             // Assert
-            Assert.Single(result.Languages);
+            _ = Assert.Single(result.Languages);
             Assert.Equal(2, result.Languages[0].Translations.Count);
             Assert.Equal("1.0.0.0", result.Version);
         }

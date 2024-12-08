@@ -15,7 +15,7 @@ namespace AnnoDesigner.CommandLine.Arguments
             public Binder(IFileSystem fileSystem)
             {
                 argumentFilePath = new Argument<IFileInfo>("layoutPath",
-                    parse: arg => fileSystem.FileInfo.FromFileName(arg.Tokens.First().Value),
+                    parse: arg => fileSystem.FileInfo.New(arg.Tokens.First().Value),
                     description: "Path to layout file (*.ad)")
                     .ExistingOnly(fileSystem);
 

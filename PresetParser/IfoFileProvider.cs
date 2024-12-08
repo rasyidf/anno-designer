@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
+using System.IO.Abstractions;
 using System.Xml;
 
 namespace PresetParser
 {
     public class IfoFileProvider : IIfoFileProvider
     {
+        private readonly IFileSystem _fileSystem;
+        public IfoFileProvider()
+        {
+            _fileSystem = new FileSystem();
+        }
         public XmlDocument GetIfoFileContent(string basePath, string variationFilename)
         {
             var result = new XmlDocument();
@@ -17,7 +18,7 @@ namespace PresetParser
             var pathToFileDirectory = Path.Combine(Path.GetDirectoryName(variationFilename), Path.GetFileNameWithoutExtension(variationFilename));
             var pathToFile = Path.Combine(basePath + "/", string.Format("{0}.ifo", pathToFileDirectory));
 
-            if (File.Exists(pathToFile))
+            if (_fileSystem.File.Exists(pathToFile))
             {
                 result.Load(pathToFile);
                 return result;

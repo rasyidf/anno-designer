@@ -12,8 +12,8 @@ namespace AnnoDesigner.Tests
         public UserDefinedColorToDisplayNameConverterTests()
         {
             var commonsMock = new Mock<ICommons>();
-            commonsMock.SetupGet(x => x.CurrentLanguage).Returns(() => "English");
-            commonsMock.SetupGet(x => x.CurrentLanguageCode).Returns(() => "eng");
+            _ = commonsMock.SetupGet(x => x.CurrentLanguage).Returns(() => "English");
+            _ = commonsMock.SetupGet(x => x.CurrentLanguageCode).Returns(() => "eng");
             Localization.Localization.Init(commonsMock.Object);
         }
 
@@ -76,7 +76,7 @@ namespace AnnoDesigner.Tests
             var converter = new UserDefinedColorToDisplayNameConverter();
 
             // Act/Assert
-            Assert.Throws<NotImplementedException>(() => converter.ConvertBack(string.Empty, typeof(UserDefinedColor), null, CultureInfo.CurrentCulture));
+            _ = Assert.Throws<NotImplementedException>(() => converter.ConvertBack(string.Empty, typeof(UserDefinedColor), null, CultureInfo.CurrentCulture));
         }
 
         #endregion

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Threading;
@@ -28,11 +27,11 @@ namespace PresetParser.Tests.CultureAware
             Initialize(culture);
         }
 
-        void Initialize(string culture)
+        private void Initialize(string culture)
         {
             this.culture = culture;
 
-            Traits.Add("Culture", new List<string> { culture });
+            Traits.Add("Culture", [culture]);
 
             DisplayName += $"[{culture}]";
         }
@@ -77,7 +76,7 @@ namespace PresetParser.Tests.CultureAware
             }
         }
 
-        static CultureInfo CurrentCulture
+        private static CultureInfo CurrentCulture
         {
 #if NETFRAMEWORK
             get => Thread.CurrentThread.CurrentCulture;
@@ -88,7 +87,7 @@ namespace PresetParser.Tests.CultureAware
 #endif
         }
 
-        static CultureInfo CurrentUICulture
+        private static CultureInfo CurrentUICulture
         {
 #if NETFRAMEWORK
             get => Thread.CurrentThread.CurrentUICulture;

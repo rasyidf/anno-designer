@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.IO.Abstractions;
 using System.Text;
 using System.Xml;
 using AnnoDesigner.Core.Presets.Models;
 using Moq;
+using PresetParser.Tests.CultureAware;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,31 +13,25 @@ namespace PresetParser.Tests
 {
     //disable parallel execution of tests, because of culture awareness in some of the tests
     [CollectionDefinition(nameof(BuildingBlockProviderTests), DisableParallelization = true)]
-    public class BuildingBlockProviderTests
+    public class BuildingBlockProviderTests(ITestOutputHelper outputHelper)
     {
+        private static readonly FileSystem _fileSystem = new();
         #region testdata
 
         private static readonly string testData_Bakery;
-        private readonly ITestOutputHelper _out;
-
+        private readonly ITestOutputHelper _out = outputHelper;
         #endregion
-
         static BuildingBlockProviderTests()
         {
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            var basePath = AppDomain.CurrentDomain.BaseDirectory;
+            testData_Bakery = _fileSystem.File.ReadAllText(_fileSystem.Path.Combine(basePath, "Testdata", "1404_Bakery.txt"), Encoding.UTF8);
 
-            testData_Bakery = File.ReadAllText(Path.Combine(basePath, "Testdata", "1404_Bakery.txt"), Encoding.UTF8);
-        }
-
-        public BuildingBlockProviderTests(ITestOutputHelper outputHelper)
-        {
-            _out = outputHelper;
         }
 
         #region ctor tests
 
         [Fact]
-        public void ctor_IfoProviderIsNull_ShouldThrow()
+        public void Ctor_IfoProviderIsNull_ShouldThrow()
         {
             // Arrange/Act
             var ex = Assert.Throws<ArgumentNullException>(() =>
@@ -59,12 +55,12 @@ namespace PresetParser.Tests
             mockedDocument.LoadXml("<Info><Dummy></Dummy></Info>");
 
             var mockedIfoProvider = new Mock<IIfoFileProvider>();
-            mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
+            _ = mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
 
             var provider = new BuildingBlockProvider(mockedIfoProvider.Object);
 
             var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.SetupAllProperties();
+            _ = mockedBuilding.SetupAllProperties();
 
             // Act
             var result = provider.GetBuildingBlocker("basePath", mockedBuilding.Object, "variationFilename", Constants.ANNO_VERSION_1404);
@@ -82,18 +78,18 @@ namespace PresetParser.Tests
             mockedDocument.LoadXml("<Info><BuildBlocker></BuildBlocker></Info>");
 
             var mockedIfoProvider = new Mock<IIfoFileProvider>();
-            mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
+            _ = mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
 
             var provider = new BuildingBlockProvider(mockedIfoProvider.Object);
 
             var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.SetupAllProperties();
+            _ = mockedBuilding.SetupAllProperties();
 
             // Act
             var result = provider.GetBuildingBlocker("basePath", mockedBuilding.Object, "variationFilename", Constants.ANNO_VERSION_1404);
 
             // Assert
-            Assert.False(result);            
+            Assert.False(result);
             Assert.NotNull(mockedBuilding.Object.BuildBlocker);
         }
 
@@ -105,12 +101,12 @@ namespace PresetParser.Tests
             mockedDocument.LoadXml("<Info><BuildBlocker><Position><x>300</x><z>300</z></Position></BuildBlocker></Info>");
 
             var mockedIfoProvider = new Mock<IIfoFileProvider>();
-            mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
+            _ = mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
 
             var provider = new BuildingBlockProvider(mockedIfoProvider.Object);
 
             var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.SetupAllProperties();
+            _ = mockedBuilding.SetupAllProperties();
 
             // Act
             var result = provider.GetBuildingBlocker("basePath", mockedBuilding.Object, "variationFilename", Constants.ANNO_VERSION_1404);
@@ -129,12 +125,12 @@ namespace PresetParser.Tests
             mockedDocument.LoadXml("<Info><BuildBlocker><Position><x>300</x><z>8192</z></Position></BuildBlocker></Info>");
 
             var mockedIfoProvider = new Mock<IIfoFileProvider>();
-            mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
+            _ = mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
 
             var provider = new BuildingBlockProvider(mockedIfoProvider.Object);
 
             var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.SetupAllProperties();
+            _ = mockedBuilding.SetupAllProperties();
 
             // Act
             var result = provider.GetBuildingBlocker("basePath", mockedBuilding.Object, "variationFilename", Constants.ANNO_VERSION_1404);
@@ -154,12 +150,12 @@ namespace PresetParser.Tests
             mockedDocument.LoadXml("<Info><BuildBlocker><Position><x>8192</x><z>300</z></Position></BuildBlocker></Info>");
 
             var mockedIfoProvider = new Mock<IIfoFileProvider>();
-            mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
+            _ = mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
 
             var provider = new BuildingBlockProvider(mockedIfoProvider.Object);
 
             var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.SetupAllProperties();
+            _ = mockedBuilding.SetupAllProperties();
 
             // Act
             var result = provider.GetBuildingBlocker("basePath", mockedBuilding.Object, "variationFilename", Constants.ANNO_VERSION_1404);
@@ -179,12 +175,12 @@ namespace PresetParser.Tests
             mockedDocument.LoadXml("<Info><BuildBlocker><Position><x>-8192</x><z>8192</z></Position></BuildBlocker></Info>");
 
             var mockedIfoProvider = new Mock<IIfoFileProvider>();
-            mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
+            _ = mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
 
             var provider = new BuildingBlockProvider(mockedIfoProvider.Object);
 
             var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.SetupAllProperties();
+            _ = mockedBuilding.SetupAllProperties();
 
             // Act
             var result = provider.GetBuildingBlocker("basePath", mockedBuilding.Object, "water_mill_ecos.txt", Constants.ANNO_VERSION_1404);
@@ -204,12 +200,12 @@ namespace PresetParser.Tests
             mockedDocument.LoadXml("<Info><BuildBlocker><Position><x>-8192</x><z>8192</z></Position></BuildBlocker></Info>");
 
             var mockedIfoProvider = new Mock<IIfoFileProvider>();
-            mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
+            _ = mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
 
             var provider = new BuildingBlockProvider(mockedIfoProvider.Object);
 
             var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.SetupAllProperties();
+            _ = mockedBuilding.SetupAllProperties();
 
             // Act
             var result = provider.GetBuildingBlocker("basePath", mockedBuilding.Object, "ornamental_post_09.txt", Constants.ANNO_VERSION_1404);
@@ -229,12 +225,12 @@ namespace PresetParser.Tests
             mockedDocument.LoadXml(testData_Bakery);
 
             var mockedIfoProvider = new Mock<IIfoFileProvider>();
-            mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
+            _ = mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
 
             var provider = new BuildingBlockProvider(mockedIfoProvider.Object);
 
             var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.SetupAllProperties();
+            _ = mockedBuilding.SetupAllProperties();
 
             // Act
             var result = provider.GetBuildingBlocker("basePath", mockedBuilding.Object, "variationFilename", Constants.ANNO_VERSION_1404);
@@ -260,12 +256,12 @@ namespace PresetParser.Tests
             mockedDocument.LoadXml(ifodocument);
 
             var mockedIfoProvider = new Mock<IIfoFileProvider>();
-            mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
+            _ = mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
 
             var provider = new BuildingBlockProvider(mockedIfoProvider.Object);
 
             var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.SetupAllProperties();
+            _ = mockedBuilding.SetupAllProperties();
 
             // Act
             var result = provider.GetBuildingBlocker("basePath", mockedBuilding.Object, "variationFilename", Constants.ANNO_VERSION_1800);
@@ -283,12 +279,12 @@ namespace PresetParser.Tests
             mockedDocument.LoadXml("<Info><BuildBlocker><Position></Position><Position></Position><Position></Position><Position></Position></BuildBlocker></Info>");
 
             var mockedIfoProvider = new Mock<IIfoFileProvider>();
-            mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
+            _ = mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
 
             var provider = new BuildingBlockProvider(mockedIfoProvider.Object);
 
             var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.SetupAllProperties();
+            _ = mockedBuilding.SetupAllProperties();
 
             // Act
             var result = provider.GetBuildingBlocker("basePath", mockedBuilding.Object, "variationFilename", Constants.ANNO_VERSION_1800);
@@ -306,12 +302,12 @@ namespace PresetParser.Tests
             mockedDocument.LoadXml("<Info><BuildBlocker></BuildBlocker></Info>");
 
             var mockedIfoProvider = new Mock<IIfoFileProvider>();
-            mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
+            _ = mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
 
             var provider = new BuildingBlockProvider(mockedIfoProvider.Object);
 
             var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.SetupAllProperties();
+            _ = mockedBuilding.SetupAllProperties();
 
             // Act
             var result = provider.GetBuildingBlocker("basePath", mockedBuilding.Object, "variationFilename", Constants.ANNO_VERSION_1800);
@@ -329,12 +325,12 @@ namespace PresetParser.Tests
             mockedDocument.LoadXml("<Info><BuildBlocker><Position><xf>0.2</xf><zf>0.2</zf></Position><Position><xf>0.2</xf><zf>-0.2</zf></Position><Position><xf>-0.2</xf><zf>0.2</zf></Position><Position><xf>-0.2</xf><zf>-0.2</zf></Position></BuildBlocker></Info>");
 
             var mockedIfoProvider = new Mock<IIfoFileProvider>();
-            mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
+            _ = mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
 
             var provider = new BuildingBlockProvider(mockedIfoProvider.Object);
 
             var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.SetupAllProperties();
+            _ = mockedBuilding.SetupAllProperties();
 
             // Act
             var result = provider.GetBuildingBlocker("basePath", mockedBuilding.Object, "variationFilename", Constants.ANNO_VERSION_1800);
@@ -353,12 +349,12 @@ namespace PresetParser.Tests
             mockedDocument.LoadXml("<Info><BuildBlocker><Position><xf>0.2</xf><zf>2</zf></Position><Position><xf>0.2</xf><zf>-2</zf></Position><Position><xf>-0.2</xf><zf>2</zf></Position><Position><xf>-0.2</xf><zf>-2</zf></Position></BuildBlocker></Info>");
 
             var mockedIfoProvider = new Mock<IIfoFileProvider>();
-            mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
+            _ = mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
 
             var provider = new BuildingBlockProvider(mockedIfoProvider.Object);
 
             var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.SetupAllProperties();
+            _ = mockedBuilding.SetupAllProperties();
 
             var building = mockedBuilding.Object;
 
@@ -380,12 +376,12 @@ namespace PresetParser.Tests
             mockedDocument.LoadXml("<Info><BuildBlocker><Position><xf>2</xf><zf>0.2</zf></Position><Position><xf>2</xf><zf>-0.2</zf></Position><Position><xf>-2</xf><zf>0.2</zf></Position><Position><xf>-2</xf><zf>-0.2</zf></Position></BuildBlocker></Info>");
 
             var mockedIfoProvider = new Mock<IIfoFileProvider>();
-            mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
+            _ = mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
 
             var provider = new BuildingBlockProvider(mockedIfoProvider.Object);
 
             var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.SetupAllProperties();
+            _ = mockedBuilding.SetupAllProperties();
 
             // Act
             var result = provider.GetBuildingBlocker("basePath", mockedBuilding.Object, "variationFilename", Constants.ANNO_VERSION_1800);
@@ -405,13 +401,13 @@ namespace PresetParser.Tests
             mockedDocument.LoadXml("<Info><BuildBlocker><Position><xf>1.5</xf><zf>1.5</zf></Position><Position><xf>1.5</xf><zf>-1.5</zf></Position><Position><xf>-1.5</xf><zf>0.5</zf></Position><Position><xf>-1.5</xf><zf>-1.5</zf></Position></BuildBlocker></Info>");
 
             var mockedIfoProvider = new Mock<IIfoFileProvider>();
-            mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
+            _ = mockedIfoProvider.Setup(x => x.GetIfoFileContent(It.IsAny<string>(), It.IsAny<string>())).Returns(() => mockedDocument);
 
             var provider = new BuildingBlockProvider(mockedIfoProvider.Object);
 
             var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.SetupAllProperties();
-            mockedBuilding.SetupGet(x => x.Identifier).Returns("Palace_Module_05 (gate)");
+            _ = mockedBuilding.SetupAllProperties();
+            _ = mockedBuilding.SetupGet(x => x.Identifier).Returns("Palace_Module_05 (gate)");
 
             // Act
             var result = provider.GetBuildingBlocker("basePath", mockedBuilding.Object, "variationFilename", Constants.ANNO_VERSION_1800);

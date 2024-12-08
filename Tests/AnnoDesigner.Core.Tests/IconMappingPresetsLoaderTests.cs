@@ -16,7 +16,7 @@ namespace AnnoDesigner.Core.Tests
             var loader = new IconMappingPresetsLoader();
 
             // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => loader.Load(jsonString));
+            _ = Assert.Throws<ArgumentNullException>(() => loader.Load(jsonString));
         }
 
         [Fact]
@@ -27,7 +27,7 @@ namespace AnnoDesigner.Core.Tests
             var loader = new IconMappingPresetsLoader();
 
             // Act/Assert
-            Assert.ThrowsAny<Exception>(() => loader.Load(jsonString));
+            _ = Assert.ThrowsAny<Exception>(() => loader.Load(jsonString));
         }
 
         [Theory]
@@ -40,7 +40,7 @@ namespace AnnoDesigner.Core.Tests
             var loader = new IconMappingPresetsLoader();
 
             // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => loader.LoadFromFile(filePath));
+            _ = Assert.Throws<ArgumentNullException>(() => loader.LoadFromFile(filePath));
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace AnnoDesigner.Core.Tests
             var result = loader.Load(content);
 
             // Assert
-            Assert.Single(result.IconNameMappings);
+            _ = Assert.Single(result.IconNameMappings);
             Assert.Equal(string.Empty, result.Version);
         }
 
@@ -69,7 +69,7 @@ namespace AnnoDesigner.Core.Tests
             var result = loader.Load(content);
 
             // Assert
-            Assert.Single(result.IconNameMappings);
+            _ = Assert.Single(result.IconNameMappings);
             Assert.Equal("0.1", result.Version);
         }
     }

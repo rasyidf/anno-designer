@@ -25,7 +25,7 @@ namespace AnnoDesigner.ViewModels
         //private bool _showSelectedBuildingList;
         private ObservableCollection<StatisticsBuilding> _buildings;
         private ObservableCollection<StatisticsBuilding> _selectedBuildings;
-        private StatisticsCalculationHelper _statisticsCalculationHelper;
+        private readonly StatisticsCalculationHelper _statisticsCalculationHelper;
         private readonly ConcurrentDictionary<string, BuildingInfo> _cachedPresetsBuilding;
         private readonly ILocalizationHelper _localizationHelper;
         private readonly ICommons _commons;
@@ -44,8 +44,8 @@ namespace AnnoDesigner.ViewModels
             AreStatisticsAvailable = true;
 
             ShowBuildingList = true;
-            Buildings = new ObservableCollection<StatisticsBuilding>();
-            SelectedBuildings = new ObservableCollection<StatisticsBuilding>();
+            Buildings = [];
+            SelectedBuildings = [];
             _statisticsCalculationHelper = new StatisticsCalculationHelper();
             _cachedPresetsBuilding = new ConcurrentDictionary<string, BuildingInfo>(Environment.ProcessorCount, 50);
         }
@@ -53,37 +53,37 @@ namespace AnnoDesigner.ViewModels
         public bool IsVisible
         {
             get { return _isVisible; }
-            set { UpdateProperty(ref _isVisible, value); }
+            set { _ = UpdateProperty(ref _isVisible, value); }
         }
 
         public string UsedArea
         {
             get { return _usedArea; }
-            set { UpdateProperty(ref _usedArea, value); }
+            set { _ = UpdateProperty(ref _usedArea, value); }
         }
 
         public double UsedTiles
         {
             get { return _usedTiles; }
-            set { UpdateProperty(ref _usedTiles, value); }
+            set { _ = UpdateProperty(ref _usedTiles, value); }
         }
 
         public double MinTiles
         {
             get { return _minTiles; }
-            set { UpdateProperty(ref _minTiles, value); }
+            set { _ = UpdateProperty(ref _minTiles, value); }
         }
 
         public string Efficiency
         {
             get { return _efficiency; }
-            set { UpdateProperty(ref _efficiency, value); }
+            set { _ = UpdateProperty(ref _efficiency, value); }
         }
 
         public bool AreStatisticsAvailable
         {
             get { return _areStatisticsAvailable; }
-            set { UpdateProperty(ref _areStatisticsAvailable, value); }
+            set { _ = UpdateProperty(ref _areStatisticsAvailable, value); }
         }
 
         public bool ShowBuildingList
@@ -91,7 +91,7 @@ namespace AnnoDesigner.ViewModels
             get { return _showBuildingList; }
             set
             {
-                UpdateProperty(ref _showBuildingList, value);
+                _ = UpdateProperty(ref _showBuildingList, value);
                 OnPropertyChanged(nameof(ShowSelectedBuildingList));
             }
         }
@@ -99,7 +99,7 @@ namespace AnnoDesigner.ViewModels
         public bool ShowStatisticsBuildingCount
         {
             get { return _showStatisticsBuildingCount; }
-            set { UpdateProperty(ref _showStatisticsBuildingCount, value); }
+            set { _ = UpdateProperty(ref _showStatisticsBuildingCount, value); }
         }
 
         public bool ShowSelectedBuildingList
@@ -110,7 +110,7 @@ namespace AnnoDesigner.ViewModels
         public ObservableCollection<StatisticsBuilding> Buildings
         {
             get { return _buildings; }
-            set { UpdateProperty(ref _buildings, value); }
+            set { _ = UpdateProperty(ref _buildings, value); }
         }
 
         public ObservableCollection<StatisticsBuilding> SelectedBuildings
@@ -118,7 +118,7 @@ namespace AnnoDesigner.ViewModels
             get { return _selectedBuildings; }
             set
             {
-                UpdateProperty(ref _selectedBuildings, value);
+                _ = UpdateProperty(ref _selectedBuildings, value);
                 OnPropertyChanged(nameof(ShowSelectedBuildingList));
             }
         }
@@ -175,7 +175,7 @@ namespace AnnoDesigner.ViewModels
         {
             if (groupedBuildingsByIdentifier is null || !groupedBuildingsByIdentifier.Any())
             {
-                return new ObservableCollection<StatisticsBuilding>();
+                return [];
             }
 
             var tempList = new List<StatisticsBuilding>();
@@ -195,7 +195,7 @@ namespace AnnoDesigner.ViewModels
                     if (!_cachedPresetsBuilding.TryGetValue(identifierToCheck, out var building))
                     {
                         building = buildingPresets.Buildings.Find(_ => string.Equals(_.Identifier, identifierToCheck, StringComparison.OrdinalIgnoreCase));
-                        _cachedPresetsBuilding.TryAdd(identifierToCheck, building);
+                        _ = _cachedPresetsBuilding.TryAdd(identifierToCheck, building);
                     }
 
                     var isUnknownObject = string.Equals(identifierToCheck, "Unknown Object", StringComparison.OrdinalIgnoreCase);
@@ -206,12 +206,12 @@ namespace AnnoDesigner.ViewModels
                     }
                     else
                     {
-                        /// Ruled those 2 out to keep Building Name Changes done through the Labeling of the building
-                        /// and when the building is not in the preset. Those statisticBuildings.name will not translated to
-                        /// other luangages anymore, as users can give there own names.
-                        /// However i made it so, that if localizations get those translations, it will translated.
-                        /// 06-02-2021, on request of user(s) on Discord read this on
-                        /// https://discord.com/channels/571011757317947406/571011757317947410/800118895855665203
+                        // Ruled those 2 out to keep Building Name Changes done through the Labeling of the building
+                        // and when the building is not in the preset. Those statisticBuildings.name will not translated to
+                        // other luangages anymore, as users can give there own names.
+                        // However i made it so, that if localizations get those translations, it will translated.
+                        // 06-02-2021, on request of user(s) on Discord read this on
+                        // https://discord.com/channels/571011757317947406/571011757317947410/800118895855665203
                         //item.ElementAt(0).Identifier = "";
                         //statisticBuilding.Name = _localizationHelper.GetLocalization("StatNameNotFound");
 

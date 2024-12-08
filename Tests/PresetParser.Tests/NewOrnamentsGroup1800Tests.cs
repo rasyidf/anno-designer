@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PresetParser.Anno1800;
 using Xunit;
 
@@ -409,12 +405,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToParkPaths_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("01 Park Paths", result.Group);
-            Assert.Equal("OrnamentalBuilding_Park", result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("01 Park Paths", Group);
+            Assert.Equal("OrnamentalBuilding_Park", Template);
         }
 
         [Theory]
@@ -422,12 +418,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToParkFences_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("02 Park Fences", result.Group);
-            Assert.Equal("OrnamentalBuilding_Park", result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("02 Park Fences", Group);
+            Assert.Equal("OrnamentalBuilding_Park", Template);
         }
 
         [Theory]
@@ -435,12 +431,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToParkVegetation_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("03 Park Vegetation", result.Group);
-            Assert.Equal("OrnamentalBuilding_Park", result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("03 Park Vegetation", Group);
+            Assert.Equal("OrnamentalBuilding_Park", Template);
         }
 
         [Theory]
@@ -448,12 +444,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToParkFountains_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("04 Park Fountains", result.Group);
-            Assert.Equal("OrnamentalBuilding_Park", result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("04 Park Fountains", Group);
+            Assert.Equal("OrnamentalBuilding_Park", Template);
         }
 
         [Theory]
@@ -461,12 +457,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToParkStatues_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("05 Park Statues", result.Group);
-            Assert.Equal("OrnamentalBuilding_Park", result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("05 Park Statues", Group);
+            Assert.Equal("OrnamentalBuilding_Park", Template);
         }
 
         [Theory]
@@ -474,12 +470,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToParkDecorations_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("06 Park Decorations", result.Group);
-            Assert.Equal("OrnamentalBuilding_Park", result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("06 Park Decorations", Group);
+            Assert.Equal("OrnamentalBuilding_Park", Template);
         }
 
         [Theory]
@@ -487,12 +483,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToCityPaths_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("07 City Paths", result.Group);
-            Assert.Null(result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("07 City Paths", Group);
+            Assert.Null(Template);
         }
 
         [Theory]
@@ -500,12 +496,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToCityFences_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("08 City Fences", result.Group);
-            Assert.Null(result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("08 City Fences", Group);
+            Assert.Null(Template);
         }
 
         [Theory]
@@ -513,12 +509,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToCityStatues_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("09 City Statues", result.Group);
-            Assert.Null(result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("09 City Statues", Group);
+            Assert.Null(Template);
         }
 
         [Theory]
@@ -526,12 +522,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToCityDecorations_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("10 City Decorations", result.Group);
-            Assert.Null(result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("10 City Decorations", Group);
+            Assert.Null(Template);
         }
 
         [Theory]
@@ -539,12 +535,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToSpecialOrnaments_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("11 Special Ornaments", result.Group);
-            Assert.Null(result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("11 Special Ornaments", Group);
+            Assert.Null(Template);
         }
 
         [Theory]
@@ -552,12 +548,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToChristmasDecorations_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("12 Christmas Decorations", result.Group);
-            Assert.Null(result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("12 Christmas Decorations", Group);
+            Assert.Null(Template);
         }
 
         [Theory]
@@ -565,12 +561,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToWorldsFairRewards_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("13 World's Fair Rewards", result.Group);
-            Assert.Null(result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("13 World's Fair Rewards", Group);
+            Assert.Null(Template);
         }
 
         [Theory]
@@ -578,12 +574,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToGardens_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("14 Gardens", result.Group);
-            Assert.Equal("OrnamentalBuilding_Park", result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("14 Gardens", Group);
+            Assert.Equal("OrnamentalBuilding_Park", Template);
         }
 
         [Theory]
@@ -591,12 +587,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToAgriculturalOrnaments_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("15 Agricultural Ornaments", result.Group);
-            Assert.Equal("OrnamentalBuilding_Park", result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("15 Agricultural Ornaments", Group);
+            Assert.Equal("OrnamentalBuilding_Park", Template);
         }
 
         [Theory]
@@ -604,12 +600,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToAgriculturalFences_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("16 Agricultural Fences", result.Group);
-            Assert.Equal("OrnamentalBuilding_Park", result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("16 Agricultural Fences", Group);
+            Assert.Equal("OrnamentalBuilding_Park", Template);
         }
 
         [Theory]
@@ -617,12 +613,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToIndustrialOrnaments_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("17 Industrial Ornaments", result.Group);
-            Assert.Equal("OrnamentalBuilding_Industrial", result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("17 Industrial Ornaments", Group);
+            Assert.Equal("OrnamentalBuilding_Industrial", Template);
         }
 
         [Theory]
@@ -630,12 +626,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToIndustrialFences_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("18 IndustrialFences", result.Group);
-            Assert.Equal("OrnamentalBuilding_Industrial", result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("18 IndustrialFences", Group);
+            Assert.Equal("OrnamentalBuilding_Industrial", Template);
         }
 
         [Theory(Skip = "not yet released")]
@@ -643,12 +639,12 @@ namespace PresetParser.Tests
         public void GetNewOrnamentsGroup1800_IdentifierBelongsToAmusementPark_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
+            var (Faction, Group, Template) = NewOrnamentsGroup1800.GetNewOrnamentsGroup1800(identifier, null, null, null);
 
             // Assert
-            Assert.Equal("Ornaments", result.Faction);
-            Assert.Equal("19 Amusement Park", result.Group);
-            Assert.Null(result.Template);
+            Assert.Equal("Ornaments", Faction);
+            Assert.Equal("19 Amusement Park", Group);
+            Assert.Null(Template);
         }
     }
 }

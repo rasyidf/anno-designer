@@ -1,6 +1,4 @@
-﻿using AnnoDesigner.Core.Presets.Models;
-
-namespace AnnoDesigner.Core.Presets.Loader
+﻿namespace AnnoDesigner.Core.Presets.Models
 {
     public interface ITreeLocalizationLoader
     {

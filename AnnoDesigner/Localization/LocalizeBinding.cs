@@ -24,11 +24,9 @@ namespace AnnoDesigner.Localization
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (values.Length == 2 && values[0] is IDictionary<string, string>)
-            {
-                return Convert(values[0], targetType, values[1], culture);
-            }
-            throw new Exception($"Incorrect DynamicLocalize parameters.");
+            return values.Length == 2 && values[0] is IDictionary<string, string>
+                ? Convert(values[0], targetType, values[1], culture)
+                : throw new Exception($"Incorrect DynamicLocalize parameters.");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -54,7 +52,7 @@ namespace AnnoDesigner.Localization
             }
         }
 
-        public Localize() : base(nameof(Localization.Instance.InstanceTranslations))
+        public Localize() : base(nameof(Localization.InstanceTranslations))
         {
             Source = Localization.Instance;
             Converter = LocalizeConverter;
@@ -80,7 +78,7 @@ namespace AnnoDesigner.Localization
 
         public DynamicLocalize()
         {
-            Bindings.Add(new Binding(nameof(Localization.Instance.InstanceTranslations))
+            Bindings.Add(new Binding(nameof(Localization.InstanceTranslations))
             {
                 Source = Localization.Instance
             });

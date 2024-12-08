@@ -11,7 +11,7 @@ namespace AnnoDesigner.Helper
 {
     public static class RoadSearchHelper
     {
-        private static readonly StatisticsCalculationHelper _statisticsCalculationHelper = new StatisticsCalculationHelper();
+        private static readonly StatisticsCalculationHelper _statisticsCalculationHelper = new();
 
         private static void DoNothing(AnnoObject objectInRange) { }
 
@@ -79,13 +79,13 @@ namespace AnnoDesigner.Helper
                 return new bool[0][];
             }
 
-            gridDictionary = gridDictionary ?? PrepareGridDictionary(placedObjects);
+            gridDictionary ??= PrepareGridDictionary(placedObjects);
             if (gridDictionary is null)
             {
                 return new bool[0][];
             }
 
-            inRangeAction = inRangeAction ?? DoNothing;
+            inRangeAction ??= DoNothing;
 
             var visitedObjects = new HashSet<AnnoObject>(placedObjects.Count() / 2);//inital capacity is half of all placed objecs to avoid resizing the HashSet
             var visitedCells = Enumerable.Range(0, gridDictionary.Count).Select(i => new bool[gridDictionary[0].Length]).ToArrayWithCapacity(gridDictionary.Count);
@@ -166,7 +166,7 @@ namespace AnnoDesigner.Helper
                     }
 
                     // visit all cells under start object
-                    visitedObjects.Add(startObject);
+                    _ = visitedObjects.Add(startObject);
                     for (var i = 0; i < startObject.Size.Width; i++)
                     {
                         for (var j = 0; j < startObject.Size.Height; j++)
@@ -176,10 +176,7 @@ namespace AnnoDesigner.Helper
                     }
                 }
 
-                var temp = nextCells;
-                nextCells = currentCells;
-                currentCells = temp;
-
+                (currentCells, nextCells) = (nextCells, currentCells);
                 if (remainingDistance > 1)
                 {
                     foreach (var (x, y) in currentCells)

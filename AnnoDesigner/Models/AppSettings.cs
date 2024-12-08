@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Properties;
@@ -15,7 +12,7 @@ namespace AnnoDesigner.Models
 
         #region ctor
 
-        private static readonly Lazy<AppSettings> lazy = new Lazy<AppSettings>(() => new AppSettings());
+        private static readonly Lazy<AppSettings> lazy = new(() => new AppSettings());
 
         public static AppSettings Instance
         {
@@ -226,7 +223,7 @@ namespace AnnoDesigner.Models
         }
 
         /// <summary>
-        /// Serialized <see cref="IDictionary{string, HotkeyInformation}"/>.
+        /// Serialized <see cref="IDictionary{TKey, HotkeyInformation}"/>.
         /// </summary>
         public string HotkeyMappings
         {

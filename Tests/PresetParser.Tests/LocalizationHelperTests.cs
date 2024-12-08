@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AnnoDesigner.Core.Models;
 using PresetParser.Anno1404_Anno2070;
 using PresetParser.Models;
@@ -21,19 +17,23 @@ namespace PresetParser.Tests
 
         static LocalizationHelperTests()
         {
-            testData_versionSpecificPaths_Anno1404 = new Dictionary<string, Dictionary<string, PathRef[]>>();
-            testData_versionSpecificPaths_Anno1404.Add(Constants.ANNO_VERSION_1404, new Dictionary<string, PathRef[]>());
+            testData_versionSpecificPaths_Anno1404 = new Dictionary<string, Dictionary<string, PathRef[]>>
+            {
+                { Constants.ANNO_VERSION_1404, [] }
+            };
             testData_versionSpecificPaths_Anno1404[Constants.ANNO_VERSION_1404].Add("localisation", new PathRef[]
             {
-                new PathRef("data/loca"),
-                new PathRef("addondata/loca")
+                new("data/loca"),
+                new("addondata/loca")
             });
 
-            testData_versionSpecificPaths_Anno2070 = new Dictionary<string, Dictionary<string, PathRef[]>>();
-            testData_versionSpecificPaths_Anno2070.Add(Constants.ANNO_VERSION_2070, new Dictionary<string, PathRef[]>());
+            testData_versionSpecificPaths_Anno2070 = new Dictionary<string, Dictionary<string, PathRef[]>>
+            {
+                { Constants.ANNO_VERSION_2070, [] }
+            };
             testData_versionSpecificPaths_Anno2070[Constants.ANNO_VERSION_2070].Add("localisation", new PathRef[]
             {
-                new PathRef("data/loca"),
+                new("data/loca"),
             });
         }
 
@@ -102,9 +102,11 @@ namespace PresetParser.Tests
 
             var languages = new string[] { "dummy" };
 
-            var versionSpecificPaths = new Dictionary<string, Dictionary<string, PathRef[]>>();
-            versionSpecificPaths.Add("dummy", new Dictionary<string, PathRef[]>());
-            versionSpecificPaths.Add(Constants.ANNO_VERSION_2205, new Dictionary<string, PathRef[]>());
+            var versionSpecificPaths = new Dictionary<string, Dictionary<string, PathRef[]>>
+            {
+                { "dummy", [] },
+                { Constants.ANNO_VERSION_2205, [] }
+            };
 
             // Act/Assert
             var ex = Assert.Throws<ArgumentException>(() => helper.GetLocalization(Constants.ANNO_VERSION_1404, addPrefix: false, versionSpecificPaths, languages, basePath: "dummy"));
@@ -210,8 +212,10 @@ namespace PresetParser.Tests
                 { $@"{basePath}\data\loca\{languages[0]}\txt\guids.txt", new MockFileData($"{expectedGuid1}={expectedLocalization1}{Environment.NewLine}{expectedGuid2}={expectedLocalization2}") },
             });
 
-            var expectedResult = new Dictionary<string, SerializableDictionary<string>>();
-            expectedResult.Add(expectedGuid1, new SerializableDictionary<string>());
+            var expectedResult = new Dictionary<string, SerializableDictionary<string>>
+            {
+                { expectedGuid1, new SerializableDictionary<string>() }
+            };
             expectedResult[expectedGuid1][languages[0]] = expectedLocalization1;
             expectedResult.Add(expectedGuid2, new SerializableDictionary<string>());
             expectedResult[expectedGuid2][languages[0]] = expectedLocalization2;
@@ -244,8 +248,10 @@ namespace PresetParser.Tests
                 { $@"{basePath}\data\loca\{languages[0]}\txt\guids.txt", new MockFileData($"{expectedGuid1}={expectedLocalization1}{Environment.NewLine}{expectedGuid2}={expectedLocalization2}") },
             });
 
-            var expectedResult = new Dictionary<string, SerializableDictionary<string>>();
-            expectedResult.Add(expectedGuid1, new SerializableDictionary<string>());
+            var expectedResult = new Dictionary<string, SerializableDictionary<string>>
+            {
+                { expectedGuid1, new SerializableDictionary<string>() }
+            };
             expectedResult[expectedGuid1][languages[0]] = expectedLocalization1;
             expectedResult.Add(expectedGuid2, new SerializableDictionary<string>());
             expectedResult[expectedGuid2][languages[0]] = expectedLocalization2;
@@ -277,8 +283,10 @@ namespace PresetParser.Tests
                 { $@"{basePath}\data\loca\{languages[0]}\txt\guids.txt", new MockFileData($"{guid1}={localization1}{Environment.NewLine}{guid2}={localization2}") },
             });
 
-            var expectedResult = new Dictionary<string, SerializableDictionary<string>>();
-            expectedResult.Add(guid1, new SerializableDictionary<string>());
+            var expectedResult = new Dictionary<string, SerializableDictionary<string>>
+            {
+                { guid1, new SerializableDictionary<string>() }
+            };
             expectedResult[guid1][languages[0]] = localization1;
             expectedResult.Add(guid2, new SerializableDictionary<string>());
             expectedResult[guid2][languages[0]] = localization1;
@@ -310,8 +318,10 @@ namespace PresetParser.Tests
                 { $@"{basePath}\data\loca\{languages[0]}\txt\guids.txt", new MockFileData($"{guid1}={localization1}{Environment.NewLine}{guid2}={localization2}") },
             });
 
-            var expectedResult = new Dictionary<string, SerializableDictionary<string>>();
-            expectedResult.Add(guid1, new SerializableDictionary<string>());
+            var expectedResult = new Dictionary<string, SerializableDictionary<string>>
+            {
+                { guid1, new SerializableDictionary<string>() }
+            };
             expectedResult[guid1][languages[0]] = localization1;
 
             var helper = new LocalizationHelper(mockedFileSystem);
@@ -322,7 +332,7 @@ namespace PresetParser.Tests
             // Assert
             Assert.NotEmpty(result);
             Assert.Equal(expectedResult[guid1][languages[0]], result[guid1][languages[0]]);
-            Assert.Single(result);
+            _ = Assert.Single(result);
         }
 
         [Fact]
@@ -342,8 +352,10 @@ namespace PresetParser.Tests
                 { $@"{basePath}\data\loca\{languages[0]}\txt\guids.txt", new MockFileData($"{guid1}={localization1}{Environment.NewLine}{guid2}={localization2}") },
             });
 
-            var expectedResult = new Dictionary<string, SerializableDictionary<string>>();
-            expectedResult.Add(guid1, new SerializableDictionary<string>());
+            var expectedResult = new Dictionary<string, SerializableDictionary<string>>
+            {
+                { guid1, new SerializableDictionary<string>() }
+            };
             expectedResult[guid1][languages[0]] = localization1;
 
             var helper = new LocalizationHelper(mockedFileSystem);
@@ -376,8 +388,10 @@ namespace PresetParser.Tests
                 { $@"{basePath}\data\loca\{languages[0]}\txt\guids.txt", new MockFileData($"{expectedGuid1}={expectedLocalization1}{Environment.NewLine}{expectedGuid2}={expectedLocalization2}") },
             });
 
-            var expectedResult = new Dictionary<string, SerializableDictionary<string>>();
-            expectedResult.Add(expectedGuid1, new SerializableDictionary<string>());
+            var expectedResult = new Dictionary<string, SerializableDictionary<string>>
+            {
+                { expectedGuid1, new SerializableDictionary<string>() }
+            };
             expectedResult[expectedGuid1][languages[0]] = expectedLocalization1;
             expectedResult.Add(expectedGuid2, new SerializableDictionary<string>());
             expectedResult[expectedGuid2][languages[0]] = expectedLocalization2;
@@ -410,8 +424,10 @@ namespace PresetParser.Tests
                 { $@"{basePath}\data\loca\{languages[0]}\txt\guids.txt", new MockFileData($"{expectedGuid1}={expectedLocalization1}{Environment.NewLine}{expectedGuid2}={expectedLocalization2}") },
             });
 
-            var expectedResult = new Dictionary<string, SerializableDictionary<string>>();
-            expectedResult.Add(expectedGuid1, new SerializableDictionary<string>());
+            var expectedResult = new Dictionary<string, SerializableDictionary<string>>
+            {
+                { expectedGuid1, new SerializableDictionary<string>() }
+            };
             expectedResult[expectedGuid1][languages[0]] = expectedLocalization1;
             expectedResult.Add(expectedGuid2, new SerializableDictionary<string>());
             expectedResult[expectedGuid2][languages[0]] = expectedLocalization2;
@@ -447,8 +463,10 @@ namespace PresetParser.Tests
                 { $@"{basePath}\data\loca\{languages[6]}\txt\guids.txt", new MockFileData($"{expectedGuid}=dummy") },
             });
 
-            var expectedResult = new Dictionary<string, SerializableDictionary<string>>();
-            expectedResult.Add(expectedGuid, new SerializableDictionary<string>());
+            var expectedResult = new Dictionary<string, SerializableDictionary<string>>
+            {
+                { expectedGuid, new SerializableDictionary<string>() }
+            };
             expectedResult[expectedGuid][languages[0]] = expectedLocalizations[0];
             expectedResult[expectedGuid][languages[1]] = expectedLocalizations[1];
             expectedResult[expectedGuid][languages[2]] = expectedLocalizations[2];
@@ -488,8 +506,10 @@ namespace PresetParser.Tests
                 { $@"{basePath}\data\loca\{languages[0]}\txt\guids.txt", new MockFileData($"{expectedGuid}={expectedLocalization}") },
             });
 
-            var expectedResult = new Dictionary<string, SerializableDictionary<string>>();
-            expectedResult.Add(expectedGuid, new SerializableDictionary<string>());
+            var expectedResult = new Dictionary<string, SerializableDictionary<string>>
+            {
+                { expectedGuid, new SerializableDictionary<string>() }
+            };
             expectedResult[expectedGuid][languages[0]] = expectedLocalization;
 
             var helper = new LocalizationHelper(mockedFileSystem);
@@ -518,8 +538,10 @@ namespace PresetParser.Tests
                 { $@"{basePath}\data\loca\{languages[0]}\txt\guids.txt", new MockFileData($"{guid1}={localization1}{Environment.NewLine}{guid2}={localization2}") },
             });
 
-            var expectedResult = new Dictionary<string, SerializableDictionary<string>>();
-            expectedResult.Add(guid1, new SerializableDictionary<string>());
+            var expectedResult = new Dictionary<string, SerializableDictionary<string>>
+            {
+                { guid1, new SerializableDictionary<string>() }
+            };
             expectedResult[guid1][languages[0]] = localization1;
             expectedResult.Add(guid2, new SerializableDictionary<string>());
             expectedResult[guid2][languages[0]] = localization1;
@@ -551,8 +573,10 @@ namespace PresetParser.Tests
                 { $@"{basePath}\data\loca\{languages[0]}\txt\guids.txt", new MockFileData($"{guid1}={localization1}{Environment.NewLine}{guid2}={localization2}") },
             });
 
-            var expectedResult = new Dictionary<string, SerializableDictionary<string>>();
-            expectedResult.Add(guid1, new SerializableDictionary<string>());
+            var expectedResult = new Dictionary<string, SerializableDictionary<string>>
+            {
+                { guid1, new SerializableDictionary<string>() }
+            };
             expectedResult[guid1][languages[0]] = localization1;
 
             var helper = new LocalizationHelper(mockedFileSystem);
@@ -563,7 +587,7 @@ namespace PresetParser.Tests
             // Assert
             Assert.NotEmpty(result);
             Assert.Equal(expectedResult[guid1][languages[0]], result[guid1][languages[0]]);
-            Assert.Single(result);
+            _ = Assert.Single(result);
         }
 
         [Fact]
@@ -583,8 +607,10 @@ namespace PresetParser.Tests
                 { $@"{basePath}\data\loca\{languages[0]}\txt\guids.txt", new MockFileData($"{guid1}={localization1}{Environment.NewLine}{guid2}={localization2}") },
             });
 
-            var expectedResult = new Dictionary<string, SerializableDictionary<string>>();
-            expectedResult.Add(guid1, new SerializableDictionary<string>());
+            var expectedResult = new Dictionary<string, SerializableDictionary<string>>
+            {
+                { guid1, new SerializableDictionary<string>() }
+            };
             expectedResult[guid1][languages[0]] = localization1;
 
             var helper = new LocalizationHelper(mockedFileSystem);

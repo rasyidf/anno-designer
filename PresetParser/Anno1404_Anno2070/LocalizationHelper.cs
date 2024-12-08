@@ -34,23 +34,14 @@ namespace PresetParser.Anno1404_Anno2070
                 throw new ArgumentNullException(nameof(languages));
             }
 
-            if (versionSpecificPaths == null)
-            {
-                throw new ArgumentNullException(nameof(versionSpecificPaths));
-            }
-
-            if (annoVersion != Constants.ANNO_VERSION_1404 &&
-                annoVersion != Constants.ANNO_VERSION_2070)
-            {
-                return null;
-            }
-
-            if (!versionSpecificPaths.ContainsKey(annoVersion))
-            {
-                throw new ArgumentException($"{nameof(annoVersion)} was not found in path list.", nameof(versionSpecificPaths));
-            }
-
-            return GetLocalizationsforAnno1404AndAnno2070(annoVersion, addPrefix, versionSpecificPaths, languages, basePath);
+            return versionSpecificPaths == null
+                ? throw new ArgumentNullException(nameof(versionSpecificPaths))
+                : annoVersion is not Constants.ANNO_VERSION_1404 and
+                not Constants.ANNO_VERSION_2070
+                ? null
+                : !versionSpecificPaths.ContainsKey(annoVersion)
+                ? throw new ArgumentException($"{nameof(annoVersion)} was not found in path list.", nameof(versionSpecificPaths))
+                : GetLocalizationsforAnno1404AndAnno2070(annoVersion, addPrefix, versionSpecificPaths, languages, basePath);
         }
 
         private Dictionary<string, SerializableDictionary<string>> GetLocalizationsforAnno1404AndAnno2070(string annoVersion,
@@ -90,13 +81,14 @@ namespace PresetParser.Anno1404_Anno2070
                             }
 
                             //get values
-                            var guid = curLine.Substring(0, separatorIndex);
-                            var translation = curLine.Substring(separatorIndex + 1);
+                            var guid = curLine[..separatorIndex];
+                            var translation = curLine[(separatorIndex + 1)..];
 
                             // add new entry if needed
-                            if (!localizations.ContainsKey(guid))
+                            if (!localizations.TryGetValue(guid, out var value))
                             {
-                                localizations.Add(guid, new SerializableDictionary<string>());
+                                value = new SerializableDictionary<string>();
+                                localizations.Add(guid, value);
                             }
 
                             // add localization string
@@ -124,7 +116,7 @@ namespace PresetParser.Anno1404_Anno2070
                                 translation = "A5_" + translation;
                             }
 
-                            localizations[guid][language] = translation;
+                            value[language] = translation;
 
                             // remember entry if guid is a reference to another guid
                             if (translation.StartsWith("[GUIDNAME"))
@@ -133,7 +125,7 @@ namespace PresetParser.Anno1404_Anno2070
                                 {
                                     Language = language,
                                     Guid = guid,
-                                    GuidReference = translation.Substring(10, translation.Length - 11)
+                                    GuidReference = translation[10..^1]
                                 });
                             }
                             else if (translation.StartsWith("A4_[GUIDNAME"))
@@ -142,7 +134,7 @@ namespace PresetParser.Anno1404_Anno2070
                                 {
                                     Language = language,
                                     Guid = guid,
-                                    GuidReference = "A4_" + translation.Substring(13, translation.Length - 14)
+                                    GuidReference = "A4_" + translation[13..^1]
                                 });
                             }
                             else if (translation.StartsWith("A5_[GUIDNAME"))
@@ -151,7 +143,7 @@ namespace PresetParser.Anno1404_Anno2070
                                 {
                                     Language = language,
                                     Guid = guid,
-                                    GuidReference = "A5_" + translation.Substring(13, translation.Length - 14)
+                                    GuidReference = "A5_" + translation[13..^1]
                                 });
                             }
                         }
@@ -162,13 +154,13 @@ namespace PresetParser.Anno1404_Anno2070
             // copy over references
             foreach (var reference in references)
             {
-                if (localizations.ContainsKey(reference.GuidReference))
+                if (localizations.TryGetValue(reference.GuidReference, out var value))
                 {
-                    localizations[reference.Guid][reference.Language] = localizations[reference.GuidReference][reference.Language];
+                    localizations[reference.Guid][reference.Language] = value[reference.Language];
                 }
                 else
                 {
-                    localizations.Remove(reference.Guid);
+                    _ = localizations.Remove(reference.Guid);
                 }
             }
 

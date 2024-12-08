@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Text;
 using AnnoDesigner.Core.Layout;
 using AnnoDesigner.Core.Layout.Exceptions;
@@ -12,23 +13,21 @@ namespace AnnoDesigner.Core.Tests
 {
     public class LayoutLoaderTests
     {
+        private static readonly IFileSystem _fileSystem;
         #region testdata
 
         private static readonly string testData_v3_LayoutWithVersionAndObjects;
         private static readonly string testData_v4_LayoutWithVersionAndObjects;
         private static readonly string testData_LayoutWithNoVersionAndObjects;
-
         #endregion
-
         static LayoutLoaderTests()
         {
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
-
-            testData_v3_LayoutWithVersionAndObjects = File.ReadAllText(Path.Combine(basePath, "Testdata", "Layout", "v3_layoutWithVersionAndObjects.ad"), Encoding.UTF8);
-            testData_v4_LayoutWithVersionAndObjects = File.ReadAllText(Path.Combine(basePath, "Testdata", "Layout", "v4_layoutWithVersionAndObjects.ad"), Encoding.UTF8);
-            testData_LayoutWithNoVersionAndObjects = File.ReadAllText(Path.Combine(basePath, "Testdata", "Layout", "layoutWithNoVersionAndObjects.ad"), Encoding.UTF8);
+            var basePath = AppDomain.CurrentDomain.BaseDirectory;
+            testData_v3_LayoutWithVersionAndObjects = _fileSystem.File.ReadAllText(_fileSystem.Path.Combine(basePath, "Testdata", "Layout", "v3_layoutWithVersionAndObjects.ad"), Encoding.UTF8);
+            testData_v4_LayoutWithVersionAndObjects = _fileSystem.File.ReadAllText(_fileSystem.Path.Combine(basePath, "Testdata", "Layout", "v4_layoutWithVersionAndObjects.ad"), Encoding.UTF8);
+            testData_LayoutWithNoVersionAndObjects = _fileSystem.File.ReadAllText(_fileSystem.Path.Combine(basePath, "Testdata", "Layout", "layoutWithNoVersionAndObjects.ad"), Encoding.UTF8);
+            _fileSystem = new FileSystem();
         }
-
         [Fact]
         public void LoadLayout_StreamIsNull_ShouldThrow()
         {
@@ -36,7 +35,7 @@ namespace AnnoDesigner.Core.Tests
             ILayoutLoader loader = new LayoutLoader();
 
             // Act and Assert
-            Assert.Throws<ArgumentNullException>(() => loader.LoadLayout((Stream)null));
+            _ = Assert.Throws<ArgumentNullException>(() => loader.LoadLayout((Stream)null));
         }
 
         [Theory]
@@ -49,7 +48,7 @@ namespace AnnoDesigner.Core.Tests
             ILayoutLoader loader = new LayoutLoader();
 
             // Act and Assert
-            Assert.Throws<ArgumentNullException>(() => loader.LoadLayout((string)filePath));
+            _ = Assert.Throws<ArgumentNullException>(() => loader.LoadLayout(filePath));
         }
 
         [Fact]
@@ -78,7 +77,7 @@ namespace AnnoDesigner.Core.Tests
             using var streamWithLayout = new MemoryStream(Encoding.UTF8.GetBytes(layoutContent));
 
             // Act and Assert
-            Assert.Throws<LayoutFileUnsupportedFormatException>(() => loader.LoadLayout(streamWithLayout));
+            _ = Assert.Throws<LayoutFileUnsupportedFormatException>(() => loader.LoadLayout(streamWithLayout));
         }
 
         [Fact]
@@ -91,7 +90,7 @@ namespace AnnoDesigner.Core.Tests
             using var streamWithLayout = new MemoryStream(Encoding.UTF8.GetBytes(layoutContent));
 
             // Act and Assert
-            Assert.Throws<LayoutFileUnsupportedFormatException>(() => loader.LoadLayout(streamWithLayout));
+            _ = Assert.Throws<LayoutFileUnsupportedFormatException>(() => loader.LoadLayout(streamWithLayout));
         }
 
         [Fact]
@@ -137,7 +136,7 @@ namespace AnnoDesigner.Core.Tests
             var result = loader.LoadLayout(streamWithLayout, true);
 
             // Assert
-            Assert.Single(result.Objects);
+            _ = Assert.Single(result.Objects);
         }
 
         [Fact]
@@ -171,7 +170,7 @@ namespace AnnoDesigner.Core.Tests
             var result = loader.LoadLayout(streamWithLayout, true).Objects;
 
             // Assert
-            Assert.Single(result);
+            _ = Assert.Single(result);
             Assert.Equal(expectedA, result[0].Color.A);
             Assert.Equal(expectedR, result[0].Color.R);
             Assert.Equal(expectedG, result[0].Color.G);
@@ -186,7 +185,7 @@ namespace AnnoDesigner.Core.Tests
 
             using var savedStream = new MemoryStream();
 
-            var listToSave = new List<AnnoObject> { new AnnoObject { Identifier = "Lorem" } };
+            var listToSave = new List<AnnoObject> { new() { Identifier = "Lorem" } };
 
             // Act
             loader.SaveLayout(new LayoutFile(listToSave), savedStream);
@@ -196,7 +195,7 @@ namespace AnnoDesigner.Core.Tests
             var result = loader.LoadLayout(savedStream);
 
             // Assert
-            Assert.Single(result.Objects);
+            _ = Assert.Single(result.Objects);
         }
 
         [Fact]
@@ -212,7 +211,7 @@ namespace AnnoDesigner.Core.Tests
 
             using var savedStream = new MemoryStream();
 
-            var listToSave = new List<AnnoObject> { new AnnoObject { Identifier = "Lorem", Color = new SerializableColor(expectedA, expectedR, expectedG, expectedB) } };
+            var listToSave = new List<AnnoObject> { new() { Identifier = "Lorem", Color = new SerializableColor(expectedA, expectedR, expectedG, expectedB) } };
 
             // Act
             loader.SaveLayout(new LayoutFile(listToSave), savedStream);
@@ -222,7 +221,7 @@ namespace AnnoDesigner.Core.Tests
             var result = loader.LoadLayout(savedStream).Objects;
 
             // Assert
-            Assert.Single(result);
+            _ = Assert.Single(result);
             Assert.Equal(expectedA, result[0].Color.A);
             Assert.Equal(expectedR, result[0].Color.R);
             Assert.Equal(expectedG, result[0].Color.G);

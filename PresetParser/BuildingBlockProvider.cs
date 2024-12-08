@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.IO.Abstractions;
 using System.Xml;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Models;
@@ -11,6 +12,7 @@ namespace PresetParser
 {
     public class BuildingBlockProvider
     {
+        private readonly IFileSystem _fileSystem;
         private const char BUILDING_BLOCKER_SEPARATOR = '.';
         private const string BUILDBLOCKER = "BuildBlocker";
         private const string X = "x";
@@ -19,31 +21,25 @@ namespace PresetParser
         private const string ORNAMENTAL_POST_09 = "ornamental_post_09";
 
         //Adding Coastal Buildings and Coastal Farm Fields to a List, to avoid long 'if statements' (Anno 2205 01-07-2022)
-        private static readonly List<string> Anno2205_CoastalFarmFieldsList = new List<string> { "production chemical arctic facility module 01 tier 01", "production food arctic facility module 02 tier 01", "production food arctic facility module 01 tier 01",
-        "production chemical earth facility module 01 tier 01"};
-        private static readonly List<string> Anno2205_CoastalFarmBuildingsList = new List<string> { "production agriculture earth facility 05 t", "production chemical earth facility 01 t", "production chemical arctic facility 01", "production energy earth facility 02",
-        "production food arctic facility 02", "production food arctic facility 01", "production heavy arctic facility 04"};
+        private static readonly List<string> Anno2205_CoastalFarmFieldsList = [ "production chemical arctic facility module 01 tier 01", "production food arctic facility module 02 tier 01", "production food arctic facility module 01 tier 01",
+        "production chemical earth facility module 01 tier 01"];
+        private static readonly List<string> Anno2205_CoastalFarmBuildingsList = [ "production agriculture earth facility 05 t", "production chemical earth facility 01 t", "production chemical arctic facility 01", "production energy earth facility 02",
+        "production food arctic facility 02", "production food arctic facility 01", "production heavy arctic facility 04"];
 
 
         private readonly IIfoFileProvider _ifoFileProvider;
-
         public BuildingBlockProvider(IIfoFileProvider ifoFileProviderToUse)
         {
             _ifoFileProvider = ifoFileProviderToUse ?? throw new ArgumentNullException(nameof(ifoFileProviderToUse));
+            _fileSystem = new FileSystem();
         }
-
         public bool GetBuildingBlocker(string basePath, IBuildingInfo building, string variationFilename, string annoVersion)
         {
             var ifoDocument = _ifoFileProvider.GetIfoFileContent(basePath, variationFilename);
 
-            if (annoVersion.Equals(Constants.ANNO_VERSION_1800, StringComparison.OrdinalIgnoreCase))
-            {
-                return ParseBuildingBlockerForAnno1800(ifoDocument, building);
-            }
-            else
-            {
-                return ParseBuildingBlocker(ifoDocument, building, variationFilename);
-            }
+            return annoVersion.Equals(Constants.ANNO_VERSION_1800, StringComparison.OrdinalIgnoreCase)
+                ? ParseBuildingBlockerForAnno1800(ifoDocument, building)
+                : ParseBuildingBlocker(ifoDocument, building, variationFilename);
         }
 
         private bool ParseBuildingBlockerForAnno1800(XmlDocument ifoDocument, IBuildingInfo building)
@@ -69,10 +65,10 @@ namespace PresetParser
                     }
                 };
 
-                XmlNode node1 = ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild;
-                XmlNode node2 = ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild.NextSibling;
-                XmlNode node3 = ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild.NextSibling.NextSibling;
-                XmlNode node4 = ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild.NextSibling.NextSibling.NextSibling;
+                var node1 = ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild;
+                var node2 = ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild.NextSibling;
+                var node3 = ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild.NextSibling.NextSibling;
+                var node4 = ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild.NextSibling.NextSibling.NextSibling;
 
                 //check of the nodes contains data
                 if (string.IsNullOrEmpty(node1?.InnerText) || string.IsNullOrEmpty(node2?.InnerText) || string.IsNullOrEmpty(node3?.InnerText) || string.IsNullOrEmpty(node4?.InnerText))
@@ -162,7 +158,7 @@ namespace PresetParser
                     zf = 3;
                 }
                 // correcting measurements of Industrial Zone Ornamentals (GUID Wise)
-                if (building.Guid == 393 || building.Guid == 677 || building.Guid == 678)
+                if (building.Guid is 393 or 677 or 678)
                 {
                     xf = 3;
                     zf = 1;
@@ -174,23 +170,9 @@ namespace PresetParser
                 }
 
                 //
-                if (xf > 0)
-                {
-                    building.BuildBlocker[X] = Math.Abs(xf);
-                }
-                else
-                {
-                    building.BuildBlocker[X] = 1;
-                }
+                building.BuildBlocker[X] = xf > 0 ? Math.Abs(xf) : 1;
 
-                if (zf > 0)
-                {
-                    building.BuildBlocker[Z] = Math.Abs(zf);
-                }
-                else
-                {
-                    building.BuildBlocker[Z] = 1;
-                }
+                building.BuildBlocker[Z] = zf > 0 ? Math.Abs(zf) : 1;
             }
             catch (NullReferenceException)
             {
@@ -210,7 +192,7 @@ namespace PresetParser
 
             try
             {
-                XmlNode node = ifoDocument.FirstChild[BUILDBLOCKER]?.FirstChild;
+                var node = ifoDocument.FirstChild[BUILDBLOCKER]?.FirstChild;
                 building.BuildBlocker = new SerializableDictionary<int>();
 
                 var x = 0;
@@ -294,42 +276,14 @@ namespace PresetParser
                 if (x > 0)
                 {
                     //Console.WriteLine("{0}", Path.GetFileNameWithoutExtension(variationFilename));
-                    if (variationFilenameWithoutExtension != ORNAMENTAL_POST_09)
-                    {
-                        if (variationFilenameWithoutExtension != WATER_MILL_ECOS)
-                        {
-                            building.BuildBlocker[X] = x;
-                        }
-                        else
-                        {
-                            building.BuildBlocker[X] = 3;
-                        }
-                    }
-                    else
-                    {
-                        building.BuildBlocker[X] = 7;
-                    }
+                    building.BuildBlocker[X] = variationFilenameWithoutExtension != ORNAMENTAL_POST_09 ? variationFilenameWithoutExtension != WATER_MILL_ECOS ? x : 3 : 7;
                 }
                 else
                 {
                     building.BuildBlocker[X] = 1;
                 }
 
-                if (z > 0)
-                {
-                    if (variationFilenameWithoutExtension != WATER_MILL_ECOS && variationFilenameWithoutExtension != ORNAMENTAL_POST_09)
-                    {
-                        building.BuildBlocker[Z] = z;
-                    }
-                    else
-                    {
-                        building.BuildBlocker[Z] = 7;
-                    }
-                }
-                else
-                {
-                    building.BuildBlocker[Z] = 1;
-                }
+                building.BuildBlocker[Z] = z > 0 ? variationFilenameWithoutExtension is not WATER_MILL_ECOS and not ORNAMENTAL_POST_09 ? z : 7 : 1;
             }
             catch (NullReferenceException)
             {

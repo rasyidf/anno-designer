@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -38,26 +37,26 @@ namespace PresetParser
         private static readonly string[] LanguagesFiles2205 = new[] { "english", "german", "french", "polish", "russian", "spanish" };
         private static readonly string[] LanguagesFiles1800 = new[] { "english", "german", "french", "polish", "russian", "spanish" };
         // Internal Program Buildings Lists to skip double buildings
-        public static List<string> annoBuildingLists = new List<string>();
-        public static List<string> anno1800IconNameLists = new List<string>();
-        public static List<string> TempExcludeOrnamentsFromPreset_1800 = new List<string>();
-        public static List<string> IconIgnoreGuidOrIdentifier = new List<string>();
+        public static List<string> annoBuildingLists = [];
+        public static List<string> anno1800IconNameLists = [];
+        public static List<string> TempExcludeOrnamentsFromPreset_1800 = [];
+        public static List<string> IconIgnoreGuidOrIdentifier = [];
         public static int annoBuildingsListCount = 0, printTestText = 0;
         public static bool testVersion = false;
         // The internal Building list for the Preset writing 
-        public static List<IBuildingInfo> buildings = new List<IBuildingInfo>();
+        public static List<IBuildingInfo> buildings = [];
         private static readonly IconFileNameHelper _iconFileNameHelper;
         private static readonly BuildingBlockProvider _buildingBlockProvider;
         private static readonly IIfoFileProvider _ifoFileProvider;
         private static readonly LocalizationHelper _localizationHelper;
         private static readonly IFileSystem _fileSystem;
         // to solve preform ants issue with continues read in of language files (06-06-2022)
-        public static XmlDocument langDocument_english = new XmlDocument();
-        public static XmlDocument langDocument_german = new XmlDocument();
-        public static XmlDocument langDocument_french = new XmlDocument();
-        public static XmlDocument langDocument_polish = new XmlDocument();
-        public static XmlDocument langDocument_russian = new XmlDocument();
-        public static XmlDocument langDocument_spanish = new XmlDocument();
+        public static XmlDocument langDocument_english = new();
+        public static XmlDocument langDocument_german = new();
+        public static XmlDocument langDocument_french = new();
+        public static XmlDocument langDocument_polish = new();
+        public static XmlDocument langDocument_russian = new();
+        public static XmlDocument langDocument_spanish = new();
 
         // Information File for Duxvitae (DuxVitae-Replaced.csv)
         // For the Converter tool Anno1800SavegameVisualizer by Duxvitae i need to output a CSV file that he can use for the replaced / not added ornamentals
@@ -78,63 +77,63 @@ namespace PresetParser
         #region Initializing Exclude IdentifierNames, FactionNames and TemplateNames for presets.json file 
 
         #region Anno 1404
-        private static readonly List<string> ExcludeNameList1404 = new List<string> { "ResidenceRuin", "AmbassadorRuin", "Gatehouse", "StorehouseTownPart", "ImperialCathedralPart", "SultanMosquePart", "Warehouse02", "Warehouse03",
-            "Markethouse02", "Markethouse03", "TreeBuildCost", "BanditCamp"};
-        private static readonly List<string> ExcludeTemplateList1404 = new List<string> { "OrnamentBuilding", "Wall" };
+        private static readonly List<string> ExcludeNameList1404 = [ "ResidenceRuin", "AmbassadorRuin", "Gatehouse", "StorehouseTownPart", "ImperialCathedralPart", "SultanMosquePart", "Warehouse02", "Warehouse03",
+            "Markethouse02", "Markethouse03", "TreeBuildCost", "BanditCamp"];
+        private static readonly List<string> ExcludeTemplateList1404 = ["OrnamentBuilding", "Wall"];
         #endregion
 
         #region Anno 2070 * Also on FactionName Excludes *
-        private static readonly List<string> ExcludeNameList2070 = new List<string> { "ruin_residence", "monument_unfinished", "town_center_variation", "nuclearpowerplant_destroyed",
-            "limestone_quarry", "markethouse2", "markethouse3", "warehouse2","warehouse3", "cybernatic_factory","electronic_recycler"};
-        private static readonly List<string> ExcludeTemplateList2070 = new List<string> { "OrnamentBuilding", "Ark" };
-        private static readonly List<string> ExcludeFactionList2070 = new List<string> { "third party" };
+        private static readonly List<string> ExcludeNameList2070 = [ "ruin_residence", "monument_unfinished", "town_center_variation", "nuclearpowerplant_destroyed",
+            "limestone_quarry", "markethouse2", "markethouse3", "warehouse2","warehouse3", "cybernatic_factory","electronic_recycler"];
+        private static readonly List<string> ExcludeTemplateList2070 = ["OrnamentBuilding", "Ark"];
+        private static readonly List<string> ExcludeFactionList2070 = ["third party"];
         #endregion
 
         #region Anno 2205 Also a GUID Checker for excluding. Do not change any numbers below
-        private static readonly List<string> ExcludeGUIDList2205 = new List<string> { "1001178", "1000737", "7000274", "1001175", "1000736", "7000275",
+        private static readonly List<string> ExcludeGUIDList2205 = [ "1001178", "1000737", "7000274", "1001175", "1000736", "7000275",
             "1000672", "1000755", "7000273", "1001171", "1000703", "7000272", "7000420", "7000421", "7000423", "7000424", "7000425", "7000427", "7000428",
             "7000429", "7000430", "7000431", "12000009", "12000010", "12000011", "12000020", "12000036", "1000063", "1000170", "1000212", "1000213", "1000174",
             "1000215", "1000217", "1000224", "1000250", "1000332", "1000886", "7001466", "7001467", "7001470", "7001471", "7001472", "7001473", "7001877",
             "7001878", "7001879", "7001880", "7001881", "7001882", "7001883", "7001884", "7001885", "7000310", "7000311", "7000315", "7000316",
-            "7000313", "7000263", "7000262", "7000305", "7000306" };
-        private static readonly List<string> ExcludeNameList2205 = new List<string> { "Placeholder", "voting", "CTU Reactor 2 (decommissioned)", "CTU Reactor 3 (decommissioned)",
+            "7000313", "7000263", "7000262", "7000305", "7000306" ];
+        private static readonly List<string> ExcludeNameList2205 = [ "Placeholder", "voting", "CTU Reactor 2 (decommissioned)", "CTU Reactor 3 (decommissioned)",
             "CTU Reactor 4 (decommissioned)", "CTU Reactor 5 (decommissioned)", "CTU Reactor 6 (decommissioned)", "CTU Reactor 2 (active!)", "CTU Reactor 3 (active!)",
-            "CTU Reactor 4 (active!)", "CTU Reactor 5 (active!)", "CTU Reactor 6 (active!)", "orbit module 07 (unused)" };
-        private static readonly List<string> ExcludeTemplateList2205 = new List<string> { "SpacePort", "BridgeWithUpgrade", "DistributionBuilding" };
-        private static readonly List<string> testGUIDNames2205 = new List<string> { "NODOUBLES YET" };
+            "CTU Reactor 4 (active!)", "CTU Reactor 5 (active!)", "CTU Reactor 6 (active!)", "orbit module 07 (unused)" ];
+        private static readonly List<string> ExcludeTemplateList2205 = ["SpacePort", "BridgeWithUpgrade", "DistributionBuilding"];
+        private static readonly List<string> testGUIDNames2205 = ["NODOUBLES YET"];
         #endregion
 
         #region anno 1800
         /// <summary>
         /// I need the IncludeBuildingsTemplateNames to get Building information from, as it is also the Presets Template String or Template GUID
         /// </summary>
-        public static IList<FarmField> farmFieldList1800 = new List<FarmField>();
+        public static IList<FarmField> farmFieldList1800 = [];
         // Removed IncludeBuildingsTemplate "CultureModule" (to must to handle and thus are replaced with the Zoo Module and Museum Module
-        private static readonly List<string> IncludeBuildingsTemplateNames1800 = new List<string> { "ResidenceBuilding", "ResidenceBuilding7", "FarmBuilding", "FreeAreaBuilding", "FactoryBuilding7", "HeavyFactoryBuilding",
+        private static readonly List<string> IncludeBuildingsTemplateNames1800 = [ "ResidenceBuilding", "ResidenceBuilding7", "FarmBuilding", "FreeAreaBuilding", "FactoryBuilding7", "HeavyFactoryBuilding",
             "SlotFactoryBuilding7", "Farmfield", "OilPumpBuilding", "PublicServiceBuilding", "CityInstitutionBuilding", "CultureBuilding", "Market", "Warehouse", "PowerplantBuilding", "HarborOffice", "HarborWarehouse7",
             "HarborDepot","Shipyard","HarborBuildingAttacker", "RepairCrane", "HarborLandingStage7", "VisitorPier", "WorkforceConnector", "Guildhouse", "OrnamentalBuilding", "CultureModule","Palace","BuffFactory",
             "BuildPermitBuilding", "BuildPermitModules", "OrnamentalModule", "IrrigationPropagationSource", "ResearchCenter", "Dockland", "HarborOrnament", "Restaurant", "Busstop","Multifactory", "FreeAreaRecipeBuilding",
             "Mall", "CultureModule", "Hacienda", "Heater_Arctic", "Monument", "HarborWarehouseStrategic", "WorkAreaRiverBuilding", "Slot", "WorkAreaSlot", "AdditionalModule", "RecipeFarm", "ItemWithUICrafting",
             "PostBoxBuildingWithDepot", "PostBoxBuildingWithPublicService", "AirshipPlatform", "AirshipPlatformModuleItemTransfer", "AirshipPlatformPostModule", "AirshipPlatformModuleWorkforceTransfer",
             "AirshipPostFreeModule"
-        };
-        private static readonly List<string> IncludeBuildingsTemplateGUID1800 = new List<string> { "100451", "1010266", "1010343", "1010288", "101331", "1010320", "1010263", "1010372", "1010359", "1010358", "1010462",
+        ];
+        private static readonly List<string> IncludeBuildingsTemplateGUID1800 = [ "100451", "1010266", "1010343", "1010288", "101331", "1010320", "1010263", "1010372", "1010359", "1010358", "1010462",
             "1010463", "1010464", "1010275", "1010271", "1010516", "1010517", "1010519", "1000155", "101623", "1003272", "118218", "100849", "1010186", "100438", "114435", "1010371", "100516", "100517", "102449", "100783",
             "100519", "100429", "100510", "100511", "119259", "101404", "1010311", "100415", "100586", "1010540", "100515", "100784", "1010525", "101403", "100416", "1010283", "1010520", "1010310", "1010522", "1010523",
             "101263", "24657", "24658", "24652", "101280", "1010321", "1010304", "1010309", "1010308", "1010305", "1010500", "1010501", "1010504", "1010505", "1010277", "1010542", "1010546", "1010543", "101272", "100514",
-            "742", "962"};
+            "742", "962"];
         // The following GUID's are given in the assets as <BaseAssetGUID> tags instead of Template name tags
-        private static readonly List<string> ExcludeBuildingsGUID1800 = new List<string> { "269850", "269851", "25175", "25176" };
-        private static readonly List<string> ExcludeNameList1800 = new List<string> { "TreePlanter_GGJ_TEST", "(Wood Field)", "(Hunting Grounds)", "(Wash House)", "Fake Ornament [test 2nd party]", "Third_party_", "CQO_",
+        private static readonly List<string> ExcludeBuildingsGUID1800 = ["269850", "269851", "25175", "25176"];
+        private static readonly List<string> ExcludeNameList1800 = [ "TreePlanter_GGJ_TEST", "(Wood Field)", "(Hunting Grounds)", "(Wash House)", "Fake Ornament [test 2nd party]", "Third_party_", "CQO_",
             "CO_Tunnel_", "- Pirates",  "Ai_", "AarhantLighthouseFake", "CO_Tunnel_Entrance01_Fake", "AI Version No Unlock", "Active fertility","- Decree", "fertility", "Arctic Cook", "Arctic Builder", "Arctic Hunter",
             "Arctic Sewer", " Buff", " Seeds", "Harbour Slot (Ghost) Arctic", "Tractor_module_01 (GASOLINE TEST)", "Fuel_station_01 (GASOLINE TEST)", "StoryIsland01 Monastery Kontor", "StoryIsland02 Military Kontor",
-            "StoryIsland03 Economy Kontor", "CourtOfJustice_", "Basin_Base", "- Paragon_", "setBuff", "Buff_", "Harbor_13 (Coal Storage)", "Harbor_12 (Coal Harbor)"};
+            "StoryIsland03 Economy Kontor", "CourtOfJustice_", "Basin_Base", "- Paragon_", "setBuff", "Buff_", "Harbor_13 (Coal Storage)", "Harbor_12 (Coal Harbor)"];
 
         #region List of skipped Template (Be aware, it is a long list)
         // To eliminate the TempplatesNames to be written in the file, as we check and looked at those and not need or can use in the presets file.
         // It will easier for me, when there is an update, new template tags will be added to a to file and later added to this list or to
         // the IncludeTemplateNames1800 or IncludeBuildingsTemplateGUID1800 list (04-06-2022)
-        public static List<string> PPTNList = new List<string> { "Text","TrackingValue", "LandAnimal", "Bird", "Painter", "IncidentResolverUnit", "Inhabitant", "VisualObjectEditor", "VisualObject", "Prop", "SimpleVehicle", "StarterObject Enter/Leave Point",
+        public static List<string> PPTNList = [ "Text","TrackingValue", "LandAnimal", "Bird", "Painter", "IncidentResolverUnit", "Inhabitant", "VisualObjectEditor", "VisualObject", "Prop", "SimpleVehicle", "StarterObject Enter/Leave Point",
             "RemovableWaterBlocker", "StaticEventBlockingObject", "StaticBlockingObject", "PositionMarker", "AudioSpots", "Projectile", "Collectable", "VisualQuestObject", "ScannerObject", "TradeShip", "QuestObject", "ChannelTarget", "QuestItem", "PaMSy_Base",
             "Product", "Transporter", "FeedbackParametersGlobal", "AnimalSessionDesc", "AnimalGlobalDesc", "DifficultySetup", "FireIncident", "ResolveActionCost", "IncidentCommunication", "RiotIncident", "IllnessIncident", "ExplosionIncident", "Festival",
             "StandaloneIncidentEffectConfiguration", "Trigger", "ProgressLevel", "FeatureUnlock", "MapTemplate", "NewsArticleList", "NewspaperArticle", "SimpleAsset", "Profile_Virtual_NeverOwnsObjects", "Profile_2ndParty", "Profile_3rdParty_NoDiplomacy_NoTrader",
@@ -175,7 +174,7 @@ namespace PresetParser
             "4623", "3761", "3661", "692", "693", "695", "635", "835", "1418", "1308", "1353", "906", "538", "966", "4254", "103643", "103645", "103646", "103647", "103648", "103649", "103650", "103651", "103652", "103653", "114166", "110942", "110943", "110944",
             "110950", "110948", "110938", "110936", "110937", "111179", "111040", "111039", "111038", "111034", "111033", "111032", "111028", "111027", "111026", "111020", "111019", "111018", "1010218", "1010210", "1654", "1655", "1058", "1059", "112518", "2397", "2400",
             "ItemTransferFeature", "ScenarioWorkshopItem", "ScenarioWorkshopPackage"
-            };
+            ];
         #endregion
 
         #endregion
@@ -191,15 +190,15 @@ namespace PresetParser
             _fileSystem = new FileSystem();
             _localizationHelper = new LocalizationHelper(_fileSystem);
 
-            VersionSpecificPaths = new Dictionary<string, Dictionary<string, PathRef[]>>();
+            VersionSpecificPaths = [];
         }
         #endregion
 
         public static void Main(string[] args)
         {
             #region User Choices 
-            string annoVersion = "";
-            bool validVersion = false;
+            var annoVersion = "";
+            var validVersion = false;
             while (!validVersion)
             {
                 Console.Write("Please enter an Anno version (1 of: {0} {1} {2} {3}):", Constants.ANNO_VERSION_1404, Constants.ANNO_VERSION_2070, Constants.ANNO_VERSION_2205, Constants.ANNO_VERSION_1800);
@@ -209,7 +208,7 @@ namespace PresetParser
                     Environment.Exit(0);
                 }
 
-                if (annoVersion == Constants.ANNO_VERSION_1404 || annoVersion == Constants.ANNO_VERSION_2070 || annoVersion == Constants.ANNO_VERSION_2205 || annoVersion == Constants.ANNO_VERSION_1800 || annoVersion == "-ALL")
+                if (annoVersion is Constants.ANNO_VERSION_1404 or Constants.ANNO_VERSION_2070 or Constants.ANNO_VERSION_2205 or Constants.ANNO_VERSION_1800 or "-ALL")
                 {
                     validVersion = true;
                 }
@@ -217,7 +216,7 @@ namespace PresetParser
                 {
                     Console.Write("Please enter an Anno version:");
                     annoVersion = Console.ReadLine();
-                    if (annoVersion == Constants.ANNO_VERSION_1404 || annoVersion == Constants.ANNO_VERSION_2070 || annoVersion == Constants.ANNO_VERSION_2205 || annoVersion == Constants.ANNO_VERSION_1800)
+                    if (annoVersion is Constants.ANNO_VERSION_1404 or Constants.ANNO_VERSION_2070 or Constants.ANNO_VERSION_2205 or Constants.ANNO_VERSION_1800)
                     {
                         validVersion = true;
                         testVersion = true;
@@ -240,7 +239,7 @@ namespace PresetParser
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("The path to the file was not valid!");
                         Console.ForegroundColor = oldColor;
-                        Console.ReadKey();
+                        _ = Console.ReadKey();
                         Environment.Exit(0);
                     }
 
@@ -249,7 +248,7 @@ namespace PresetParser
                         var loadedPresets = SerializationHelper.LoadFromFile<BuildingPresets>(filePathToValidate);
 
                         ValidateBuildings(loadedPresets.Buildings.Cast<IBuildingInfo>().ToList());
-                        Console.ReadLine();
+                        _ = Console.ReadLine();
                         Environment.Exit(0);
                     }
                     catch (Exception ex)
@@ -305,110 +304,110 @@ namespace PresetParser
             /// </summary>
             //These should stay constant for different anno versions (hopefully!)
             #region Anno 1404 xPaths
-            if (annoVersion == Constants.ANNO_VERSION_1404 || annoVersion == "-ALL")
+            if (annoVersion is Constants.ANNO_VERSION_1404 or "-ALL")
             {
-                VersionSpecificPaths.Add(Constants.ANNO_VERSION_1404, new Dictionary<string, PathRef[]>());
+                VersionSpecificPaths.Add(Constants.ANNO_VERSION_1404, []);
                 VersionSpecificPaths[Constants.ANNO_VERSION_1404].Add("icons", new PathRef[]
                 {
                 //new PathRef("data/config/game/icons.xml", "/Icons/i" ),
-                new PathRef("addondata/config/game/icons.xml", "/Icons/i", "", "")
+                new("addondata/config/game/icons.xml", "/Icons/i", "", "")
                 });
                 VersionSpecificPaths[Constants.ANNO_VERSION_1404].Add("localisation", new PathRef[]
                 {
-                new PathRef("data/loca"),
-                new PathRef("addondata/loca")
+                new("data/loca"),
+                new("addondata/loca")
                 });
                 VersionSpecificPaths[Constants.ANNO_VERSION_1404].Add("assets", new PathRef[]
                 {
-                new PathRef("data/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Assets/Asset", "PlayerBuildings"),
-                new PathRef("data/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "PlayerBuildings"),
-                new PathRef("data/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "PlayerBuildings"),
-                new PathRef("addondata/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Assets/Asset", "PlayerBuildings"),
-                new PathRef("addondata/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "PlayerBuildings"),
-                new PathRef("addondata/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "PlayerBuildings"),
-                new PathRef("addondata/config/balancing/addon_01_assets.xml", "/Group/Groups/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "PlayerBuildings")
+                new("data/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Assets/Asset", "PlayerBuildings"),
+                new("data/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "PlayerBuildings"),
+                new("data/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "PlayerBuildings"),
+                new("addondata/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Assets/Asset", "PlayerBuildings"),
+                new("addondata/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "PlayerBuildings"),
+                new("addondata/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "PlayerBuildings"),
+                new("addondata/config/balancing/addon_01_assets.xml", "/Group/Groups/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "PlayerBuildings")
                 });
             }
             #endregion
 
             #region Anno 2070 xPaths
-            if (annoVersion == Constants.ANNO_VERSION_2070 || annoVersion == "-ALL")
+            if (annoVersion is Constants.ANNO_VERSION_2070 or "-ALL")
             {
-                VersionSpecificPaths.Add(Constants.ANNO_VERSION_2070, new Dictionary<string, PathRef[]>());
+                VersionSpecificPaths.Add(Constants.ANNO_VERSION_2070, []);
                 VersionSpecificPaths[Constants.ANNO_VERSION_2070].Add("icons", new PathRef[]
                 {
-                new PathRef("data/config/game/icons.xml", "/Icons/i", "", "")
+                new("data/config/game/icons.xml", "/Icons/i", "", "")
                 });
                 VersionSpecificPaths[Constants.ANNO_VERSION_2070].Add("localisation", new PathRef[]
                 {
-                new PathRef("data/loca")
+                new("data/loca")
                 });
                 VersionSpecificPaths[Constants.ANNO_VERSION_2070].Add("assets", new PathRef[]
                 {
-                new PathRef("data/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
-                new PathRef("data/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
-                new PathRef("data/config/dlc_01/assets.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
-                new PathRef("data/config/dlc_02/assets.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
-                new PathRef("data/config/dlc_03/assets.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
-                new PathRef("data/config/dlc_04/assets.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
-                new PathRef("addondata/config/balancing/addon_01_assets.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
-                new PathRef("addondata/config/balancing/addon_01_assets.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Buildings")
+                new("data/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
+                new("data/config/game/assets.xml", "/AssetList/Groups/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
+                new("data/config/dlc_01/assets.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
+                new("data/config/dlc_02/assets.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
+                new("data/config/dlc_03/assets.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
+                new("data/config/dlc_04/assets.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
+                new("addondata/config/balancing/addon_01_assets.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
+                new("addondata/config/balancing/addon_01_assets.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Buildings")
                 });
             }
             #endregion
 
             #region Anno 2205 xPaths
-            if (annoVersion == Constants.ANNO_VERSION_2205 || annoVersion == "-ALL")
+            if (annoVersion is Constants.ANNO_VERSION_2205 or "-ALL")
             {
-                VersionSpecificPaths.Add(Constants.ANNO_VERSION_2205, new Dictionary<string, PathRef[]>());
+                VersionSpecificPaths.Add(Constants.ANNO_VERSION_2205, []);
                 /// Trying to read data from the objects.exm 
                 Console.WriteLine();
                 Console.WriteLine("Trying to read Buildings Data from the objects.xml of anno 2205");
                 VersionSpecificPaths[Constants.ANNO_VERSION_2205].Add("assets", new PathRef[]
                 {
                     #region Data Structure Normal Anno 2205
-                    new PathRef("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Assets/Asset", "Earth"),
-                    new PathRef("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Earth"),
-                    new PathRef("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Earth"),
-                    new PathRef("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Earth"),
-                    new PathRef("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Earth"),
-                    new PathRef("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Assets/Asset", "Arctic"),
-                    new PathRef("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Arctic"),
-                    new PathRef("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Arctic"),
-                    new PathRef("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Arctic"),
-                    new PathRef("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Arctic"),
-                    new PathRef("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Assets/Asset", "Moon"),
-                    new PathRef("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Moon"),
-                    new PathRef("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Moon"),
-                    new PathRef("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Moon"),
-                    new PathRef("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Moon"),
+                    new("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Assets/Asset", "Earth"),
+                    new("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Earth"),
+                    new("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Earth"),
+                    new("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Earth"),
+                    new("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Earth"),
+                    new("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Assets/Asset", "Arctic"),
+                    new("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Arctic"),
+                    new("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Arctic"),
+                    new("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Arctic"),
+                    new("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Arctic"),
+                    new("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Assets/Asset", "Moon"),
+                    new("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Moon"),
+                    new("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Moon"),
+                    new("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Moon"),
+                    new("data/config/game/asset/objects/buildings.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Moon"),
                     #endregion
                     #region Data Structure DLC 01 (Tundra)
-                    new PathRef("data/dlc01/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
-                    new PathRef("data/dlc01/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
-                    new PathRef("data/dlc01/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
+                    new("data/dlc01/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
+                    new("data/dlc01/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
+                    new("data/dlc01/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
                     #endregion
                     #region Data Structure DLC 02 (Orbit)
-                    new PathRef("data/dlc02/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
+                    new("data/dlc02/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
                     #endregion
                     #region Data Structure DLC 03 (Frontiers) (and DCL 04, no data groups)
-                    new PathRef("data/dlc03/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
-                    new PathRef("data/dlc03/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
+                    new("data/dlc03/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
+                    new("data/dlc03/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
                     //DLC 04 does not contain any building information that goes into the preset
                     #endregion
                     #region Data Structure FCP 01 / 02 / 02b
-                    new PathRef("data/fcp01/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
-                    new PathRef("data/fcp02/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
-                    new PathRef("data/fcp02b/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings")
+                    new("data/fcp01/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
+                    new("data/fcp02/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings"),
+                    new("data/fcp02b/config/game/asset/objects.xml", "/Group/Groups/Group", "Groups/Group/Groups/Group/Assets/Asset", "Buildings")
                     #endregion
                 });
             }
             #endregion
 
             #region Anno 1800 xPaths
-            if (annoVersion == Constants.ANNO_VERSION_1800 || annoVersion == "-ALL")
+            if (annoVersion is Constants.ANNO_VERSION_1800 or "-ALL")
             {
-                VersionSpecificPaths.Add(Constants.ANNO_VERSION_1800, new Dictionary<string, PathRef[]>());
+                VersionSpecificPaths.Add(Constants.ANNO_VERSION_1800, []);
                 /// Trying to read data from the objects.exm 
                 Console.WriteLine();
                 Console.WriteLine("Trying to read Buildings Data from the objects.xml of anno 1800");
@@ -417,34 +416,34 @@ namespace PresetParser
                 VersionSpecificPaths[Constants.ANNO_VERSION_1800].Add("assets", new PathRef[]
                 {
                     // Base Game with DLC's
-                    new PathRef("data/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
                     // Scenario 1 Extra / Changed Building Lists
-                    new PathRef("data/eoy21/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/eoy21/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/eoy21/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/eoy21/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/eoy21/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/eoy21/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/eoy21/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/eoy21/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/eoy21/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/eoy21/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/eoy21/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/eoy21/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
                     // Scenario 2 Extra / Changed Building Lists
                     /// Nothing in the assets to add, ad there are no buildings in it (not with GUID's) and the other buildings are in the normal Base Xpath's
-                    new PathRef("data/dlc10/scenario02/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/dlc10/scenario02/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/dlc10/scenario02/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/dlc10/scenario02/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/dlc10/scenario02/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/dlc10/scenario02/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/dlc10/scenario02/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/dlc10/scenario02/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/dlc10/scenario02/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/dlc10/scenario02/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/dlc10/scenario02/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/dlc10/scenario02/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
                     // Scenario 03 Extra / Changed Buildings list
-                    new PathRef("data/dlc11/scenario03/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/dlc11/scenario03/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/dlc11/scenario03/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/dlc11/scenario03/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/dlc11/scenario03/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
-                    new PathRef("data/dlc11/scenario03/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset")
+                    new("data/dlc11/scenario03/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/dlc11/scenario03/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/dlc11/scenario03/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/dlc11/scenario03/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/dlc11/scenario03/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
+                    new("data/dlc11/scenario03/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset")
                 });
             }
             #endregion
@@ -496,7 +495,7 @@ namespace PresetParser
             #endregion
 
             #region Write preset.json and icon.json files
-            BuildingPresets presets = new BuildingPresets() { Version = BUILDING_PRESETS_VERSION, Buildings = buildings.Cast<BuildingInfo>().ToList() };
+            var presets = new BuildingPresets() { Version = BUILDING_PRESETS_VERSION, Buildings = buildings.Cast<BuildingInfo>().ToList() };
 
             Console.WriteLine();
             if (!testVersion)
@@ -513,7 +512,7 @@ namespace PresetParser
             Console.WriteLine("This list contains {0} Buildings", annoBuildingsListCount);
             Console.WriteLine();
             #region Make DVDataFile "DuxVitae-Replaced.csv" for Convert Tool by DuxVitae
-            if (annoVersion == "-ALL" || annoVersion == Constants.ANNO_VERSION_1800) // Only for Anno 1800 purpose
+            if (annoVersion is "-ALL" or Constants.ANNO_VERSION_1800) // Only for Anno 1800 purpose
             {
                 // This file is need to get the right building objects from the presets when GUID's are removed, not added,
                 // or replaced by other objects, so DuxVitae can use this file to pinpoint the right GUID's in the presets.  
@@ -539,14 +538,14 @@ namespace PresetParser
                 DVDataList[114435] = DVDataList[114435] + ",117633";
                 DVDataList[1010310] = DVDataList[1010310] + ",101303";
                 #endregion
-                foreach (string DVData in DVDataList)
+                foreach (var DVData in DVDataList)
                 {
-                    if (!String.IsNullOrEmpty(DVData))
+                    if (!string.IsNullOrEmpty(DVData))
                     {
-                        string[] DVDataCheck = DVData.Split(',');
-                        if ((DVDataCheck.Length > 3))
+                        var DVDataCheck = DVData.Split(',');
+                        if (DVDataCheck.Length > 3)
                         {
-                            int DVDataGUID = Convert.ToInt32(DVDataCheck[0]);
+                            var DVDataGUID = Convert.ToInt32(DVDataCheck[0]);
                             DVFile.WriteLine(DVDataList[DVDataGUID]);
                         }
                     }
@@ -564,7 +563,7 @@ namespace PresetParser
             Console.WriteLine("presets.json, in the Anno Designer directory!");
             Console.WriteLine();
             Console.WriteLine("DONE - press enter to exit");
-            Console.ReadLine();
+            _ = Console.ReadLine();
             #endregion //End Prepare JSON Files0
         }
 
@@ -577,7 +576,7 @@ namespace PresetParser
                 "Residence_Africa_World", "Residence_colony02_tier02" };
 
             var validator = new Validator();
-            (bool isValid, List<string> duplicateIdentifiers) = validator.CheckForUniqueIdentifiers(buildingsToCheck, knownDuplicates);
+            (var isValid, var duplicateIdentifiers) = validator.CheckForUniqueIdentifiers(buildingsToCheck, knownDuplicates);
             var oldColor = Console.ForegroundColor;
             if (!isValid)
             {
@@ -623,11 +622,11 @@ namespace PresetParser
         {
             if (!canCheckIconFiles && !checkIconFilePathDone)
             {
-                string workingDirectory = Environment.CurrentDirectory;
-                string WorkPathRepo = Directory.GetParent(workingDirectory).Parent.Parent.Parent.FullName;
+                var workingDirectory = Environment.CurrentDirectory;
+                var WorkPathRepo = _fileSystem.Directory.GetParent(workingDirectory).Parent.Parent.Parent.FullName;
                 IconFileCheckPath = WorkPathRepo + "\\AnnoDesigner\\icons";
-                string IconFilePathExists = $"{IconFileCheckPath}";
-                if (Directory.Exists(IconFilePathExists))
+                var IconFilePathExists = $"{IconFileCheckPath}";
+                if (_fileSystem.Directory.Exists(IconFilePathExists))
                 {
                     canCheckIconFiles = true;
                     checkIconFilePathDone = true;
@@ -648,13 +647,13 @@ namespace PresetParser
             }
             if (canCheckIconFiles && IconFileName != "Test.png")
             {
-                string IconFileToCheck = $"{IconFileCheckPath}\\{IconFileName}";
-                if (!File.Exists(IconFileToCheck))
+                var IconFileToCheck = $"{IconFileCheckPath}\\{IconFileName}";
+                if (!_fileSystem.File.Exists(IconFileToCheck))
                 {
                     // Put here the GUID's or IdentifierName that may skipped, in a LIST String Format.
                     // Those will skipped by checking if file exists, as they have no IconfileName, 
                     // or not need an Icon anyway (i.e. Street kind objects and Quay Objects) 
-                    IconIgnoreGuidOrIdentifier = new List<string> { "harbourprops", "Harboursystem", "HarbourSystem" };
+                    IconIgnoreGuidOrIdentifier = ["harbourprops", "Harboursystem", "HarbourSystem"];
                     if (GUID_or_IdentifierName.IsMatch(IconIgnoreGuidOrIdentifier))
                     {
                         return;
@@ -671,8 +670,8 @@ namespace PresetParser
         #region Asking Directory path for the choices Anno versions
         public static string GetBASE_PATH(string annoVersion)
         {
-            bool validPath = false;
-            string path = "";
+            var validPath = false;
+            var path = "";
             while (!validPath)
             {
                 Console.WriteLine();
@@ -682,7 +681,7 @@ namespace PresetParser
                 {
                     Environment.Exit(0);
                 }
-                if (Directory.Exists(path))
+                if (_fileSystem.Directory.Exists(path))
                 {
                     validPath = true;
                 }
@@ -705,7 +704,7 @@ namespace PresetParser
             Console.WriteLine("Parsing assets.xml:");
             var assetPathRefs = VersionSpecificPaths[annoVersion]["assets"];
             #region Start prepare Anno 1404 or Anno 2070
-            if (annoVersion == Constants.ANNO_VERSION_1404 || annoVersion == Constants.ANNO_VERSION_2070)
+            if (annoVersion is Constants.ANNO_VERSION_1404 or Constants.ANNO_VERSION_2070)
             {
                 // prepare localizations
                 // This call will set the extra Anno Version Number on the icon translation for Anno 1404 ('A4_')
@@ -719,9 +718,9 @@ namespace PresetParser
                 #region Preparing icon.json file
 
                 // prepare icon mapping
-                XmlDocument iconsDocument = new XmlDocument();
-                List<XmlNode> iconNodes = new List<XmlNode>();
-                foreach (PathRef p in VersionSpecificPaths[annoVersion]["icons"])
+                var iconsDocument = new XmlDocument();
+                List<XmlNode> iconNodes = [];
+                foreach (var p in VersionSpecificPaths[annoVersion]["icons"])
                 {
                     iconsDocument.Load(BASE_PATH + p.Path);
                     iconNodes.AddRange(iconsDocument.SelectNodes(p.XPath).Cast<XmlNode>());
@@ -744,7 +743,7 @@ namespace PresetParser
 
                 // parse buildings
                 // find buildings in assets.xml
-                foreach (PathRef p in assetPathRefs)
+                foreach (var p in assetPathRefs)
                 {
                     ParseAssetsFile(BASE_PATH + p.Path, p.XPath, p.YPath, buildings, iconNodes, localizations, p.InnerNameTag, annoVersion);
                 }
@@ -764,15 +763,14 @@ namespace PresetParser
             {
                 #region Read in Language Files
                 Console.WriteLine("Parsing Language files....");
-                // To boost performances we need to read in all supported language files into programs memory.
-                string languageFileName = ""; // This will be given thou the static LanguagesFiles array
-                string languageFilePath = "data/config/gui/";
-                string languageFileStart = "texts_";
-                int languageCount = 0;
-                foreach (string Language in Languages)
+                var languageFilePath = "data/config/gui/";
+                var languageFileStart = "texts_";
+                var languageCount = 0;
+                foreach (var Language in Languages)
                 {
-                    languageFileName = BASE_PATH + languageFilePath + languageFileStart + LanguagesFiles2205[languageCount] + ".xml";
-                    XmlDocument langDocument = new XmlDocument();
+                    // To boost performances we need to read in all supported language files into programs memory.
+                    var languageFileName = BASE_PATH + languageFilePath + languageFileStart + LanguagesFiles2205[languageCount] + ".xml";
+                    var langDocument = new XmlDocument();
                     langDocument.Load(languageFileName);
                     switch (languageCount)
                     {
@@ -788,7 +786,7 @@ namespace PresetParser
                 #endregion;
 
                 Console.WriteLine("Parsing buildings...");
-                foreach (PathRef p in assetPathRefs)
+                foreach (var p in assetPathRefs)
                 {
                     ParseAssetsFile2205(BASE_PATH + p.Path, p.XPath, p.YPath, buildings, p.InnerNameTag, annoVersion);
                 }
@@ -831,14 +829,13 @@ namespace PresetParser
                 #region Read in Language Files
                 // To boost performances we need to read in all supported language files into programs memory.
                 Console.WriteLine("Parsing Language files....");
-                string languageFileName = ""; // This will be given thou the static LanguagesFiles array
-                string languageFilePath = "data/config/gui/";
-                string languageFileStart = "texts_";
-                int languageCount = 0;
-                foreach (string Language in Languages)
+                var languageFilePath = "data/config/gui/";
+                var languageFileStart = "texts_";
+                var languageCount = 0;
+                foreach (var Language in Languages)
                 {
-                    languageFileName = BASE_PATH + languageFilePath + languageFileStart + LanguagesFiles1800[languageCount] + ".xml";
-                    XmlDocument langDocument = new XmlDocument();
+                    var languageFileName = BASE_PATH + languageFilePath + languageFileStart + LanguagesFiles1800[languageCount] + ".xml";
+                    var langDocument = new XmlDocument();
                     langDocument.Load(languageFileName);
                     switch (languageCount)
                     {
@@ -855,7 +852,7 @@ namespace PresetParser
 
                 var PPTNFileXPath = "";
                 Console.WriteLine("Parsing buildings...");
-                foreach (PathRef p in assetPathRefs)
+                foreach (var p in assetPathRefs)
                 {
                     // To know in what assets file is the Missing Template Name
                     // for the missing TemplateNames file (20-09-2022) 
@@ -1012,11 +1009,11 @@ namespace PresetParser
         private static void ParseAssetsFile(string filename, string xPathToBuildingsNode, string YPath, List<IBuildingInfo> buildings,
             IEnumerable<XmlNode> iconNodes, Dictionary<string, SerializableDictionary<string>> localizations, string innerNameTag, string annoVersion)
         {
-            XmlDocument assetsDocument = new XmlDocument();
+            var assetsDocument = new XmlDocument();
             assetsDocument.Load(filename);
-            XmlNode buildingNodes = assetsDocument.SelectNodes(xPathToBuildingsNode)
+            var buildingNodes = assetsDocument.SelectNodes(xPathToBuildingsNode)
                 .Cast<XmlNode>().Single(_ => _["Name"].InnerText == innerNameTag); //This differs between anno versions
-            foreach (XmlNode buildingNode in buildingNodes.SelectNodes(YPath).Cast<XmlNode>())
+            foreach (var buildingNode in buildingNodes.SelectNodes(YPath).Cast<XmlNode>())
             {
                 ParseBuilding(buildings, buildingNode, iconNodes, localizations, annoVersion);
             }
@@ -1049,7 +1046,7 @@ namespace PresetParser
             // to get 2 buildings from OrnamentFeedbackBuilding, all other OrnamentFeedbackBuildings will be skipped
             if (templateValue == "OrnamentFeedbackBuilding" && annoVersion == Constants.ANNO_VERSION_2070)
             {
-                if (guidValue != "7110000" && guidValue != "7110001")
+                if (guidValue is not "7110000" and not "7110001")
                 {
                     return;
                 }
@@ -1069,7 +1066,7 @@ namespace PresetParser
                 isExcludedName = nameValue.Contains(ExcludeNameList2070);
                 isExcludedTemplate = templateValue.Contains(ExcludeTemplateList2070);
 
-                string factionValue = buildingNode.ParentNode.ParentNode.ParentNode.ParentNode["Name"].InnerText;
+                var factionValue = buildingNode.ParentNode.ParentNode.ParentNode.ParentNode["Name"].InnerText;
                 isExcludedFaction = factionValue.Contains(ExcludeFactionList2070);
             }
 
@@ -1119,7 +1116,7 @@ namespace PresetParser
                 if (factionName == "(3) Techs" && identifierName == "underwater markethouse II") { factionName = "Others"; }
                 if (identifierName == "techs_academy") { groupName = "Public"; }
                 if (identifierName == "vineyard") { identifierName = "A5_vineyard"; }
-                if (groupName == "Farmfields" || groupName == "Farmfield") { groupName = "Farm Fields"; }
+                if (groupName is "Farmfields" or "Farmfield") { groupName = "Farm Fields"; }
                 if (factionName == "Others" && identifierName.Contains("black_smoker_miner") == true) { groupName = "Black Smokers (Normal)"; }
                 if (factionName == "(3) Techs" && identifierName == "black_smoker_miner_platinum")
                 {
@@ -1182,8 +1179,8 @@ namespace PresetParser
             #region Get IconFilename from icons.xml
 
             // find icon node based on guid match
-            string buildingGuid = values["Standard"]["GUID"].InnerText;
-            XmlNode icon = iconNodes.FirstOrDefault(_ => _["GUID"].InnerText == buildingGuid);
+            var buildingGuid = values["Standard"]["GUID"].InnerText;
+            var icon = iconNodes.FirstOrDefault(_ => _["GUID"].InnerText == buildingGuid);
             if (icon != null)
             {
                 b.IconFileName = _iconFileNameHelper.GetIconFilename(icon["Icons"].FirstChild, annoVersion);
@@ -1205,10 +1202,10 @@ namespace PresetParser
             #endregion
 
             #region Get Translations for Building Names
-            int languageCount = 0;
-            if (localizations.ContainsKey(buildingGuid))
+            var languageCount = 0;
+            if (localizations.TryGetValue(buildingGuid, out var value))
             {
-                b.Localization = localizations[buildingGuid];
+                b.Localization = value;
                 #region Change default known language text (can be used for anno 1404 and 2070).
                 /// if something need to be added or changed to the languages, put guid and header as checker, 
                 /// and make the changes you want.
@@ -1225,7 +1222,7 @@ namespace PresetParser
                     //Add extra name to the translation of Rice Paddles for the Distillery
                     if (b.Guid == 10047)
                     {
-                        foreach (string Language in Languages)
+                        foreach (var Language in Languages)
                         {
                             switch (languageCount)
                             {
@@ -1240,33 +1237,33 @@ namespace PresetParser
                         }
                     }
                     //put tier number before translation of residences for anno 2070
-                    if (b.Guid == 10011 || b.Guid == 10021 || b.Guid == 10088)
+                    if (b.Guid is 10011 or 10021 or 10088)
                     {
-                        foreach (string Language in Languages)
+                        foreach (var Language in Languages)
                         {
                             b.Localization[Languages[languageCount]] = "(1) " + b.Localization[Languages[languageCount]]; break;
                             languageCount++;
                         }
                     }
-                    if (b.Guid == 10013 || b.Guid == 10076 || b.Guid == 10209)
+                    if (b.Guid is 10013 or 10076 or 10209)
                     {
-                        foreach (string Language in Languages)
+                        foreach (var Language in Languages)
                         {
                             b.Localization[Languages[languageCount]] = "(2) " + b.Localization[Languages[languageCount]]; break;
                             languageCount++;
                         }
                     }
-                    if (b.Guid == 10119 || b.Guid == 10116 || b.Guid == 40000006)
+                    if (b.Guid is 10119 or 10116 or 40000006)
                     {
-                        foreach (string Language in Languages)
+                        foreach (var Language in Languages)
                         {
                             b.Localization[Languages[languageCount]] = "(3) " + b.Localization[Languages[languageCount]]; break;
                             languageCount++;
                         }
                     }
-                    if (b.Guid == 10117 || b.Guid == 10118)
+                    if (b.Guid is 10117 or 10118)
                     {
-                        foreach (string Language in Languages)
+                        foreach (var Language in Languages)
                         {
                             b.Localization[Languages[languageCount]] = "(4) " + b.Localization[Languages[languageCount]]; break;
                             languageCount++;
@@ -1283,9 +1280,9 @@ namespace PresetParser
 
                 b.Localization = new SerializableDictionary<string>();
 
-                string translation = values["Standard"]["Name"].InnerText;//TODO use identifierName?
+                var translation = values["Standard"]["Name"].InnerText;//TODO use identifierName?
 
-                foreach (string Language in Languages)
+                foreach (var Language in Languages)
                 {
                     b.Localization.Dict.Add(Languages[languageCount], translation);
                     languageCount++;
@@ -1316,11 +1313,11 @@ namespace PresetParser
 
         private static void ParseAssetsFile2205(string filename, string xPathToBuildingsNode, string YPath, List<IBuildingInfo> buildings, string innerNameTag, string annoVersion)
         {
-            XmlDocument assetsDocument = new XmlDocument();
+            var assetsDocument = new XmlDocument();
             assetsDocument.Load(filename);
-            XmlNode buildingNodes = assetsDocument.SelectNodes(xPathToBuildingsNode)
+            var buildingNodes = assetsDocument.SelectNodes(xPathToBuildingsNode)
                 .Cast<XmlNode>().Single(_ => _["Name"].InnerText == innerNameTag); //This differs between anno versions
-            foreach (XmlNode buildingNode in buildingNodes.SelectNodes(YPath).Cast<XmlNode>())
+            foreach (var buildingNode in buildingNodes.SelectNodes(YPath).Cast<XmlNode>())
             {
                 ParseBuilding2205(buildings, buildingNode, Constants.ANNO_VERSION_2205);
             }
@@ -1347,7 +1344,7 @@ namespace PresetParser
 
             #region Skip Unused buildings in Anno Designer List
             //Skip Energy Connector Top Object (no field, nor object | 01-07-2022) 
-            if (guidValue == "1003535" || guidValue == "1002878" || guidValue == "1001410" || guidValue == "13000158" || guidValue == "13000424")
+            if (guidValue is "1003535" or "1002878" or "1001410" or "13000158" or "13000424")
             {
                 return;
             }
@@ -1371,7 +1368,7 @@ namespace PresetParser
 
             #endregion
 
-            string buildingGuid = values["Standard"]["GUID"].InnerText;
+            var buildingGuid = values["Standard"]["GUID"].InnerText;
 
             #region TEST SECTION OF GUID CHECK
 
@@ -1455,7 +1452,7 @@ namespace PresetParser
             // read the xml key : <Energy> / <RadiusUsed> and then divide by 4096 for the training centers
             if (string.IsNullOrEmpty(Convert.ToString(b.InfluenceRadius)) || b.InfluenceRadius == 0)
             {
-                b.InfluenceRadius = (Convert.ToInt32(values?["Energy"]?["RadiusUsed"]?.InnerText) / 4096);
+                b.InfluenceRadius = Convert.ToInt32(values?["Energy"]?["RadiusUsed"]?.InnerText) / 4096;
             }
             // Set influenceRadius to 0, if it is still Null/Empty
             if (string.IsNullOrEmpty(Convert.ToString(b.InfluenceRadius)))
@@ -1523,15 +1520,15 @@ namespace PresetParser
             #region Get localizations            
 
             //Initialize the dictionary
-            string langNodeStartPath = "/TextExport/Texts/Text";
-            string langNodeDepth = "Text";
-            int languageCount = 0;
+            var langNodeStartPath = "/TextExport/Texts/Text";
+            var langNodeDepth = "Text";
+            var languageCount = 0;
             b.Localization = new SerializableDictionary<string>();
 
-            foreach (string Language in Languages)
+            foreach (var Language in Languages)
             {
                 // Changed because of performance issues (06-06-2022)
-                XmlDocument langDocument = new XmlDocument();
+                var langDocument = new XmlDocument();
                 switch (languageCount)
                 {
                     case 0: { langDocument = langDocument_english; break; }
@@ -1542,7 +1539,7 @@ namespace PresetParser
                     case 5: { langDocument = langDocument_spanish; break; }
                 }
 
-                string translation = "";
+                var translation = "";
 
                 // To get the right residence building inhabitants name, instead of region residence building name (anno 2205, 01-07-2022)
                 // if values["Residence"]["PopulationLevel"] has a value, then put translation buidingGuid to that translation GUID
@@ -1551,7 +1548,7 @@ namespace PresetParser
                     buildingGuid = values["Residence"]["PopulationLevel"].InnerText;
                 }
 
-                XmlNode translationNodes = langDocument.SelectNodes(langNodeStartPath)
+                var translationNodes = langDocument.SelectNodes(langNodeStartPath)
                     .Cast<XmlNode>().SingleOrDefault(_ => _["GUID"].InnerText == buildingGuid);
 
                 if (translationNodes != null)
@@ -1576,32 +1573,32 @@ namespace PresetParser
 
                     # region Set tier numbers and mesurements on the residence buildings (02-07-2022)
                     //Small Residences (3x3, Temperate only)
-                    if (b.Guid == 1000005 || b.Guid == 1000152 || b.Guid == 1000153 || b.Guid == 1000154)
+                    if (b.Guid is 1000005 or 1000152 or 1000153 or 1000154)
                     {
-                        translation = translation + " (3x3)";
+                        translation += " (3x3)";
                     }
                     //Small Residences (6x6, Temperate only)
-                    if (b.Guid == 1000151 || b.Guid == 1000192 || b.Guid == 1000193 || b.Guid == 1000194 || b.Guid == 13000388)
+                    if (b.Guid is 1000151 or 1000192 or 1000193 or 1000194 or 13000388)
                     {
-                        translation = translation + " (6x6)";
+                        translation += " (6x6)";
                     }
                     //Tier numbers 1 (all regions)
-                    if (b.Guid == 1000005 || b.Guid == 1000151 || b.Guid == 1000247 || b.Guid == 1000183 || b.Guid == 7000007)
+                    if (b.Guid is 1000005 or 1000151 or 1000247 or 1000183 or 7000007)
                     {
                         translation = "(1) " + translation;
                     }
                     //Tier numbers 2 (all regions)
-                    if (b.Guid == 1000152 || b.Guid == 1000192 || b.Guid == 1000248 || b.Guid == 1000184 || b.Guid == 7000008)
+                    if (b.Guid is 1000152 or 1000192 or 1000248 or 1000184 or 7000008)
                     {
                         translation = "(2) " + translation;
                     }
                     //Tier numbers 3 (Temperate only)
-                    if (b.Guid == 1000153 || b.Guid == 1000193)
+                    if (b.Guid is 1000153 or 1000193)
                     {
                         translation = "(3) " + translation;
                     }
                     //Tier numbers 4 (Temperate only)
-                    if (b.Guid == 1000154 || b.Guid == 1000194)
+                    if (b.Guid is 1000154 or 1000194)
                     {
                         translation = "(4) " + translation;
                     }
@@ -1621,7 +1618,7 @@ namespace PresetParser
                     {
                         //"[GUIDNAME 2001009]",
                         //remove the [ and ] marking the GUID, and remove the GUIDNAME identifier.
-                        string nextGuid = translation.Substring(1, translation.Length - 2).Replace("GUIDNAME", "").Trim();
+                        var nextGuid = translation[1..^1].Replace("GUIDNAME", "").Trim();
                         translationNodes = langDocument.SelectNodes(langNodeStartPath)
                             .Cast<XmlNode>().SingleOrDefault(_ => _["GUID"].InnerText == nextGuid);
                         translation = translationNodes?.SelectNodes(langNodeDepth)?.Item(0).InnerText;
@@ -1646,7 +1643,7 @@ namespace PresetParser
                     if (translation.IsPartOf(testGUIDNames2205))
                     {
                         Console.WriteLine(">>------------------------------------------------------------------------<<");
-                        Console.ReadKey();
+                        _ = Console.ReadKey();
 
                         if (buildingGuid.Contains(ExcludeGUIDList2205))
                         {
@@ -1677,11 +1674,11 @@ namespace PresetParser
 
         private static void ParseAssetsFile1800(string filename, string xPathToBuildingsNode, List<IBuildingInfo> buildings)
         {
-            XmlDocument assetsDocument = new XmlDocument();
+            var assetsDocument = new XmlDocument();
             assetsDocument.Load(filename);
-            List<XmlNode> buildingNodes = assetsDocument.SelectNodes(xPathToBuildingsNode).Cast<XmlNode>().ToList();
+            var buildingNodes = assetsDocument.SelectNodes(xPathToBuildingsNode).Cast<XmlNode>().ToList();
 
-            foreach (XmlNode buildingNode in buildingNodes)
+            foreach (var buildingNode in buildingNodes)
             {
                 ParseBuilding1800(buildings, buildingNode, Constants.ANNO_VERSION_1800);
             }
@@ -1690,17 +1687,17 @@ namespace PresetParser
         private static void ParseBuilding1800(List<IBuildingInfo> buildings, XmlNode buildingNode, string annoVersion)
         {
             string[] LanguagesFiles = { "" };
-            string templateName = "";
-            string factionName = "";
-            string identifierName = "";
-            string groupName = "";
-            string headerName = "(A7) Anno " + Constants.ANNO_VERSION_1800;
-            int guidNumber = 0;
+            var templateName = "";
+            var factionName = "";
+            var identifierName = "";
+            var groupName = "";
+            var headerName = "(A7) Anno " + Constants.ANNO_VERSION_1800;
+            var guidNumber = 0;
             var oldColor = Console.ForegroundColor;
 
             #region Get valid Building Information 
 
-            XmlElement values = buildingNode["Values"]; //Set the value List as normally
+            var values = buildingNode["Values"]; //Set the value List as normally
             if (!buildingNode.HasChildNodes)
             {
                 //Go next when no firstValue<ChildNames> are found
@@ -1708,9 +1705,9 @@ namespace PresetParser
             }
             else
             {
-                for (int i = 0; i < buildingNode.ChildNodes.Count; i++)
+                for (var i = 0; i < buildingNode.ChildNodes.Count; i++)
                 {
-                    string firstChildName = buildingNode.ChildNodes[i].Name;
+                    var firstChildName = buildingNode.ChildNodes[i].Name;
                     switch (firstChildName)
                     {
                         case "BaseAssetGUID": templateName = buildingNode["BaseAssetGUID"].InnerText; break;
@@ -1752,7 +1749,7 @@ namespace PresetParser
                 }
             }
 
-            string guidName = values["Standard"]?["GUID"]?.InnerText;
+            var guidName = values["Standard"]?["GUID"]?.InnerText;
             if (!string.IsNullOrEmpty(guidName))
             {
                 isExcludedGUID = guidName.Contains(ExcludeBuildingsGUID1800);
@@ -1766,7 +1763,7 @@ namespace PresetParser
 
             //Skip the 2 following mines, as those are manual added to the DVDataList
             //1308 = second bauxit mine , 1353 = second helium mine
-            if (guidNumber == 1308 || guidNumber == 1353)
+            if (guidNumber is 1308 or 1353)
             {
                 return;
             }
@@ -1805,14 +1802,13 @@ namespace PresetParser
             }
 
             // Setting the factionname, thats the first menu after header
-            string associatedRegion = "";
+            var associatedRegion = "";
             associatedRegion = values?["Building"]?["AssociatedRegions"]?.InnerText;
-            switch (associatedRegion)
+            factionName = associatedRegion switch
             {
-                case "Moderate;Colony01": factionName = "All Worlds"; break;
-                default: factionName = associatedRegion.FirstCharToUpper(); break;
-            }
-
+                "Moderate;Colony01" => "All Worlds",
+                _ => associatedRegion.FirstCharToUpper(),
+            };
             if (values?["Building"]?["BuildingType"]?.InnerText != null)
             {
                 groupName = values["Building"]["BuildingType"].InnerText;
@@ -1997,7 +1993,7 @@ namespace PresetParser
             }
 
             // Empire of the Skies (DLC 20-09-2022)
-            if (guidNumber == 835 || guidNumber == 648 || guidNumber == 1345 || guidNumber == 1418)
+            if (guidNumber is 835 or 648 or 1345 or 1418)
             {
                 factionName = "(20) Empire of the Skies";
                 groupName = "Production Buildings";
@@ -2006,7 +2002,7 @@ namespace PresetParser
                     templateName = "FactoryBuilding7";
                 }
             }
-            if (guidNumber == 1372 || guidNumber == 1375 || guidNumber == 2399)
+            if (guidNumber is 1372 or 1375 or 2399)
             {
                 factionName = "(20) Empire of the Skies";
                 groupName = "Mining Buildings";
@@ -2027,7 +2023,7 @@ namespace PresetParser
                 return;
             }
             if (guidNumber == 2654)
-            { 
+            {
                 DVDataList[2654] = "2654,A7_airship_platform_southamerica.png,airship landing platform colony01,963";
                 oldColor = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
@@ -2056,12 +2052,12 @@ namespace PresetParser
                 groupName = "Public Buildings";
                 identifierName = "Service_arctic_02 (Post Office)";
             }
-            if (guidNumber == 538 || guidNumber == 962 || guidNumber == 3741)
+            if (guidNumber is 538 or 962 or 3741)
             {
                 factionName = "(03) Artisans";
                 groupName = "Public Buildings";
             }
-            if (guidNumber == 3661 || guidNumber == 3761 || guidNumber == 2654)
+            if (guidNumber is 3661 or 3761 or 2654)
             {
                 factionName = "(08) Obreros";
                 groupName = "Public Buildings";
@@ -2073,12 +2069,12 @@ namespace PresetParser
                 factionName = "(11) Technicians";
                 groupName = "Airship Platform Module";
             }
-            if (guidNumber == 966 || guidNumber == 964)
+            if (guidNumber is 966 or 964)
             {
                 factionName = "(03) Artisans";
                 groupName = "Airship Platform Module";
             }
-            if (guidNumber == 967 || guidNumber == 2274 || guidNumber == 2276)
+            if (guidNumber is 967 or 2274 or 2276)
             {
                 factionName = "(08) Obreros";
                 groupName = "Airship Platform Module";
@@ -2101,7 +2097,7 @@ namespace PresetParser
                 groupName = "Ornaments";
                 templateName = "Scenario1";
             }
-            if (((guidNumber > 769 && guidNumber < 951) && guidNumber!=835 && !identifierName.StartsWith("Multifactory_Magazin(DropGoods)_")) || guidNumber == 686)
+            if ((guidNumber > 769 && guidNumber < 951 && guidNumber != 835 && !identifierName.StartsWith("Multifactory_Magazin(DropGoods)_")) || guidNumber == 686)
             {
                 factionName = "(30) Scenario 1: Eden Burning";
                 switch (templateName)
@@ -2129,7 +2125,7 @@ namespace PresetParser
             }
 
             //Scenario 2 : Seasons of Silver Ornamentals/Buildings
-            if ((identifierName.Contains("Scenario02")) || (identifierName == "Amoniac Factory") || (identifierName == "Cyanide Pool Module") || (identifierName == "Cyanide Leacher") || (identifierName == "SilverMint") || (identifierName == "SilverSmelter"))
+            if (identifierName.Contains("Scenario02") || (identifierName == "Amoniac Factory") || (identifierName == "Cyanide Pool Module") || (identifierName == "Cyanide Leacher") || (identifierName == "SilverMint") || (identifierName == "SilverSmelter"))
             {
                 factionName = "(31) Scenario 2: Seasons of Silver";
                 groupName = null;
@@ -2137,7 +2133,7 @@ namespace PresetParser
 
             //Scenario 3: Clash of the Curiers
             if (identifierName.Contains("scenario03") || identifierName.Contains("Scenario03"))
-            { 
+            {
                 factionName = "(32) Scenario 3: Clash of the Curiers";
                 groupName = null;
             }
@@ -2265,7 +2261,7 @@ namespace PresetParser
             // Also Skip Manual added GUID's to the DVDataList
             #region Add all Zoo, Museum, Botanical Modules to the DVDataLisy
             // The code will be redone to compacter code after update 5.0 !
-            string DVreplaceName = "A7_";
+            var DVreplaceName = "A7_";
             string DVicon = null;
             if (values["Standard"]?["IconFilename"]?.InnerText != null)
             {
@@ -2275,48 +2271,43 @@ namespace PresetParser
             if (DVicon != null)
             {
                 /// Split the Value <IconFilenames>innertext</IconFilenames> to get only the Name.png
-                string[] sDVIcons = DVicon.Split('/');
-                if (sDVIcons.LastOrDefault().StartsWith("icon_"))
-                {
-                    DVicon = sDVIcons.LastOrDefault().Replace("icon_", DVreplaceName);
-                }
-                else /* Put the Replace name on front*/
-                {
-                    DVicon = DVreplaceName + sDVIcons.LastOrDefault();
-                }
+                var sDVIcons = DVicon.Split('/');
+                DVicon = sDVIcons.LastOrDefault().StartsWith("icon_")
+                    ? sDVIcons.LastOrDefault().Replace("icon_", DVreplaceName)
+                    : DVreplaceName + sDVIcons.LastOrDefault();
                 if ((DVicon == "A7_Zoo module.png") && (b.Guid != 100455))
                 {
-                    string DVisExcludedGuidStr = Convert.ToString(b.Guid);
+                    var DVisExcludedGuidStr = Convert.ToString(b.Guid);
                     DVDataList[100455] = DVDataList[100455] + DVDataSeperator + DVisExcludedGuidStr;
                     return;
                 }
                 if ((DVicon == "A7_music_pavillion.png") && (b.Guid != 113452))
                 {
-                    string DVisExcludedGuidStr = Convert.ToString(b.Guid);
+                    var DVisExcludedGuidStr = Convert.ToString(b.Guid);
                     DVDataList[113452] = DVDataList[113452] + DVDataSeperator + DVisExcludedGuidStr;
                     return;
                 }
             }
             // DVDataList for the Zoo Modules that has not the Default Zoo Icon
-            if ((((b.Identifier.StartsWith("Culture_01_module_")) || ((b.Group == "CultureModule") && (b.Faction == "All Worlds") && (DVicon == "A7_general_module_01.png"))) && (b.Guid != 100455)))
+            if ((b.Identifier.StartsWith("Culture_01_module_") || ((b.Group == "CultureModule") && (b.Faction == "All Worlds") && (DVicon == "A7_general_module_01.png"))) && (b.Guid != 100455))
             {
-                string DVisExcludedGuidStr = Convert.ToString(b.Guid);
+                var DVisExcludedGuidStr = Convert.ToString(b.Guid);
                 DVDataList[100455] = DVDataList[100455] + DVDataSeperator + DVisExcludedGuidStr;
                 return;
             }
 
             // DVDataList for the Museum Modules on part of IdentifierName
-            if ((b.Identifier.StartsWith("Culture_02_module_")) && (b.Guid != 100454))
+            if (b.Identifier.StartsWith("Culture_02_module_") && (b.Guid != 100454))
             {
-                string DVisExcludedGuidStr = Convert.ToString(b.Guid);
+                var DVisExcludedGuidStr = Convert.ToString(b.Guid);
                 DVDataList[100454] = DVDataList[100454] + DVDataSeperator + DVisExcludedGuidStr;
                 return;
             }
 
             // DVDataList for the Botanica Garden Modules on part of IdentifierName
-            if ((b.Identifier.StartsWith("C03_")) && (b.Guid != 111104))
+            if (b.Identifier.StartsWith("C03_") && (b.Guid != 111104))
             {
-                string DVisExcludedGuidStr = Convert.ToString(b.Guid);
+                var DVisExcludedGuidStr = Convert.ToString(b.Guid);
                 DVDataList[111104] = DVDataList[111104] + DVDataSeperator + DVisExcludedGuidStr;
                 return;
             }
@@ -2427,7 +2418,7 @@ namespace PresetParser
             #region Get and set new IconFilenames
 
             // find icon node in values
-            string replaceName = "A7_";
+            var replaceName = "A7_";
             string icon = null;
             if (values["Standard"]?["IconFilename"]?.InnerText != null)
             {
@@ -2437,15 +2428,10 @@ namespace PresetParser
             if (icon != null)
             {
                 /// Split the Value <IconFilenames>innertext</IconFilenames> to get only the Name.png
-                string[] sIcons = icon.Split('/');
-                if (sIcons.LastOrDefault().StartsWith("icon_"))
-                {
-                    icon = sIcons.LastOrDefault().Replace("icon_", replaceName);
-                }
-                else /* Put the Replace name on front*/
-                {
-                    icon = replaceName + sIcons.LastOrDefault();
-                }
+                var sIcons = icon.Split('/');
+                icon = sIcons.LastOrDefault().StartsWith("icon_")
+                    ? sIcons.LastOrDefault().Replace("icon_", replaceName)
+                    : replaceName + sIcons.LastOrDefault();
 
                 switch (guidName)
                 {
@@ -2473,7 +2459,7 @@ namespace PresetParser
 
                 //Place all (24) Seasonal Decorations Pack CDLC in the right menu (on IconFileName)
                 // spring_ / summer_ / winter_ / autumn_
-                if ((icon.StartsWith("A7_spring_")) || (icon.StartsWith("A7_summer_")) || (icon.StartsWith("A7_autumn_")) || (icon.StartsWith("A7_winter_")))
+                if (icon.StartsWith("A7_spring_") || icon.StartsWith("A7_summer_") || icon.StartsWith("A7_autumn_") || icon.StartsWith("A7_winter_"))
                 {
                     b.Faction = "Ornaments"; b.Group = "26 Seasonal Decorations";
                 }
@@ -2537,19 +2523,19 @@ namespace PresetParser
             {
                 if (b.Identifier.Contains("(Warehouse ")) { b.IconFileName = replaceName + "warehouse.png"; }
                 if (b.Identifier.Contains("(Depot)") || b.Group.StartsWith("1010519")) { b.IconFileName = replaceName + "depot.png"; }
-                if (b.Group == "100783" || b.Group == "101403") { b.IconFileName = replaceName + "oil_habour_01.png"; }
+                if (b.Group is "100783" or "101403") { b.IconFileName = replaceName + "oil_habour_01.png"; }
                 if (b.Group == "100519") { b.IconFileName = "A7_pier.png"; }
                 if (b.Group == "100429") { b.IconFileName = "A7_visitor_harbour.png"; }
                 if (b.Identifier.StartsWith("Kontor_airship_arctic_")) { b.IconFileName = replaceName + "airship_landing_plattform.png"; }
                 if (b.Identifier.StartsWith("Kontor_imperial_") || b.Identifier.StartsWith("Kontor_main_")) { b.IconFileName = replaceName + "kontor_main.png"; }
-                if (b.Group == "101404" || b.Group == "119259") { b.IconFileName = replaceName + "oil_habour_01.png"; }
+                if (b.Group is "101404" or "119259") { b.IconFileName = replaceName + "oil_habour_01.png"; }
                 if (b.Group == "1010311") { b.IconFileName = replaceName + "gold_ore.png"; }
                 if (b.Group == "100415") { b.IconFileName = replaceName + "townhall.png"; }
                 if (b.Group == "100586") { b.IconFileName = replaceName + "harbour_kontor.png"; }
                 if (b.Group == "100784") { b.IconFileName = replaceName + "oil_storage.png"; }
                 if (b.Group == "1010525") { b.IconFileName = replaceName + "repair_crane.png"; }
                 if (b.Group == "1010516") { b.IconFileName = replaceName + "guildhouse.png"; }
-                if ((b.Group == "Slot" && b.Faction == "Not Placed Yet -Moderate" && b.Identifier != "Heavy_01_01_slot (Oil Pump Slot)")) { b.IconFileName = replaceName + "mineral_desposits.png"; }
+                if (b.Group == "Slot" && b.Faction == "Not Placed Yet -Moderate" && b.Identifier != "Heavy_01_01_slot (Oil Pump Slot)") { b.IconFileName = replaceName + "mineral_desposits.png"; }
                 if (b.Identifier == "Random slot mining arctic") { b.IconFileName = replaceName + "oil.png"; }
                 if (b.Group == "1010522") { b.IconFileName = replaceName + "defense_tower_pucklegun.png"; }
                 if (b.Group == "1010523") { b.IconFileName = replaceName + "defense_tower_cannon.png"; }
@@ -2563,7 +2549,7 @@ namespace PresetParser
             }
 
             // Put Double DLC11 Ornamentals into DVDatalist Manualy, to avoid Double names there
-            bool DoDLC11_OrnamentRemove = false; 
+            var DoDLC11_OrnamentRemove = false;
             oldColor = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             if (!string.IsNullOrEmpty(b.IconFileName))
@@ -2587,7 +2573,7 @@ namespace PresetParser
             if (DoDLC11_OrnamentRemove == true) { return; }
 
 
-            string isExcludedGuidStr = Convert.ToString(b.Guid);
+            var isExcludedGuidStr = Convert.ToString(b.Guid);
             //Those Identifier changes will not harm any users, as they where never in the presets before....
             //This will be done directly to the building info structure (b)
             //Also switch wrong icons between two objects (see issue #178)
@@ -2608,11 +2594,11 @@ namespace PresetParser
                 // must use to get the right AD Object into his converted ad file.
                 // This will also prevent Double Identifier Objects
                 oldColor = Console.ForegroundColor;
-                foreach (string DVData in DVDataList)
+                foreach (var DVData in DVDataList)
                 {
-                    if (!String.IsNullOrEmpty(DVData))
+                    if (!string.IsNullOrEmpty(DVData))
                     {
-                        string[] DVDataCheck = DVData.Split(',');
+                        var DVDataCheck = DVData.Split(',');
                         if (DVDataCheck.Length > 2)
                         {
                             // Check first the Double Identifiers on this check, so double Buildings Identifiers
@@ -2622,7 +2608,7 @@ namespace PresetParser
                                 if (b.Identifier.IsMatch(buildings))
                                 {
                                     Console.ForegroundColor = ConsoleColor.Red;
-                                    int DVDataGUID = Convert.ToInt32(DVDataCheck[0]);
+                                    var DVDataGUID = Convert.ToInt32(DVDataCheck[0]);
                                     DVDataList[DVDataGUID] = DVDataList[DVDataGUID] + DVDataSeperator + isExcludedGuidStr;
                                     Console.WriteLine("---> Building added to Replacement List (Ident): " + DVDataGUID + " << " + isExcludedGuidStr);
                                     Console.ForegroundColor = oldColor; return;
@@ -2631,7 +2617,7 @@ namespace PresetParser
                             if (b.IconFileName == DVDataCheck[1] && !string.IsNullOrEmpty(DVDataCheck[1]) && isExcludedName && isExcludeIconName)
                             {
                                 Console.ForegroundColor = ConsoleColor.DarkYellow;
-                                int DVDataGUID = Convert.ToInt32(DVDataCheck[0]);
+                                var DVDataGUID = Convert.ToInt32(DVDataCheck[0]);
                                 DVDataList[DVDataGUID] = DVDataList[DVDataGUID] + DVDataSeperator + isExcludedGuidStr;
                                 Console.WriteLine("---> Building added to Replacement List (Icon): " + DVDataGUID + " << " + isExcludedGuidStr);
                                 Console.ForegroundColor = oldColor; return;
@@ -2704,7 +2690,7 @@ namespace PresetParser
             {
                 b.InfluenceRange = Convert.ToInt32(values["PublicService"]["FullSatisfactionDistance"].InnerText);
             }
-            else if ((!string.IsNullOrEmpty(values?["BuffFactory"]?["PublicServiceData"]?["FullSatisfactionDistance"]?.InnerText)))
+            else if (!string.IsNullOrEmpty(values?["BuffFactory"]?["PublicServiceData"]?["FullSatisfactionDistance"]?.InnerText))
             {
                 // Fix #407, missing InfluenceRange on Stores/Malls (and maybe some other buildings)
                 b.InfluenceRange = Convert.ToInt32(values["BuffFactory"]["PublicServiceData"]["FullSatisfactionDistance"].InnerText);
@@ -2766,15 +2752,15 @@ namespace PresetParser
             }
 
             //Initialize the dictionary
-            string langNodeStartPath = "/TextExport/Texts/Text";
-            string langNodeDepth = "Text";
-            int languageCount = 0;
+            var langNodeStartPath = "/TextExport/Texts/Text";
+            var langNodeDepth = "Text";
+            var languageCount = 0;
             b.Localization = new SerializableDictionary<string>();
 
-            foreach (string Language in Languages)
+            foreach (var Language in Languages)
             {
                 // Changed because of performance issues (06-06-2022)
-                XmlDocument langDocument = new XmlDocument();
+                var langDocument = new XmlDocument();
                 switch (languageCount)
                 {
                     case 0: { langDocument = langDocument_english; break; }
@@ -2785,10 +2771,10 @@ namespace PresetParser
                     case 5: { langDocument = langDocument_spanish; break; }
                 }
 
-                string translation = "";
+                var translation = "";
                 if (!string.IsNullOrEmpty(buildingGuid))
                 {
-                    XmlNode translationNodes = langDocument.SelectNodes(langNodeStartPath)
+                    var translationNodes = langDocument.SelectNodes(langNodeStartPath)
                         .Cast<XmlNode>().SingleOrDefault(_ => _["GUID"].InnerText == buildingGuid);
                     if (translationNodes != null)
                     {
@@ -2802,7 +2788,7 @@ namespace PresetParser
                         {
                             //"[AsserData(2001009): <text>",
                             //Split the translation text ( and ) marking the GUID, and use the second value in nextGUID[].
-                            string[] nextGuid = translation.Split('(', ')');
+                            var nextGuid = translation.Split('(', ')');
                             translationNodes = langDocument.SelectNodes(langNodeStartPath)
                                 .Cast<XmlNode>().SingleOrDefault(_ => _["GUID"].InnerText == nextGuid[1]);
                             translation = translationNodes?.SelectNodes(langNodeDepth)?.Item(0).InnerText;
@@ -2969,22 +2955,22 @@ namespace PresetParser
                         {
                             switch (languageCount)
                             {
-                                case 0: { translation = translation = translation + " - (5)"; break; }
-                                case 1: { translation = translation = translation + " - (5)"; break; }
-                                case 2: { translation = translation = translation + " - (5)"; break; }
-                                case 3: { translation = translation = translation + " - (5)"; break; }
-                                case 4: { translation = translation = translation + " - (5)"; break; }
-                                case 5: { translation = translation = translation + " - (5)"; break; }
+                                case 0: { translation = translation += " - (5)"; break; }
+                                case 1: { translation = translation += " - (5)"; break; }
+                                case 2: { translation = translation += " - (5)"; break; }
+                                case 3: { translation = translation += " - (5)"; break; }
+                                case 4: { translation = translation += " - (5)"; break; }
+                                case 5: { translation = translation += " - (5)"; break; }
                             }
                         }
                         #region Give all residences a Tier Number
                         //Tier numbers 1 (all regions)
-                        if (b.Guid == 1010343 || b.Guid == 101254 || b.Guid == 112091 || b.Guid == 114436)
+                        if (b.Guid is 1010343 or 101254 or 112091 or 114436)
                         {
                             translation = "(1) " + translation;
                         }
                         //Tier numbers 2 (all regions)
-                        if (b.Guid == 1010344 || b.Guid == 101255 || b.Guid == 112652 || b.Guid == 114437)
+                        if (b.Guid is 1010344 or 101255 or 112652 or 114437)
                         {
                             translation = "(2) " + translation;
                         }
@@ -3027,7 +3013,7 @@ namespace PresetParser
                         translation = translation.FirstCharToUpper();
                     }
 
-                    if (templateName == "FarmBuilding" || templateName == "Farmfield")
+                    if (templateName is "FarmBuilding" or "Farmfield")
                     {
                         string fieldAmountValue = null;
                         string fieldGuidValue = null;
@@ -3112,8 +3098,8 @@ namespace PresetParser
             #region Add all other (Upgrading) buildings to the DVDataLisy
             // Add CSV GUID Data to List for DuxVitae Convert/extract tool, Games save --> Layout AD File (01-06-2022)
             // Skip Zoo, Museum, Botanical Garden, Music Pavilion empty modules and other buildings, as those are added on start
-            bool DVDatacounted2 = false;
-            int DVDataGUID2 = 0;
+            var DVDatacounted2 = false;
+            var DVDataGUID2 = 0;
             if (b.IconFileName != null)
             {
                 switch (b.IconFileName)
@@ -3142,21 +3128,21 @@ namespace PresetParser
                     case "A7_repair_crane.png": if (b.Guid != 1010525) { DVDataGUID2 = 1010525; DVDatacounted2 = true; } break;
                     case "A7_guildhouse.png": if (b.Guid != 1010516) { DVDataGUID2 = 1010516; DVDatacounted2 = true; } break;
                     case "A7_mineral_desposits.png": if (b.Guid != 1000029) { DVDataGUID2 = 1000029; DVDatacounted2 = true; } break;
-                    case "A7_oil.png": if (b.Guid != 100849 && b.Guid != 101331 && b.Guid != 1010561) { DVDataGUID2 = 100849; DVDatacounted2 = true; } else if (b.Guid != 101331 && b.Guid != 100849 && b.Guid != 101062 && b.Guid != 116037) { DVDataGUID2 = 101331; DVDatacounted2 = true; } break;
+                    case "A7_oil.png": if (b.Guid is not 100849 and not 101331 and not 1010561) { DVDataGUID2 = 100849; DVDatacounted2 = true; } else if (b.Guid is not 101331 and not 100849 and not 101062 and not 116037) { DVDataGUID2 = 101331; DVDatacounted2 = true; } break;
                     case "A7_defense_tower_pucklegun.png": if (b.Guid != 1010522) { DVDataGUID2 = 1010522; DVDatacounted2 = true; } break;
                     case "A7_defense_tower_cannon.png": if (b.Guid != 1010523) { DVDataGUID2 = 1010523; DVDatacounted2 = true; } break;
                     case "A7_sail_shipyard.png": if (b.Guid != 1010520) { DVDataGUID2 = 1010520; DVDatacounted2 = true; } break;
-                    case "A7_airship_hangar_southamerica.png": if(b.Guid != 648) { DVDataGUID2 = 648; DVDatacounted2 = true; } break;
+                    case "A7_airship_hangar_southamerica.png": if (b.Guid != 648) { DVDataGUID2 = 648; DVDatacounted2 = true; } break;
                 }
             }
 
             // DVDatalilst for other buildings on (part of) Identifier/faction names:
-            if ((b.Identifier.StartsWith("Tourist_monument_0") && (b.Guid != 132765))) { DVDataGUID2 = 132765; DVDatacounted2 = true; }
-            if ((b.Faction == "Not Placed Yet -Moderate" && b.Identifier == "Forester" && (b.IconFileName == "A7_wood_log.png") && (b.Guid != 1010266))) { DVDataGUID2 = 1010266; DVDatacounted2 = true; }
-            if ((b.Faction.StartsWith("Not Placed Yet -") && (b.IconFileName == "A7_tractor.png") && (b.Guid != 269837))) { DVDataGUID2 = 269837; DVDatacounted2 = true; }
-            if ((b.Identifier.Contains("(Clay Harvester)") && b.Guid != 117743)) { DVDataGUID2 = 117743; DVDatacounted2 = true; }
-            if ((b.Identifier.Contains("(Paper Mill)") && b.Guid != 117744)) { DVDataGUID2 = 117744; DVDatacounted2 = true; }
-            if ((b.Identifier.Contains("(Water Pump)") && b.Guid != 114544)) { DVDataGUID2 = 114544; DVDatacounted2 = true; }
+            if (b.Identifier.StartsWith("Tourist_monument_0") && (b.Guid != 132765)) { DVDataGUID2 = 132765; DVDatacounted2 = true; }
+            if (b.Faction == "Not Placed Yet -Moderate" && b.Identifier == "Forester" && (b.IconFileName == "A7_wood_log.png") && (b.Guid != 1010266)) { DVDataGUID2 = 1010266; DVDatacounted2 = true; }
+            if (b.Faction.StartsWith("Not Placed Yet -") && (b.IconFileName == "A7_tractor.png") && (b.Guid != 269837)) { DVDataGUID2 = 269837; DVDatacounted2 = true; }
+            if (b.Identifier.Contains("(Clay Harvester)") && b.Guid != 117743) { DVDataGUID2 = 117743; DVDatacounted2 = true; }
+            if (b.Identifier.Contains("(Paper Mill)") && b.Guid != 117744) { DVDataGUID2 = 117744; DVDatacounted2 = true; }
+            if (b.Identifier.Contains("(Water Pump)") && b.Guid != 114544) { DVDataGUID2 = 114544; DVDatacounted2 = true; }
 
             // If one of the object above is placed in the datafile as replaced building,
             // send a message on console and skip the building; 
@@ -3165,20 +3151,20 @@ namespace PresetParser
                 var oldColor2 = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine("---> Building added to Replacement List: " + DVDataGUID2 + " << " + isExcludedGuidStr + " || " + b.IconFileName);
-                string DVisExcludedGuidStr = Convert.ToString(b.Guid);
+                var DVisExcludedGuidStr = Convert.ToString(b.Guid);
                 DVDataList[DVDataGUID2] = DVDataList[DVDataGUID2] + DVDataSeperator + DVisExcludedGuidStr;
                 Console.ForegroundColor = oldColor2; return;
             }
 
-            if ((b.Guid != 100455) && (b.Guid != 100454) && (b.Guid != 111104) && (b.Guid != 113452) &&
-                (b.Guid != 112685) && (b.Guid != 132765) && (b.Guid != 118938) && (b.Guid != 1010371) &&
-                (b.Guid != 100783) && (b.Guid != 1010540) && (b.Guid != 100429) && (b.Guid != 686) &&
-                (b.Guid != 4260) && (b.Guid != 4258) && (b.Guid!=2654) && (b.Guid != 1372) && (b.Guid != 1375))
+            if (b.Guid is not 100455 and not 100454 and not 111104 and not 113452 and
+                not 112685 and not 132765 and not 118938 and not 1010371 and
+                not 100783 and not 1010540 and not 100429 and not 686 and
+                not 4260 and not 4258 and not 2654 and not 1372 and not 1375)
             {
                 if (string.IsNullOrEmpty(DVDataList[b.Guid]))
                 {
-                    string DVIdent = b.Identifier;
-                    if (DVIdent.Contains(",")) { DVIdent = DVIdent.Replace(",", ""); }
+                    var DVIdent = b.Identifier;
+                    if (DVIdent.Contains(',')) { DVIdent = DVIdent.Replace(",", ""); }
                     DVDataList[b.Guid] = Convert.ToString(b.Guid) + DVDataSeperator + b.IconFileName + DVDataSeperator + DVIdent;
                 }
                 else //give Error MSG if GUID was already in list and hold
@@ -3189,17 +3175,17 @@ namespace PresetParser
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Enter any key to continue");
                     Console.ForegroundColor = oldColor2;
-                    Console.ReadLine();
+                    _ = Console.ReadLine();
                 }
             }
             #endregion
 
             // Remove CultureModules Menu and the OrnamentalBuilding Menu that Appeared
-            if ((b.Header == "(A7) Anno 1800" && b.Faction == "All Worlds") && (b.Group == "CultureModule" || b.Group == "OrnamentalBuilding")) { return; }
+            if (b.Header == "(A7) Anno 1800" && b.Faction == "All Worlds" && (b.Group == "CultureModule" || b.Group == "OrnamentalBuilding")) { return; }
 
             // Remove the Not Placed Buildings
             /// comment out the line below if you make a new preset after update of the game 'ANNO 1800', or when a new 'ANNO 1800 DLC' is released 
-            if (b.Faction == "Not Placed Yet -Moderate" || b.Faction == "Not Placed Yet -Arctic" || b.Faction == "Not Placed Yet -Africa" || b.Faction == "Not Placed Yet -Colony01" || b.Faction == "Not Placed Yet -All Worlds") { return; }
+            if (b.Faction is "Not Placed Yet -Moderate" or "Not Placed Yet -Arctic" or "Not Placed Yet -Africa" or "Not Placed Yet -Colony01" or "Not Placed Yet -All Worlds") { return; }
             if (b.Faction == "Not Placed Yet -") { return; };
 
             //Validate iconfilename, if not exists it will be written into a file of missing icons

@@ -1,13 +1,9 @@
-﻿using AnnoDesigner.Core.Helper;
+﻿using System;
+using System.Collections.Generic;
+using System.IO.Abstractions;
+using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.Presets.Models;
 using NLog;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AnnoDesigner.Core.Presets.Loader
 {
@@ -16,7 +12,12 @@ namespace AnnoDesigner.Core.Presets.Loader
     /// </summary>
     public class IconMappingPresetsLoader
     {
+        private readonly IFileSystem _fileSystem;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        public IconMappingPresetsLoader()
+        {
+            _fileSystem = new FileSystem();
+        }
 
         public IconMappingPresets LoadFromFile(string pathToIconNameMappingFile)
         {
@@ -24,7 +25,7 @@ namespace AnnoDesigner.Core.Presets.Loader
             {
                 throw new ArgumentNullException(nameof(pathToIconNameMappingFile));
             }
-            var fileContents = File.ReadAllText(pathToIconNameMappingFile);
+            var fileContents = _fileSystem.File.ReadAllText(pathToIconNameMappingFile);
             return Load(fileContents);
         }
 

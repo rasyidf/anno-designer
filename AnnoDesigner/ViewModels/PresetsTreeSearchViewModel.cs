@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Threading;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
 using static AnnoDesigner.Core.CoreConstants;
@@ -30,16 +25,16 @@ namespace AnnoDesigner.ViewModels
 
             HasFocus = false;
             SearchText = string.Empty;
-            GameVersionFilters = new ObservableCollection<GameVersionFilter>();
+            GameVersionFilters = [];
             InitGameVersionFilters();
         }
 
         private void InitGameVersionFilters()
         {
             var order = 0;
-            foreach (GameVersion curGameVersion in Enum.GetValues(typeof(GameVersion)))
+            foreach (var curGameVersion in Enum.GetValues<GameVersion>())
             {
-                if (curGameVersion == GameVersion.Unknown || curGameVersion == GameVersion.All)
+                if (curGameVersion is GameVersion.Unknown or GameVersion.All)
                 {
                     continue;
                 }
@@ -56,19 +51,19 @@ namespace AnnoDesigner.ViewModels
         public string SearchText
         {
             get { return _searchText; }
-            set { UpdateProperty(ref _searchText, value); }
+            set { _ = UpdateProperty(ref _searchText, value); }
         }
 
         public bool HasFocus
         {
             get { return _hasFocus; }
-            set { UpdateProperty(ref _hasFocus, value); }
+            set { _ = UpdateProperty(ref _hasFocus, value); }
         }
 
         public ObservableCollection<GameVersionFilter> GameVersionFilters
         {
             get { return _gameVersionFilters; }
-            set { UpdateProperty(ref _gameVersionFilters, value); }
+            set { _ = UpdateProperty(ref _gameVersionFilters, value); }
         }
 
         public ObservableCollection<GameVersionFilter> SelectedGameVersionFilters
@@ -119,7 +114,7 @@ namespace AnnoDesigner.ViewModels
 
                 //Debug.WriteLine($"++ IsFocused: {textBox.IsFocused} | IsKeyboardFocused: {textBox.IsKeyboardFocused} | IsKeyboardFocusWithin: {textBox.IsKeyboardFocusWithin} | CaretIndex: {textBox.CaretIndex}");
 
-                textBox.Focus();
+                _ = textBox.Focus();
                 textBox.UpdateLayout();
 
                 //Debug.WriteLine($"+++ IsFocused: {textBox.IsFocused} | IsKeyboardFocused: {textBox.IsKeyboardFocused} | IsKeyboardFocusWithin: {textBox.IsKeyboardFocusWithin} | CaretIndex: {textBox.CaretIndex}");

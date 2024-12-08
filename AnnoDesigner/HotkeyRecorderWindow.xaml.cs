@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using AnnoDesigner.Core.Controls;
-using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.Models;
-using AnnoDesigner.Models;
 using AnnoDesigner.ViewModels;
 
 namespace AnnoDesigner
@@ -18,7 +11,7 @@ namespace AnnoDesigner
     /// </summary>
     public partial class HotkeyRecorderWindow : Window, ICloseable
     {
-        public  HotkeyRecorderWindow()
+        public HotkeyRecorderWindow()
         {
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             InitializeComponent();
@@ -27,7 +20,7 @@ namespace AnnoDesigner
                 ActionRecorder = ActionRecorder
             };
             DataContext = ViewModel;
-            ActionRecorder.Focus();
+            _ = ActionRecorder.Focus();
             Closing += HotkeyRecorderWindow_Closing;
         }
 
@@ -43,7 +36,7 @@ namespace AnnoDesigner
         public (Key key, ModifierKeys modifiers, ExtendedMouseAction action, ActionRecorder.ActionType result, bool userCancelled) RecordNewAction()
         {
             ViewModel.Reset();
-            ShowDialog();
+            _ = ShowDialog();
             return (ViewModel.Key, ViewModel.Modifiers, ViewModel.MouseAction, ViewModel.Result, !DialogResult.Value);
         }
 

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Media;
 using AnnoDesigner.Models;
 
-namespace AnnoDesigner.Helper
+namespace AnnoDesigner
 {
     public class BrushCache : IBrushCache
     {
@@ -14,7 +10,7 @@ namespace AnnoDesigner.Helper
 
         static BrushCache()
         {
-            _cachedBrushes = new Dictionary<Color, SolidColorBrush>();
+            _cachedBrushes = [];
         }
 
         public SolidColorBrush GetSolidBrush(Color color)

@@ -7,7 +7,7 @@ namespace PresetParser.Tests.CultureAware
 {
     public class CulturedFactAttributeDiscoverer : IXunitTestCaseDiscoverer
     {
-        readonly IMessageSink diagnosticMessageSink;
+        private readonly IMessageSink diagnosticMessageSink;
 
         public CulturedFactAttributeDiscoverer(IMessageSink diagnosticMessageSink)
         {

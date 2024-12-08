@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-using Moq;
 using PresetParser.Anno1800;
+using Xunit;
 
 namespace PresetParser.Tests
 {
@@ -447,10 +442,10 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToFarmers_ShouldReturnCorrectFaction(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, _, _) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("(01) Farmers", result.Faction);
+            Assert.Equal("(01) Farmers", Faction);
         }
 
         [Theory]
@@ -458,12 +453,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToFarmersPublicBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Public Buildings", result.Group);
-            Assert.Equal("(01) Farmers", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Public Buildings", Group);
+            Assert.Equal("(01) Farmers", Faction);
+            Assert.Empty(Template);
         }
 
         [Theory]
@@ -471,12 +466,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToFarmersProductionBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Production Buildings", result.Group);
-            Assert.Equal("(01) Farmers", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Production Buildings", Group);
+            Assert.Equal("(01) Farmers", Faction);
+            Assert.Empty(Template);
         }
 
         [Theory]
@@ -484,12 +479,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToFarmersFarmBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Farm Buildings", result.Group);
-            Assert.Equal("(01) Farmers", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Farm Buildings", Group);
+            Assert.Equal("(01) Farmers", Faction);
+            Assert.Empty(Template);
         }
 
         #endregion
@@ -503,10 +498,10 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToWorkers_ShouldReturnCorrectFaction(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, _, _) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("(02) Workers", result.Faction);
+            Assert.Equal("(02) Workers", Faction);
         }
 
         [Theory]
@@ -514,12 +509,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToWorkersPublicBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Public Buildings", result.Group);
-            Assert.Equal("(02) Workers", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Public Buildings", Group);
+            Assert.Equal("(02) Workers", Faction);
+            Assert.Empty(Template);
         }
 
         [Theory]
@@ -527,12 +522,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToWorkersProductionBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Production Buildings", result.Group);
-            Assert.Equal("(02) Workers", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Production Buildings", Group);
+            Assert.Equal("(02) Workers", Faction);
+            Assert.Empty(Template);
         }
 
         [Theory]
@@ -540,12 +535,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToWorkersFarmBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Farm Buildings", result.Group);
-            Assert.Equal("(02) Workers", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Farm Buildings", Group);
+            Assert.Equal("(02) Workers", Faction);
+            Assert.Empty(Template);
         }
 
         #endregion
@@ -559,10 +554,10 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToArtisans_ShouldReturnCorrectFaction(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, _, _) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("(03) Artisans", result.Faction);
+            Assert.Equal("(03) Artisans", Faction);
         }
 
         [Theory]
@@ -570,12 +565,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToArtisansPublicBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Public Buildings", result.Group);
-            Assert.Equal("(03) Artisans", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Public Buildings", Group);
+            Assert.Equal("(03) Artisans", Faction);
+            Assert.Empty(Template);
         }
 
         [Theory]
@@ -583,12 +578,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToArtisansProductionBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Production Buildings", result.Group);
-            Assert.Equal("(03) Artisans", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Production Buildings", Group);
+            Assert.Equal("(03) Artisans", Faction);
+            Assert.Empty(Template);
         }
 
         [Theory]
@@ -596,12 +591,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToArtisansFarmBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Farm Buildings", result.Group);
-            Assert.Equal("(03) Artisans", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Farm Buildings", Group);
+            Assert.Equal("(03) Artisans", Faction);
+            Assert.Empty(Template);
         }
 
         #endregion
@@ -614,10 +609,10 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToEngineers_ShouldReturnCorrectFaction(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, _, _) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("(04) Engineers", result.Faction);
+            Assert.Equal("(04) Engineers", Faction);
         }
 
         [Theory]
@@ -625,12 +620,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToEngineersPublicBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Public Buildings", result.Group);
-            Assert.Equal("(04) Engineers", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Public Buildings", Group);
+            Assert.Equal("(04) Engineers", Faction);
+            Assert.Empty(Template);
         }
 
         [Theory]
@@ -638,12 +633,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToEngineersProductionBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Production Buildings", result.Group);
-            Assert.Equal("(04) Engineers", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Production Buildings", Group);
+            Assert.Equal("(04) Engineers", Faction);
+            Assert.Empty(Template);
         }
 
         #endregion
@@ -657,10 +652,10 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToInvestors_ShouldReturnCorrectFaction(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, _, _) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("(05) Investors", result.Faction);
+            Assert.Equal("(05) Investors", Faction);
         }
 
         [Theory]
@@ -668,12 +663,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToInvestorsPublicBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Public Buildings", result.Group);
-            Assert.Equal("(05) Investors", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Public Buildings", Group);
+            Assert.Equal("(05) Investors", Faction);
+            Assert.Empty(Template);
         }
 
         [Theory]
@@ -681,12 +676,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToInvestorsProductionBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Production Buildings", result.Group);
-            Assert.Equal("(05) Investors", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Production Buildings", Group);
+            Assert.Equal("(05) Investors", Faction);
+            Assert.Empty(Template);
         }
 
         [Theory]
@@ -694,12 +689,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToInvestorsFarmBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Farm Buildings", result.Group);
-            Assert.Equal("(05) Investors", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Farm Buildings", Group);
+            Assert.Equal("(05) Investors", Faction);
+            Assert.Empty(Template);
         }
 
         #endregion
@@ -713,10 +708,10 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToJornaleros_ShouldReturnCorrectFaction(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, _, _) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("(07) Jornaleros", result.Faction);
+            Assert.Equal("(07) Jornaleros", Faction);
         }
 
         [Theory]
@@ -724,12 +719,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToJornalerosPublicBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Public Buildings", result.Group);
-            Assert.Equal("(07) Jornaleros", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Public Buildings", Group);
+            Assert.Equal("(07) Jornaleros", Faction);
+            Assert.Empty(Template);
         }
 
         [Theory]
@@ -737,12 +732,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToJornalerosProductionBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Production Buildings", result.Group);
-            Assert.Equal("(07) Jornaleros", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Production Buildings", Group);
+            Assert.Equal("(07) Jornaleros", Faction);
+            Assert.Empty(Template);
         }
 
         [Theory]
@@ -750,12 +745,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToJornalerosFarmBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Farm Buildings", result.Group);
-            Assert.Equal("(07) Jornaleros", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Farm Buildings", Group);
+            Assert.Equal("(07) Jornaleros", Faction);
+            Assert.Empty(Template);
         }
 
         #endregion
@@ -769,10 +764,10 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToObreros_ShouldReturnCorrectFaction(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, _, _) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("(08) Obreros", result.Faction);
+            Assert.Equal("(08) Obreros", Faction);
         }
 
         [Theory]
@@ -780,12 +775,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToObrerosPublicBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Public Buildings", result.Group);
-            Assert.Equal("(08) Obreros", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Public Buildings", Group);
+            Assert.Equal("(08) Obreros", Faction);
+            Assert.Empty(Template);
         }
 
         [Theory]
@@ -793,12 +788,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToObrerosProductionBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Production Buildings", result.Group);
-            Assert.Equal("(08) Obreros", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Production Buildings", Group);
+            Assert.Equal("(08) Obreros", Faction);
+            Assert.Empty(Template);
         }
 
         [Theory]
@@ -806,12 +801,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToObrerosFarmBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Farm Buildings", result.Group);
-            Assert.Equal("(08) Obreros", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Farm Buildings", Group);
+            Assert.Equal("(08) Obreros", Faction);
+            Assert.Empty(Template);
         }
 
         #endregion
@@ -823,10 +818,10 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToSpecialBuildings_ShouldReturnCorrectFaction(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, _, _) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("All Worlds", result.Faction);
+            Assert.Equal("All Worlds", Faction);
         }
 
         [Theory]
@@ -834,12 +829,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToSpecialBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Special Buildings", result.Group);
-            Assert.Equal("All Worlds", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Special Buildings", Group);
+            Assert.Equal("All Worlds", Faction);
+            Assert.Empty(Template);
         }
 
         #endregion
@@ -851,10 +846,10 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToOrnamentals_ShouldReturnCorrectFaction(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, _, _) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Null(result.Faction);
+            Assert.Null(Faction);
         }
 
         [Theory]
@@ -862,12 +857,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToOrnamentals_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Null(result.Group);
-            Assert.Null(result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Null(Group);
+            Assert.Null(Faction);
+            Assert.Empty(Template);
         }
 
         #endregion
@@ -881,10 +876,10 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToExplorers_ShouldReturnCorrectFaction(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, _, _) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("(10) Explorers", result.Faction);
+            Assert.Equal("(10) Explorers", Faction);
         }
 
         [Theory]
@@ -892,12 +887,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToExplorersPublicBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Public Buildings", result.Group);
-            Assert.Equal("(10) Explorers", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Public Buildings", Group);
+            Assert.Equal("(10) Explorers", Faction);
+            Assert.Empty(Template);
         }
 
         [Theory]
@@ -905,12 +900,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToExplorersProductionBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Production Buildings", result.Group);
-            Assert.Equal("(10) Explorers", result.Faction);
-            Assert.Equal("FactoryBuilding7", result.Template);
+            Assert.Equal("Production Buildings", Group);
+            Assert.Equal("(10) Explorers", Faction);
+            Assert.Equal("FactoryBuilding7", Template);
         }
 
         [Theory]
@@ -918,12 +913,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToExplorersFarmBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Farm Buildings", result.Group);
-            Assert.Equal("(10) Explorers", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Farm Buildings", Group);
+            Assert.Equal("(10) Explorers", Faction);
+            Assert.Empty(Template);
         }
 
         #endregion
@@ -937,10 +932,10 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToTechnicians_ShouldReturnCorrectFaction(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, _, _) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("(11) Technicians", result.Faction);
+            Assert.Equal("(11) Technicians", Faction);
         }
 
         [Theory]
@@ -948,12 +943,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToTechniciansPublicBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Public Buildings", result.Group);
-            Assert.Equal("(11) Technicians", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Public Buildings", Group);
+            Assert.Equal("(11) Technicians", Faction);
+            Assert.Empty(Template);
         }
 
         [Theory]
@@ -961,12 +956,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToTechniciansProductionBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Production Buildings", result.Group);
-            Assert.Equal("(11) Technicians", result.Faction);
-            Assert.Equal("FactoryBuilding7", result.Template);
+            Assert.Equal("Production Buildings", Group);
+            Assert.Equal("(11) Technicians", Faction);
+            Assert.Equal("FactoryBuilding7", Template);
         }
 
         [Theory]
@@ -974,12 +969,12 @@ namespace PresetParser.Tests
         public void GetNewFactionAndGroup1800_IdentifierBelongsToTechniciansFarmBuildings_ShouldReturnCorrectGroup(string identifier)
         {
             // Arrange/Act
-            var result = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
+            var (Faction, Group, Template) = NewFactionAndGroup1800.GetNewFactionAndGroup1800(identifier, null, null);
 
             // Assert
-            Assert.Equal("Farm Buildings", result.Group);
-            Assert.Equal("(11) Technicians", result.Faction);
-            Assert.Empty(result.Template);
+            Assert.Equal("Farm Buildings", Group);
+            Assert.Equal("(11) Technicians", Faction);
+            Assert.Empty(Template);
         }
 
         #endregion

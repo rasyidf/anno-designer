@@ -20,7 +20,7 @@ namespace AnnoDesigner.Core.Tests
 
         static ClipboardServiceTests()
         {
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            var basePath = AppDomain.CurrentDomain.BaseDirectory;
 
             testData_v4_LayoutWithVersionAndObjects = System.IO.File.ReadAllText(System.IO.Path.Combine(basePath, "Testdata", "Layout", "v4_layoutWithVersionAndObjects.ad"), Encoding.UTF8);
         }
@@ -40,13 +40,13 @@ namespace AnnoDesigner.Core.Tests
 
         private List<AnnoObject> GetListOfObjects()
         {
-            return new List<AnnoObject>
-            {
+            return
+            [
                 new AnnoObject
                 {
                     Identifier = "my dummy"
                 }
-            };
+            ];
         }
 
         #region Copy tests
@@ -161,7 +161,7 @@ namespace AnnoDesigner.Core.Tests
         {
             // Arrange
             var service = GetService();
-            _mockedClipboard.AddFilesToClipboard(new List<string> { "first file path", "second file path" });
+            _mockedClipboard.AddFilesToClipboard(["first file path", "second file path"]);
 
             // Act
             var result = service.Paste();
@@ -199,7 +199,7 @@ namespace AnnoDesigner.Core.Tests
                 .Returns(() => new LayoutFile(data));
 
             var service = GetService(layoutLoaderToUse: mockedLayoutLoader.Object);
-            _mockedClipboard.AddFilesToClipboard(new List<string> { "first" });
+            _mockedClipboard.AddFilesToClipboard(["first"]);
 
             // Act
             var result = service.Paste();
@@ -219,7 +219,7 @@ namespace AnnoDesigner.Core.Tests
                 .Throws(new JsonReaderException());
 
             var service = GetService(layoutLoaderToUse: mockedLayoutLoader.Object);
-            _mockedClipboard.AddFilesToClipboard(new List<string> { "first" });
+            _mockedClipboard.AddFilesToClipboard(["first"]);
 
             // Act
             var result = service.Paste();
@@ -252,7 +252,7 @@ namespace AnnoDesigner.Core.Tests
 
             using var memoryStream = new System.IO.MemoryStream();
             _mockedLayoutLoader.SaveLayout(new LayoutFile(data), memoryStream);
-            memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
+            _ = memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
             _mockedClipboard.SetData(CoreConstants.AnnoDesignerClipboardFormat, memoryStream);
 
             var service = GetService();
@@ -281,7 +281,7 @@ namespace AnnoDesigner.Core.Tests
 
             using var memoryStream = new System.IO.MemoryStream();
             _mockedLayoutLoader.SaveLayout(new LayoutFile(data), memoryStream);
-            memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
+            _ = memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
             _mockedClipboard.SetData(CoreConstants.AnnoDesignerClipboardFormat, memoryStream);
 
             var service = GetService(layoutLoaderToUse: mockedLayoutLoader.Object);

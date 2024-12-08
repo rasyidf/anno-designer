@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Octokit;
-
-namespace AnnoDesigner.Models
+﻿namespace AnnoDesigner.Models
 {
     public interface INavigatedTo
     {

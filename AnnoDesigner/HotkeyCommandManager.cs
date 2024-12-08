@@ -27,8 +27,8 @@ namespace AnnoDesigner
 
         public HotkeyCommandManager(ILocalizationHelper localizationHelperToUse)
         {
-            hotkeys = new Dictionary<string, Hotkey>();
-            _observableCollection = new ObservableCollection<Hotkey>();
+            hotkeys = [];
+            _observableCollection = [];
             ObservableCollection = _observableCollection;
             _localizationHelper = localizationHelperToUse;
         }
@@ -99,11 +99,11 @@ namespace AnnoDesigner
         /// <param name="hotkeyId"></param>
         public void RemoveHotkey(string hotkeyId)
         {
-            if (hotkeys.ContainsKey(hotkeyId))
+            if (hotkeys.TryGetValue(hotkeyId, out var value))
             {
-                hotkeys[hotkeyId].PropertyChanged -= Hotkey_PropertyChanged;
-                _observableCollection.Remove(hotkeys[hotkeyId]);
-                hotkeys.Remove(hotkeyId);
+                value.PropertyChanged -= Hotkey_PropertyChanged;
+                _ = _observableCollection.Remove(value);
+                _ = hotkeys.Remove(hotkeyId);
             }
             else
             {
@@ -144,11 +144,7 @@ namespace AnnoDesigner
         /// <returns></returns>
         public Hotkey GetHotkey(string hotkeyId)
         {
-            if (!hotkeys.TryGetValue(hotkeyId, out var hotkey))
-            {
-                throw new KeyNotFoundException($"Key {hotkeyId} does not exist");
-            }
-            return hotkey;
+            return !hotkeys.TryGetValue(hotkeyId, out var hotkey) ? throw new KeyNotFoundException($"Key {hotkeyId} does not exist") : hotkey;
         }
 
         /// <summary>
@@ -163,7 +159,7 @@ namespace AnnoDesigner
         }
 
         /// <summary>
-        /// Retrieves a <see cref="Dictionary{string, HotkeyInformation}"/> of Hotkeys that have been remapped from their defaults.
+        /// Retrieves a <see cref="Dictionary{TKey, HotkeyInformation}"/> of Hotkeys that have been remapped from their defaults.
         /// Hotkeys that have not been changed are ignored.
         /// </summary>
         /// <returns></returns>
@@ -225,7 +221,7 @@ namespace AnnoDesigner
                     catch { }
                     //ignore any exceptions. Remove this mapping anyway, even if an exception is thrown,
                     //as its probably responsible for the exception
-                    hotkeyUserMappings.Remove(kvp.Key);
+                    _ = hotkeyUserMappings.Remove(kvp.Key);
                 }
             }
         }

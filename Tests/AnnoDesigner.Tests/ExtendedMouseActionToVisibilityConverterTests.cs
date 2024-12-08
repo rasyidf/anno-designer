@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using AnnoDesigner.Converters;
 using AnnoDesigner.Core.Models;
 using Xunit;
@@ -77,7 +72,7 @@ namespace AnnoDesigner.Tests
             var converter = new ExtendedMouseActionToVisibilityConverter();
 
             // Act/Assert
-            Assert.Throws<NotImplementedException>(() => converter.ConvertBack(ExtendedMouseAction.LeftClick, typeof(Visibility), null, CultureInfo.CurrentCulture));
+            _ = Assert.Throws<NotImplementedException>(() => converter.ConvertBack(ExtendedMouseAction.LeftClick, typeof(Visibility), null, CultureInfo.CurrentCulture));
         }
 
         #endregion

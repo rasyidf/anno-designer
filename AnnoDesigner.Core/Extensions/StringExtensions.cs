@@ -13,12 +13,7 @@ namespace AnnoDesigner.Core.Extensions
                 return false;//or throw error?
             }
 
-            if (s.IndexOf(token, stringComparison) != -1)
-            {
-                return true;
-            }
-
-            return false;
+            return s.IndexOf(token, stringComparison) != -1;
         }
 
         public static bool Contains(this string s, IEnumerable<string> tokens)

@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Input;
 using AnnoDesigner.Core.Models;
 
 namespace AnnoDesigner

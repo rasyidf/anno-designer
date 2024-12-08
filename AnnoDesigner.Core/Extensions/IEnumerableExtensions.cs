@@ -9,21 +9,9 @@ namespace AnnoDesigner.Core.Extensions
     {
         public static Dictionary<TKey, TSource> ToDictionaryWithCapacity<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            int capacity;
-
-            if (source is ICollection<TSource> collection)
-            {
-                capacity = collection.Count;
-            }
-            else if (source is IReadOnlyCollection<TSource> readonlyCollection)
-            {
-                capacity = readonlyCollection.Count;
-            }
-            else
-            {
-                capacity = source.Count();
-            }
-
+            var capacity = source is ICollection<TSource> collection
+                ? collection.Count
+                : source is IReadOnlyCollection<TSource> readonlyCollection ? readonlyCollection.Count : source.Count();
             var result = new Dictionary<TKey, TSource>(capacity);
 
             foreach (var current in source)
@@ -43,7 +31,7 @@ namespace AnnoDesigner.Core.Extensions
         {
             var result = new TSource[capacity];
 
-            int i = 0;
+            var i = 0;
             foreach (var item in source)
             {
                 result[i++] = item;
@@ -97,12 +85,7 @@ namespace AnnoDesigner.Core.Extensions
         /// <remarks>Currently the logic is based only on a single "Template", but can be extended to other criteria in the future.</remarks>
         public static IEnumerable<AnnoObject> WithoutIgnoredObjects(this IEnumerable<AnnoObject> objects)
         {
-            if (objects is null)
-            {
-                return null;
-            }
-
-            return objects.Where(x => !x.IsIgnoredObject());
+            return objects?.Where(x => !x.IsIgnoredObject());
         }
 
         /// <summary>

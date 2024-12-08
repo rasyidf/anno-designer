@@ -23,7 +23,7 @@ namespace AnnoDesigner.Core.Tests
         public void WithoutIgnoredObjects_ListIsEmpty_ShouldReturnEmptyList()
         {
             // Arrange/Act
-            var result = IEnumerableExtensions.WithoutIgnoredObjects(new List<AnnoObject>());
+            var result = IEnumerableExtensions.WithoutIgnoredObjects([]);
 
             // Assert
             Assert.Empty(result);
@@ -35,12 +35,10 @@ namespace AnnoDesigner.Core.Tests
             // Arrange
             var list = new List<AnnoObject>
             {
-                new AnnoObject
-                {
+                new() {
                     Template = "Dummy"
                 },
-                new AnnoObject
-                {
+                new() {
                     Template = "AnotherDummy"
                 }
             };
@@ -62,16 +60,13 @@ namespace AnnoDesigner.Core.Tests
             // Arrange
             var list = new List<AnnoObject>
             {
-                new AnnoObject
-                {
+                new() {
                     Template = "Blocker"
                 },
-                new AnnoObject
-                {
+                new() {
                     Template = "Dummy"
                 },
-                new AnnoObject
-                {
+                new() {
                     Template = "AnotherDummy"
                 }
             };

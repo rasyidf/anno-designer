@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Packaging;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.IO.Abstractions;
 using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.Layout.Exceptions;
 using AnnoDesigner.Core.Layout.Models;
@@ -16,10 +12,16 @@ namespace AnnoDesigner.Core.Layout
 {
     public class LayoutLoader : ILayoutLoader
     {
+        private readonly IFileSystem _fileSystem;
+
+        public LayoutLoader()
+        {
+            _fileSystem = new FileSystem();
+        }
+
         /// <summary>
         /// Saves the given objects to the given file and includes the current file version number.
         /// </summary>
-        /// <param name="objects">objects to save</param>
         /// <param name="pathToLayoutFile">filepath to save to</param>
         public void SaveLayout(LayoutFile layout, string pathToLayoutFile)
         {
@@ -29,7 +31,6 @@ namespace AnnoDesigner.Core.Layout
         /// <summary>
         /// Saves the given objects to the given stream and includes the current file version number.
         /// </summary>
-        /// <param name="objects">objects to save</param>
         /// <param name="streamWithLayout">stream to save to</param>
         public void SaveLayout(LayoutFile layout, Stream streamWithLayout)
         {
@@ -49,7 +50,7 @@ namespace AnnoDesigner.Core.Layout
             {
                 throw new ArgumentNullException(nameof(pathToLayoutFile));
             }
-            var jsonString = File.ReadAllText(pathToLayoutFile);
+            var jsonString = _fileSystem.File.ReadAllText(pathToLayoutFile);
             return Load(jsonString, forceLoad);
         }
 
@@ -74,19 +75,16 @@ namespace AnnoDesigner.Core.Layout
             catch (JsonSerializationException) { } //No file version, old layout file.
 
             //Only throw an exception if we do not support the layout
-            var isLayoutVersionSupported = layoutVersion.FileVersion >= CoreConstants.LayoutFileVersionSupportedMinimum && layoutVersion.FileVersion <= CoreConstants.LayoutFileVersion;
-            if (!isLayoutVersionSupported && !forceLoad)
-            {
-                throw new LayoutFileUnsupportedFormatException($"loaded version: {layoutVersion.FileVersion} | expected version: {CoreConstants.LayoutFileVersionSupportedMinimum} <= file version <= {CoreConstants.LayoutFileVersion}");
-            }
-
-            return layoutVersion.FileVersion switch
-            {
-                var version when version >= 4 => SerializationHelper.LoadFromJsonString<LayoutFile>(jsonString), //file version 4+, Newtonsoft.Json format json
-                var version when version > 0 => SerializationHelper.LoadFromJsonStringLegacy<LayoutFile>(jsonString), //file version 1-3, DataContractJsonSerializer format json 
-                var version when version == 0 => new LayoutFile(SerializationHelper.LoadFromJsonStringLegacy<List<AnnoObject>>(jsonString)), //no file version, DataContractJsonSerializer format json
-                _ => throw new NotImplementedException()
-            };
+            var isLayoutVersionSupported = layoutVersion.FileVersion is >= CoreConstants.LayoutFileVersionSupportedMinimum and <= CoreConstants.LayoutFileVersion;
+            return !isLayoutVersionSupported && !forceLoad
+                ? throw new LayoutFileUnsupportedFormatException($"loaded version: {layoutVersion.FileVersion} | expected version: {CoreConstants.LayoutFileVersionSupportedMinimum} <= file version <= {CoreConstants.LayoutFileVersion}")
+                : layoutVersion.FileVersion switch
+                {
+                    var version when version >= 4 => SerializationHelper.LoadFromJsonString<LayoutFile>(jsonString), //file version 4+, Newtonsoft.Json format json
+                    var version when version > 0 => SerializationHelper.LoadFromJsonStringLegacy<LayoutFile>(jsonString), //file version 1-3, DataContractJsonSerializer format json 
+                    var version when version == 0 => new LayoutFile(SerializationHelper.LoadFromJsonStringLegacy<List<AnnoObject>>(jsonString)), //no file version, DataContractJsonSerializer format json
+                    _ => throw new NotImplementedException()
+                };
         }
     }
 }

@@ -11,7 +11,7 @@ namespace AnnoDesigner.Core.Presets.Models
         public ColorScheme()
         {
             Name = string.Empty;
-            Colors = new List<PredefinedColor>();
+            Colors = [];
         }
 
         [DataMember(Order = 0, Name = "Name")]

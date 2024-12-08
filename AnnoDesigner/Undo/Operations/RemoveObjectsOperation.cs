@@ -20,7 +20,7 @@ namespace AnnoDesigner.Undo.Operations
         {
             foreach (var obj in Objects)
             {
-                Collection.Remove(obj);
+                _ = Collection.Remove(obj);
             }
         }
     }

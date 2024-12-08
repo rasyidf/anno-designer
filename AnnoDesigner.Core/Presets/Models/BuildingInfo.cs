@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Runtime.Serialization;
-using System.Windows;
 using AnnoDesigner.Core.Models;
 
 namespace AnnoDesigner.Core.Presets.Models

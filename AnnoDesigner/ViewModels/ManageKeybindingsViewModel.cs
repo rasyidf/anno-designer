@@ -51,25 +51,25 @@ namespace AnnoDesigner.ViewModels
         public HotkeyCommandManager HotkeyCommandManager
         {
             get { return _manager; }
-            set { UpdateProperty(ref _manager, value); }
+            set { _ = UpdateProperty(ref _manager, value); }
         }
 
         public ICommand EditCommand
         {
             get { return _editCommand; }
-            set { UpdateProperty(ref _editCommand, value); }
+            set { _ = UpdateProperty(ref _editCommand, value); }
         }
 
         public ICommand ResetHotkeysCommand
         {
             get { return _resetHotkeysCommand; }
-            set { UpdateProperty(ref _resetHotkeysCommand, value); }
+            set { _ = UpdateProperty(ref _resetHotkeysCommand, value); }
         }
 
         public string EditButtonText
         {
             get { return _editButtonText; }
-            set { UpdateProperty(ref _editButtonText, value); }
+            set { _ = UpdateProperty(ref _editButtonText, value); }
         }
 
         public string EditButtonCurrentTextKey { get; set; } = EDIT;
@@ -88,7 +88,7 @@ namespace AnnoDesigner.ViewModels
             //Only set new hotkeys if the user didn't click cancel, and they didn't close the window without a key/action bound
             if (!userCancelled && !(key == Key.None && action == ExtendedMouseAction.None))
             {
-                hotkey.UpdateHotkey(key, action, modifiers, (actionType == ActionRecorder.ActionType.KeyAction ? GestureType.KeyGesture : GestureType.MouseGesture));
+                hotkey.UpdateHotkey(key, action, modifiers, actionType == ActionRecorder.ActionType.KeyAction ? GestureType.KeyGesture : GestureType.MouseGesture);
             }
             EditButtonCurrentTextKey = EDIT;
             UpdateRebindButtonText();

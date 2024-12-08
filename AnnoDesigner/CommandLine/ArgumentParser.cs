@@ -22,7 +22,10 @@ namespace AnnoDesigner.CommandLine
         {
             IProgramArgs parsedArgs = null;
 
-            void StoreParsedArgs(IProgramArgs args) => parsedArgs = args;
+            void StoreParsedArgs(IProgramArgs args)
+            {
+                parsedArgs = args;
+            }
 
             var root = new RootCommand
             {
@@ -32,7 +35,7 @@ namespace AnnoDesigner.CommandLine
             };
             root.SetHandler(() => parsedArgs = new EmptyArgs());
 
-            root.Invoke(arguments.ToArray(), _console);
+            _ = root.Invoke(arguments.ToArray(), _console);
 
             return parsedArgs;
         }

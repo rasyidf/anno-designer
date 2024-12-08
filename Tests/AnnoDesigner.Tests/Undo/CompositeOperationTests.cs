@@ -22,11 +22,11 @@ namespace AnnoDesigner.Tests.Undo
 
             var operation = new CompositeOperation()
             {
-                Operations = new List<IOperation>()
-                {
+                Operations =
+                [
                     op1.Object,
                     op2.Object
-                }
+                ]
             };
 
             // Act
@@ -53,11 +53,11 @@ namespace AnnoDesigner.Tests.Undo
 
             var operation = new CompositeOperation()
             {
-                Operations = new List<IOperation>()
-                {
+                Operations =
+                [
                     op1.Object,
                     op2.Object
-                }
+                ]
             };
 
             // Act

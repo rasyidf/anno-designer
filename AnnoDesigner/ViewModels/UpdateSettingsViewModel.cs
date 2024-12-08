@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -116,7 +115,7 @@ namespace AnnoDesigner.ViewModels
 
         private async Task CheckForNewAppVersionAsync()
         {
-            (bool isNewAppVersionAvailable, Version newAppVersion) = await _updateHelper.IsNewAppVersionAvailableAsync();
+            (var isNewAppVersionAvailable, var newAppVersion) = await _updateHelper.IsNewAppVersionAvailableAsync();
 
             if (isNewAppVersionAvailable)
             {
@@ -171,7 +170,7 @@ namespace AnnoDesigner.ViewModels
 
         private void ExecuteOpenReleases(object param)
         {
-            Process.Start("https://github.com/AnnoDesigner/anno-designer/releases");
+            _ = Process.Start("https://github.com/AnnoDesigner/anno-designer/releases");
         }
 
         public ICommand DownloadPresetsCommand { get; private set; }
@@ -232,19 +231,19 @@ namespace AnnoDesigner.ViewModels
         public string VersionValue
         {
             get { return _versionValue; }
-            set { UpdateProperty(ref _versionValue, value); }
+            set { _ = UpdateProperty(ref _versionValue, value); }
         }
 
         public string FileVersionValue
         {
             get { return _fileVersionValue; }
-            set { UpdateProperty(ref _fileVersionValue, value); }
+            set { _ = UpdateProperty(ref _fileVersionValue, value); }
         }
 
         public string PresetsVersionValue
         {
             get { return _presetsVersionValue; }
-            set { UpdateProperty(ref _presetsVersionValue, value); }
+            set { _ = UpdateProperty(ref _presetsVersionValue, value); }
         }
 
         public bool UpdateSupportsPrerelease
@@ -274,55 +273,55 @@ namespace AnnoDesigner.ViewModels
         public bool IsUpdateAvailable
         {
             get { return _isUpdateAvailable; }
-            set { UpdateProperty(ref _isUpdateAvailable, value); }
+            set { _ = UpdateProperty(ref _isUpdateAvailable, value); }
         }
 
         public bool IsPresetUpdateAvailable
         {
             get { return _isPresetUpdateAvailable; }
-            set { UpdateProperty(ref _isPresetUpdateAvailable, value); }
+            set { _ = UpdateProperty(ref _isPresetUpdateAvailable, value); }
         }
 
         public bool IsAppUpToDate
         {
             get { return _isAppUpToDate; }
-            set { UpdateProperty(ref _isAppUpToDate, value); }
+            set { _ = UpdateProperty(ref _isAppUpToDate, value); }
         }
 
         public bool IsUpdateError
         {
             get { return _isUpdateError; }
-            set { UpdateProperty(ref _isUpdateError, value); }
+            set { _ = UpdateProperty(ref _isUpdateError, value); }
         }
 
         public bool IsBusy
         {
             get { return _isBusy; }
-            set { UpdateProperty(ref _isBusy, value); }
+            set { _ = UpdateProperty(ref _isBusy, value); }
         }
 
         public string BusyContent
         {
             get { return _busyContent; }
-            set { UpdateProperty(ref _busyContent, value); }
+            set { _ = UpdateProperty(ref _busyContent, value); }
         }
 
         public string ColorPresetsVersionValue
         {
             get { return _colorPresetsVersionValue; }
-            set { UpdateProperty(ref _colorPresetsVersionValue, value); }
+            set { _ = UpdateProperty(ref _colorPresetsVersionValue, value); }
         }
 
         public string TreeLocalizationVersionValue
         {
             get { return _treeLocalizationVersionValue; }
-            set { UpdateProperty(ref _treeLocalizationVersionValue, value); }
+            set { _ = UpdateProperty(ref _treeLocalizationVersionValue, value); }
         }
 
         public string UpdatedVersionValue
         {
             get { return _updatedVersionValue; }
-            set { UpdateProperty(ref _updatedVersionValue, value); }
+            set { _ = UpdateProperty(ref _updatedVersionValue, value); }
         }
     }
 }

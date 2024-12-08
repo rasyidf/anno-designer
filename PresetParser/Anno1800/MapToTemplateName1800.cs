@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AnnoDesigner.Core.Extensions;
 
 namespace PresetParser.Anno1800
 {
     /// <summary>
     /// This process will set the right Template name to the Enbesa Park Ornamets the green color, all other no listed will be standard yellow/gold color
-   
+
     public static class MapToTemplateName1800
     {
-        private static readonly List<string> ChangeTemplateNameToOrnamentalBuilding_Park_1800 = new List<string> { "AfriFlowerBed_Single_Tree", "AfriFlowerBed_straight_noTree", "AfriFlowerBed_T", "AfriFlowerBed_Corner", "AfriFlowerBed_X", 
-            "AfriFlowerBed_End", "AfriPark_Bush01", "AfriPark_Tree02", "AfriPark_Grass", "AfriFlowerBed_Single_NoTree", "AfriPark_Bush02","AfriFlowerBed_straight_Tree","AfriPark_Tree01"};
-        
+        private static readonly List<string> ChangeTemplateNameToOrnamentalBuilding_Park_1800 = [ "AfriFlowerBed_Single_Tree", "AfriFlowerBed_straight_noTree", "AfriFlowerBed_T", "AfriFlowerBed_Corner", "AfriFlowerBed_X",
+            "AfriFlowerBed_End", "AfriPark_Bush01", "AfriPark_Tree02", "AfriPark_Grass", "AfriFlowerBed_Single_NoTree", "AfriPark_Bush02","AfriFlowerBed_straight_Tree","AfriPark_Tree01"];
+
         /// <summary>
         /// Retuns the faction and group for an identifier.
         /// </summary>

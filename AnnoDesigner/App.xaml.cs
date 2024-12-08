@@ -14,6 +14,7 @@ using AnnoDesigner.Core.Extensions;
 using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Loader;
+using AnnoDesigner.Core.Presets.Models;
 using AnnoDesigner.Core.RecentFiles;
 using AnnoDesigner.Core.Services;
 using AnnoDesigner.Models;
@@ -40,23 +41,18 @@ namespace AnnoDesigner
         private static readonly IConsole _console;
 
         public new MainWindow MainWindow { get => base.MainWindow as MainWindow; set => base.MainWindow = value; }
-
         static App()
         {
             _commons = Commons.Instance;
             _appSettings = AppSettings.Instance;
             _messageBoxService = new MessageBoxService();
-
             Localization.Localization.Init(_commons);
             _localizationHelper = Localization.Localization.Instance;
-
             _updateHelper = new UpdateHelper(ApplicationPath, _appSettings, _messageBoxService, _localizationHelper);
             _fileSystem = new FileSystem();
-
             _console = new ConsoleManager.LazyConsole();
             _argumentParser = new ArgumentParser(_console, _fileSystem);
         }
-
         public App()
         {
             AppDomain.CurrentDomain.UnhandledException += (s, e) =>
@@ -91,7 +87,7 @@ namespace AnnoDesigner
             if (!string.IsNullOrWhiteSpace(logFile))
             {
                 logFile = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), logFile);
-                if (File.Exists(logFile))
+                if (_fileSystem.File.Exists(logFile))
                 {
                     logFile = logFile.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
                     message += $"{Environment.NewLine}{Environment.NewLine}Details in \"{logFile}\".";
@@ -111,10 +107,7 @@ namespace AnnoDesigner
         {
             get
             {
-                if (_executablePath is null)
-                {
-                    _executablePath = Assembly.GetEntryAssembly().Location;
-                }
+                _executablePath ??= Assembly.GetEntryAssembly().Location;
                 return _executablePath;
             }
         }
@@ -124,10 +117,7 @@ namespace AnnoDesigner
         {
             get
             {
-                if (_applicationPath is null)
-                {
-                    _applicationPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-                }
+                _applicationPath ??= Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
                 return _applicationPath;
             }
         }
@@ -148,7 +138,7 @@ namespace AnnoDesigner
                 if (ConsoleManager.StartedWithoutConsole)
                 {
                     Console.WriteLine("Press enter to exit");
-                    Console.ReadLine();
+                    _ = Console.ReadLine();
                 }
                 ConsoleManager.Hide();
                 Environment.Exit(0);
@@ -185,9 +175,9 @@ namespace AnnoDesigner
                     }
                 }
 
-                if (File.Exists(fileName))
+                if (_fileSystem.File.Exists(fileName))
                 {
-                    File.Delete(fileName);
+                    _fileSystem.File.Delete(fileName);
                 }
 
                 _appSettings.Reload();
@@ -218,7 +208,7 @@ namespace AnnoDesigner
             ITreeLocalizationLoader treeLocalizationLoader = new TreeLocalizationLoader(_fileSystem);
 
             var mainVM = new MainViewModel(_commons, _appSettings, recentFilesHelper, _messageBoxService, _updateHelper, _localizationHelper, _fileSystem, treeLocalizationLoader: treeLocalizationLoader);
-            mainVM.UpdateRegisteredExtension();
+            MainViewModel.UpdateRegisteredExtension();
 
             //TODO MainWindow.ctor calls AnnoCanvas.ctor loads presets -> change logic when to load data 
             MainWindow = new MainWindow(_appSettings);
@@ -236,7 +226,7 @@ namespace AnnoDesigner
                 {
                     var w = new Welcome();
                     w.DataContext = mainVM.WelcomeViewModel;
-                    w.ShowDialog();
+                    _ = w.ShowDialog();
                 }
                 //started via command line and language is not set -> set default language
                 else
@@ -245,12 +235,12 @@ namespace AnnoDesigner
                 }
             }
 
-            MainWindow.ShowDialog();
+            _ = MainWindow.ShowDialog();
         }
 
         private static bool IsAnotherInstanceRunning()
         {
-            Process currentProcess = Process.GetCurrentProcess();
+            var currentProcess = Process.GetCurrentProcess();
             var currentFileLocation = currentProcess.MainModule.FileName;
 
             var runningProcesses = from process in Process.GetProcessesByName(currentProcess.ProcessName)

@@ -37,12 +37,7 @@ namespace AnnoDesigner.Core.Models
 
         public string NameForLanguage(string languageCode)
         {
-            if (Localizations is null || !Localizations.TryGetValue(languageCode, out var translation))
-            {
-                return Name;
-            }
-
-            return translation;
+            return Localizations is null || !Localizations.TryGetValue(languageCode, out var translation) ? Name : translation;
         }
 
         public BitmapImage Icon

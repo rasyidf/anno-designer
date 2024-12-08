@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
 
@@ -25,21 +20,21 @@ namespace AnnoDesigner.ViewModels
 
         public LicensesViewModel()
         {
-            Licenses = new ObservableCollection<LicenseInfo>
-            {
+            Licenses =
+            [
                 new LicenseInfo
                 {
                     License = APACHE_2,
                     LicenseURL = "https://github.com/google/material-design-icons/blob/master/LICENSE",
                     ProjectName = "Material design icons",
                     ProjectWebsite = "https://github.com/google/material-design-icons",
-                    Assets = new List<string>()
-                    {
+                    Assets =
+                    [
                         "left-click.png",
                         "middle-click.png",
                         "right-click.png",
                         "chevron-up.png"
-                    }
+                    ]
                 },
                 new LicenseInfo
                 {
@@ -48,7 +43,7 @@ namespace AnnoDesigner.ViewModels
                     ProjectName="Extended WPF Toolkit™ (3.8.2)",
                     ProjectWebsite="https://github.com/xceedsoftware/wpftoolkit"
                 }
-            };
+            ];
 
 
 

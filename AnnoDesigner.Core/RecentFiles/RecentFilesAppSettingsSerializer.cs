@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AnnoDesigner.Core.Models;
 using Newtonsoft.Json;
 using NLog;
@@ -24,7 +22,7 @@ namespace AnnoDesigner.Core.RecentFiles
         {
             if (string.IsNullOrWhiteSpace(_appSettings.RecentFiles))
             {
-                return new List<RecentFile>();
+                return [];
             }
 
             var savedList = new List<RecentFile>();

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using AnnoDesigner.Core.Presets.Comparer;
 using AnnoDesigner.Core.Presets.Models;
 using Moq;
@@ -28,12 +24,12 @@ namespace AnnoDesigner.Core.Tests
         {
             // Arrange
             var mockedElement1 = new Mock<IBuildingInfo>();
-            mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
+            _ = mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
 
             var mockedElement2 = new Mock<IBuildingInfo>();
-            mockedElement2.SetupGet(x => x.Group).Returns(GROUP_FIRST);
+            _ = mockedElement2.SetupGet(x => x.Group).Returns(GROUP_FIRST);
 
-            BuildingInfoComparer comparer = new BuildingInfoComparer();
+            var comparer = new BuildingInfoComparer();
 
             // Act/Assert
             Assert.True(comparer.Equals(mockedElement1.Object, mockedElement2.Object));
@@ -44,9 +40,9 @@ namespace AnnoDesigner.Core.Tests
         {
             // Arrange
             var mockedElement = new Mock<IBuildingInfo>();
-            mockedElement.SetupGet(x => x.Group).Returns(GROUP_FIRST);
+            _ = mockedElement.SetupGet(x => x.Group).Returns(GROUP_FIRST);
 
-            BuildingInfoComparer comparer = new BuildingInfoComparer();
+            var comparer = new BuildingInfoComparer();
 
             // Act/Assert
             Assert.False(comparer.Equals(mockedElement.Object, null));
@@ -57,7 +53,7 @@ namespace AnnoDesigner.Core.Tests
         public void Equals_BothAreNull_ShouldReturnTrue()
         {
             // Arrange
-            BuildingInfoComparer comparer = new BuildingInfoComparer();
+            var comparer = new BuildingInfoComparer();
 
             // Act/Assert
             Assert.True(comparer.Equals(null, null));
@@ -68,12 +64,12 @@ namespace AnnoDesigner.Core.Tests
         {
             // Arrange
             var mockedElement1 = new Mock<IBuildingInfo>();
-            mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
+            _ = mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
 
             var mockedElement2 = new Mock<IBuildingInfo>();
-            mockedElement2.SetupGet(x => x.Group).Returns(GROUP_SECOND);
+            _ = mockedElement2.SetupGet(x => x.Group).Returns(GROUP_SECOND);
 
-            BuildingInfoComparer comparer = new BuildingInfoComparer();
+            var comparer = new BuildingInfoComparer();
 
             // Act/Assert
             Assert.False(comparer.Equals(mockedElement1.Object, mockedElement2.Object));
@@ -88,12 +84,12 @@ namespace AnnoDesigner.Core.Tests
         {
             // Arrange
             var mockedElement1 = new Mock<IBuildingInfo>();
-            mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
+            _ = mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
 
             var mockedElement2 = new Mock<IBuildingInfo>();
-            mockedElement2.SetupGet(x => x.Group).Returns(GROUP_FIRST);
+            _ = mockedElement2.SetupGet(x => x.Group).Returns(GROUP_FIRST);
 
-            BuildingInfoComparer comparer = new BuildingInfoComparer();
+            var comparer = new BuildingInfoComparer();
 
             // Act
             var hashCode1 = comparer.GetHashCode(mockedElement1.Object);
@@ -108,12 +104,12 @@ namespace AnnoDesigner.Core.Tests
         {
             // Arrange
             var mockedElement1 = new Mock<IBuildingInfo>();
-            mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
+            _ = mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
 
             var mockedElement2 = new Mock<IBuildingInfo>();
-            mockedElement2.SetupGet(x => x.Group).Returns(GROUP_SECOND);
+            _ = mockedElement2.SetupGet(x => x.Group).Returns(GROUP_SECOND);
 
-            BuildingInfoComparer comparer = new BuildingInfoComparer();
+            var comparer = new BuildingInfoComparer();
 
             // Act
             var hashCode1 = comparer.GetHashCode(mockedElement1.Object);
@@ -127,7 +123,7 @@ namespace AnnoDesigner.Core.Tests
         public void GetHashCode_ElementIsNull_ShouldNotThrow()
         {
             // Arrange
-            BuildingInfoComparer comparer = new BuildingInfoComparer();
+            var comparer = new BuildingInfoComparer();
 
             // Act
             var hashCode = comparer.GetHashCode(null);

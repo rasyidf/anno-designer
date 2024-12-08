@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO.Abstractions;
 
 namespace AnnoDesigner.Core.Helper
 {
     public static class FileHelper
     {
+        private static readonly IFileSystem _fileSystem = new FileSystem();
+
         /// <summary>
         /// Sets the attributes of a file to 'normal'. If the file was set to ReadOnly the attribute will be removed.
         /// </summary>
@@ -21,12 +20,12 @@ namespace AnnoDesigner.Core.Helper
                 throw new ArgumentNullException(nameof(filePath), "The path to the file was not specified.");
             }
 
-            if (!File.Exists(filePath))
+            if (!_fileSystem.File.Exists(filePath))
             {
                 return;
             }
 #if DEBUG
-            var fileAttributes = File.GetAttributes(filePath);
+            var fileAttributes = _fileSystem.File.GetAttributes(filePath);
 
             //check whether a file is read only
             var isReadOnly = fileAttributes.HasFlag(FileAttributes.ReadOnly);
@@ -42,7 +41,7 @@ namespace AnnoDesigner.Core.Helper
 #endif            
             try
             {
-                File.SetAttributes(filePath, FileAttributes.Normal);
+                _fileSystem.File.SetAttributes(filePath, FileAttributes.Normal);
             }
             catch (Exception ex)
             {

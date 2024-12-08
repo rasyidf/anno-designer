@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using AnnoDesigner.Core.Models;
 
 namespace AnnoDesigner.Models
@@ -17,13 +12,13 @@ namespace AnnoDesigner.Models
         public int Count
         {
             get { return _count; }
-            set { UpdateProperty(ref _count, value); }
+            set { _ = UpdateProperty(ref _count, value); }
         }
 
         public string Name
         {
             get { return _name; }
-            set { UpdateProperty(ref _name, value); }
+            set { _ = UpdateProperty(ref _name, value); }
         }
     }
 }

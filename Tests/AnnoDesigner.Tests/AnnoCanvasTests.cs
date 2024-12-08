@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Models;
@@ -25,16 +24,16 @@ namespace AnnoDesigner.Tests
         public AnnoCanvasTests()
         {
             var mockedAppSettings = new Mock<IAppSettings>();
-            mockedAppSettings.Setup(x => x.ColorGridLines).Returns(() => "{\"Type\":\"Default\",\"Color\":{\"A\":255,\"R\":0,\"G\":0,\"B\":0}}");
-            mockedAppSettings.Setup(x => x.ColorObjectBorderLines).Returns(() => "{\"Type\":\"Default\",\"Color\":{\"A\":255,\"R\":0,\"G\":0,\"B\":0}}");
+            _ = mockedAppSettings.Setup(x => x.ColorGridLines).Returns(() => "{\"Type\":\"Default\",\"Color\":{\"A\":255,\"R\":0,\"G\":0,\"B\":0}}");
+            _ = mockedAppSettings.Setup(x => x.ColorObjectBorderLines).Returns(() => "{\"Type\":\"Default\",\"Color\":{\"A\":255,\"R\":0,\"G\":0,\"B\":0}}");
             _appSettings = mockedAppSettings.Object;
 
             var mockedBrushCache = new Mock<IBrushCache>();
-            mockedBrushCache.Setup(x => x.GetSolidBrush(It.IsAny<Color>())).Returns(() => new SolidColorBrush(Colors.Black));
+            _ = mockedBrushCache.Setup(x => x.GetSolidBrush(It.IsAny<Color>())).Returns(() => new SolidColorBrush(Colors.Black));
             _brushCache = mockedBrushCache.Object;
 
             var mockedPenCache = new Mock<IPenCache>();
-            mockedPenCache.Setup(x => x.GetPen(It.IsAny<Brush>(), It.IsAny<double>())).Returns(() => new Pen(new SolidColorBrush(Colors.Black), 2));
+            _ = mockedPenCache.Setup(x => x.GetPen(It.IsAny<Brush>(), It.IsAny<double>())).Returns(() => new Pen(new SolidColorBrush(Colors.Black), 2));
             _penCache = mockedPenCache.Object;
 
             _coordinateHelper = new Mock<ICoordinateHelper>().Object;
@@ -58,7 +57,7 @@ namespace AnnoDesigner.Tests
         private IAnnoCanvas GetCanvas()
         {
             return new AnnoCanvas(new BuildingPresets(),
-                new Dictionary<string, IconImage>(),
+                [],
                 _appSettings,
                 _coordinateHelper,
                 _brushCache,
@@ -80,7 +79,7 @@ namespace AnnoDesigner.Tests
             var canvas = GetCanvas();
 
             var selectedObject = CreateLayoutObject(0, 0, 2, 2);
-            canvas.SelectedObjects.Add(selectedObject);
+            _ = canvas.SelectedObjects.Add(selectedObject);
 
             Assert.Empty(canvas.CurrentObjects);
 
@@ -88,7 +87,7 @@ namespace AnnoDesigner.Tests
             canvas.RotateCommand.Execute(null);
 
             // Assert
-            Assert.Single(canvas.CurrentObjects);
+            _ = Assert.Single(canvas.CurrentObjects);
 
             selectedObject.Size = new Size(4, 4);
             Assert.NotEqual(selectedObject.Size, canvas.CurrentObjects[0].Size);

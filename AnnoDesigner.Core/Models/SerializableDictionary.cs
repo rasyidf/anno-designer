@@ -12,12 +12,12 @@ namespace AnnoDesigner.Core.Models
 
         public SerializableDictionary()
         {
-            Dict = new Dictionary<string, T>();
+            Dict = [];
         }
 
         protected SerializableDictionary(SerializationInfo info, StreamingContext context)
         {
-            Dict = new Dictionary<string, T>();
+            Dict = [];
             foreach (var entry in info)
             {
                 Dict.Add(entry.Name, (T)Convert.ChangeType(entry.Value, typeof(T)));
@@ -36,7 +36,7 @@ namespace AnnoDesigner.Core.Models
         {
             get
             {
-                return Dict.ContainsKey(key) ? Dict[key] : default;
+                return Dict.TryGetValue(key, out var value) ? value : default;
             }
             set
             {

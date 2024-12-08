@@ -22,7 +22,7 @@ namespace AnnoDesigner.ViewModels
                     return;
                 }
 
-                UpdateProperty(ref _layoutVersion, value);
+                _ = UpdateProperty(ref _layoutVersion, value);
                 OnPropertyChanged(nameof(LayoutVersionDisplayValue));
             }
         }

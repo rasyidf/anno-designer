@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.Serialization;
@@ -13,7 +12,7 @@ namespace AnnoDesigner.Core.Presets.Models
         public PredefinedColor()
         {
             TargetTemplate = string.Empty;
-            TargetIdentifiers = new List<string>();
+            TargetIdentifiers = [];
             Color = new SerializableColor();
         }
 

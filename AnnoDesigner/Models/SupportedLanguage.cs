@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
 using AnnoDesigner.Core.Models;
 
 namespace AnnoDesigner.Models
@@ -24,19 +18,19 @@ namespace AnnoDesigner.Models
         public string Name
         {
             get { return _name; }
-            private set { UpdateProperty(ref _name, value); }
+            private set { _ = UpdateProperty(ref _name, value); }
         }
 
         public string FlagPath
         {
             get { return _flagPath; }
-            set { UpdateProperty(ref _flagPath, value); }
+            set { _ = UpdateProperty(ref _flagPath, value); }
         }
 
         public bool IsSelected
         {
             get { return _isSelected; }
-            set { UpdateProperty(ref _isSelected, value); }
+            set { _ = UpdateProperty(ref _isSelected, value); }
         }
     }
 }

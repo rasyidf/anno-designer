@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.IO.Abstractions;
 using System.Windows;
 using System.Windows.Media;
 using AnnoDesigner.Core.Helper;
@@ -16,6 +17,7 @@ namespace AnnoDesigner.Models
     [DebuggerDisplay("{" + nameof(Identifier) + "}")]
     public class LayoutObject : IBounded
     {
+        private readonly IFileSystem _fileSystem;
         private AnnoObject _wrappedAnnoObject;
         private readonly ICoordinateHelper _coordinateHelper;
         private readonly IBrushCache _brushCache;
@@ -58,21 +60,20 @@ namespace AnnoDesigner.Models
         private double _borderlessPenThickness; //hot path optimization (avoid access of DependencyProperty)
         private Brush _borderlessPenBrush; //hot path optimization (avoid access of DependencyProperty)
         private Rect? _bounds;
-
         /// <summary>
-        /// Creates a new instance of a wrapper for <see cref="AnnoObject"/>.
+        /// Creates a new instance of a wrapper for <see cref = "AnnoObject"/>.
         /// </summary>
-        /// <param name="annoObjectToWrap">The <see cref="AnnoObject"/> to wrap. Reference will be kept.</param>
-        /// <param name="coordinateHelperToUse">The <see cref="ICoordinateHelper"/> to use in calculations.</param>
-        /// <param name="brushCacheToUse">The <see cref="IBrushCache"/> used as a cache.</param>
+        /// <param name = "annoObjectToWrap">The <see cref = "AnnoObject"/> to wrap. Reference will be kept.</param>
+        /// <param name = "coordinateHelperToUse">The <see cref = "ICoordinateHelper"/> to use in calculations.</param>
+        /// <param name = "brushCacheToUse">The <see cref = "IBrushCache"/> used as a cache.</param>
         public LayoutObject(AnnoObject annoObjectToWrap, ICoordinateHelper coordinateHelperToUse, IBrushCache brushCacheToUse, IPenCache penCacheToUse)
         {
             WrappedAnnoObject = annoObjectToWrap;
             _coordinateHelper = coordinateHelperToUse;
             _brushCache = brushCacheToUse;
             _penCache = penCacheToUse;
+            _fileSystem = new FileSystem();
         }
-
         public AnnoObject WrappedAnnoObject
         {
             get { return _wrappedAnnoObject; }
@@ -103,10 +104,7 @@ namespace AnnoDesigner.Models
         {
             get
             {
-                if (_transparentBrush == null)
-                {
-                    _transparentBrush = _brushCache.GetSolidBrush(TransparentColor);
-                }
+                _transparentBrush ??= _brushCache.GetSolidBrush(TransparentColor);
 
                 return _transparentBrush;
             }
@@ -129,10 +127,7 @@ namespace AnnoDesigner.Models
         {
             get
             {
-                if (_renderBrush == null)
-                {
-                    _renderBrush = _brushCache.GetSolidBrush(RenderColor);
-                }
+                _renderBrush ??= _brushCache.GetSolidBrush(RenderColor);
 
                 return _renderBrush;
             }
@@ -158,10 +153,7 @@ namespace AnnoDesigner.Models
         {
             get
             {
-                if (_blockedAreaBrush == null)
-                {
-                    _blockedAreaBrush = _brushCache.GetSolidBrush(BlockedAreaColor);
-                }
+                _blockedAreaBrush ??= _brushCache.GetSolidBrush(BlockedAreaColor);
 
                 return _blockedAreaBrush;
             }
@@ -212,20 +204,14 @@ namespace AnnoDesigner.Models
         {
             get
             {
-                if (_wrappedAnnoObject.BlockedAreaWidth > 0)
-                {
-                    return _wrappedAnnoObject.BlockedAreaWidth;
-                }
-
-                switch (Direction)
-                {
-                    case GridDirection.Up:
-                    case GridDirection.Down: return Size.Width - 0.5;
-                    case GridDirection.Right:
-                    case GridDirection.Left: return Size.Height - 0.5;
-                }
-
-                return 0;
+                return _wrappedAnnoObject.BlockedAreaWidth > 0
+                    ? _wrappedAnnoObject.BlockedAreaWidth
+                    : Direction switch
+                    {
+                        GridDirection.Up or GridDirection.Down => Size.Width - 0.5,
+                        GridDirection.Right or GridDirection.Left => Size.Height - 0.5,
+                        _ => 0,
+                    };
             }
         }
 
@@ -287,24 +273,24 @@ namespace AnnoDesigner.Models
                     {
                         case GridDirection.Up:
                             return _blockedAreaScreenRect = new Rect(
-                                ScreenRect.Left + (ScreenRect.Width - blockedAreaScreenWidth) / 2,
+                                ScreenRect.Left + ((ScreenRect.Width - blockedAreaScreenWidth) / 2),
                                 ScreenRect.Top - blockedAreaScreenLength,
                                 blockedAreaScreenWidth,
                                 blockedAreaScreenLength);
                         case GridDirection.Right:
                             return _blockedAreaScreenRect = new Rect(
                                 ScreenRect.Right,
-                                ScreenRect.Top + (ScreenRect.Height - blockedAreaScreenWidth) / 2,
+                                ScreenRect.Top + ((ScreenRect.Height - blockedAreaScreenWidth) / 2),
                                 blockedAreaScreenLength,
                                 blockedAreaScreenWidth);
                         case GridDirection.Down:
-                            return _blockedAreaScreenRect = new Rect(ScreenRect.Left + (ScreenRect.Width - blockedAreaScreenWidth) / 2,
+                            return _blockedAreaScreenRect = new Rect(ScreenRect.Left + ((ScreenRect.Width - blockedAreaScreenWidth) / 2),
                                 ScreenRect.Bottom,
                                 blockedAreaScreenWidth,
                                 blockedAreaScreenLength);
                         case GridDirection.Left:
                             return _blockedAreaScreenRect = new Rect(ScreenRect.TopLeft.X - blockedAreaScreenLength,
-                                ScreenRect.TopLeft.Y + (ScreenRect.Height - blockedAreaScreenWidth) / 2,
+                                ScreenRect.TopLeft.Y + ((ScreenRect.Height - blockedAreaScreenWidth) / 2),
                                 blockedAreaScreenLength,
                                 blockedAreaScreenWidth);
                     }
@@ -348,10 +334,7 @@ namespace AnnoDesigner.Models
         {
             get
             {
-                if (_iconNameWithoutExtension == null)
-                {
-                    _iconNameWithoutExtension = Path.GetFileNameWithoutExtension(WrappedAnnoObject.Icon);
-                }
+                _iconNameWithoutExtension ??= Path.GetFileNameWithoutExtension(WrappedAnnoObject.Icon);
 
                 return _iconNameWithoutExtension;
             }
@@ -363,10 +346,7 @@ namespace AnnoDesigner.Models
         {
             get
             {
-                if (_identifier == null)
-                {
-                    _identifier = WrappedAnnoObject.Identifier;
-                }
+                _identifier ??= WrappedAnnoObject.Identifier;
 
                 return _identifier;
             }
@@ -407,10 +387,7 @@ namespace AnnoDesigner.Models
         {
             get
             {
-                if (_bounds is null)
-                {
-                    _bounds = new Rect(Position, Size);
-                }
+                _bounds ??= new Rect(Position, Size);
 
                 return _bounds.Value;
             }

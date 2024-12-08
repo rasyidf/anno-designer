@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AnnoDesigner.Core.Models;
 
 namespace AnnoDesigner.Models.PresetsTree
@@ -25,7 +20,7 @@ namespace AnnoDesigner.Models.PresetsTree
         {
             Parent = parent;
             Header = string.Empty;
-            Children = new ObservableCollection<GenericTreeItem>();
+            Children = [];
             IsExpanded = false;
             IsVisible = true;
             IsSelected = false;
@@ -34,7 +29,7 @@ namespace AnnoDesigner.Models.PresetsTree
         public GenericTreeItem Parent
         {
             get { return _parent; }
-            private set { UpdateProperty(ref _parent, value); }
+            private set { _ = UpdateProperty(ref _parent, value); }
         }
 
         public GenericTreeItem Root
@@ -45,19 +40,19 @@ namespace AnnoDesigner.Models.PresetsTree
         public string Header
         {
             get { return _header; }
-            set { UpdateProperty(ref _header, value); }
+            set { _ = UpdateProperty(ref _header, value); }
         }
 
         public AnnoObject AnnoObject
         {
             get { return _annoObject; }
-            set { UpdateProperty(ref _annoObject, value); }
+            set { _ = UpdateProperty(ref _annoObject, value); }
         }
 
         public ObservableCollection<GenericTreeItem> Children
         {
             get { return _children; }
-            set { UpdateProperty(ref _children, value); }
+            set { _ = UpdateProperty(ref _children, value); }
         }
 
         public bool IsExpanded
@@ -65,7 +60,7 @@ namespace AnnoDesigner.Models.PresetsTree
             get { return _isExpanded; }
             set
             {
-                UpdateProperty(ref _isExpanded, value);
+                _ = UpdateProperty(ref _isExpanded, value);
 
                 //also expand all parent nodes
                 if (value && Parent != null)
@@ -78,13 +73,13 @@ namespace AnnoDesigner.Models.PresetsTree
         public bool IsVisible
         {
             get { return _isVisible; }
-            set { UpdateProperty(ref _isVisible, value); }
+            set { _ = UpdateProperty(ref _isVisible, value); }
         }
 
         public bool IsSelected
         {
             get { return _isSelected; }
-            set { UpdateProperty(ref _isSelected, value); }
+            set { _ = UpdateProperty(ref _isSelected, value); }
         }
 
         /// <summary>
@@ -93,7 +88,7 @@ namespace AnnoDesigner.Models.PresetsTree
         public int Id
         {
             get { return _id; }
-            set { UpdateProperty(ref _id, value); }
+            set { _ = UpdateProperty(ref _id, value); }
         }
     }
 }

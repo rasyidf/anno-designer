@@ -1,14 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\AnnoDesigner.Core\AnnoDesigner.Core.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="System.IO.Abstractions" />
   </ItemGroup>
   <PropertyGroup />
 </Project>

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using System.Windows;
 using AnnoDesigner.Core.Converters;
 using Xunit;
@@ -76,7 +71,7 @@ namespace AnnoDesigner.Core.Tests
             var converter = new BoolToVisibilityConverter();
 
             // Act
-            var result = converter.Convert(String.Empty, typeof(Visibility), null, CultureInfo.CurrentCulture);
+            var result = converter.Convert(string.Empty, typeof(Visibility), null, CultureInfo.CurrentCulture);
 
             // Assert
             Assert.Null(result);

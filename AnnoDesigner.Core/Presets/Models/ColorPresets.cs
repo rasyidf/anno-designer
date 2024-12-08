@@ -11,7 +11,7 @@ namespace AnnoDesigner.Core.Presets.Models
         public ColorPresets()
         {
             Version = string.Empty;
-            AvailableSchemes = new List<ColorScheme>();
+            AvailableSchemes = [];
         }
 
         [DataMember(Order = 0)]

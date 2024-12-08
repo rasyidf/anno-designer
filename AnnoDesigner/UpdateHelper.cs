@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
+using System.IO.Abstractions;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
@@ -19,8 +19,20 @@ using Octokit;
 
 namespace AnnoDesigner
 {
-    public class UpdateHelper : IUpdateHelper
+    /// <summary>
+    /// Initializes a new instance of <see cref = "UpdateHelper"/>
+    /// </summary>
+    /// <param name = "basePathToUse">The path the directory of the application.</param>
+    /// <remarks>
+    /// example to get the basePath: <c>string basePath = AppDomain.CurrentDomain.BaseDirectory;</c>
+    /// </remarks>
+    public class UpdateHelper(
+        string basePathToUse,
+        IAppSettings appSettingsToUse,
+        IMessageBoxService messageBoxServiceToUse,
+        ILocalizationHelper localizationHelperToUse) : IUpdateHelper
     {
+        private readonly FileSystem _fileSystem = new();
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         private const string GITHUB_USERNAME = "AnnoDesigner";
@@ -34,37 +46,12 @@ namespace AnnoDesigner
 
         private GitHubClient _apiClient;
         private HttpClient _httpClient;
-        private readonly string _basePath;
-        private readonly IAppSettings _appSettings;
-        private readonly IMessageBoxService _messageBoxService;
-        private readonly ILocalizationHelper _localizationHelper;
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="AnnoDesigner.UpdateHelper"./>
-        /// </summary>
-        /// <param name="basePathToUse">The path the directory of the application.</param>
-        /// <remarks>
-        /// example to get the basePath: <c>string basePath = AppDomain.CurrentDomain.BaseDirectory;</c>
-        /// </remarks>
-        public UpdateHelper(string basePathToUse,
-            IAppSettings appSettingsToUse,
-            IMessageBoxService messageBoxServiceToUse,
-            ILocalizationHelper localizationHelperToUse)
-        {
-            _basePath = basePathToUse;
-            _appSettings = appSettingsToUse;
-            _messageBoxService = messageBoxServiceToUse;
-            _localizationHelper = localizationHelperToUse;
-        }
 
         private GitHubClient ApiClient
         {
             get
             {
-                if (_apiClient == null)
-                {
-                    _apiClient = new GitHubClient(new Octokit.ProductHeaderValue($"anno-designer-{Constants.Version}", "1.0"));
-                }
+                _apiClient ??= new GitHubClient(new Octokit.ProductHeaderValue($"anno-designer-{Constants.Version}", "1.0"));
 
                 return _apiClient;
             }
@@ -86,17 +73,6 @@ namespace AnnoDesigner
                     _httpClient.Timeout = TimeSpan.FromSeconds(30);
                     _httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"anno-designer-{Constants.Version}", "1.0"));
 
-                    //detect DNS changes (default is infinite)
-                    //ServicePointManager.FindServicePoint(new Uri(BASE_URI)).ConnectionLeaseTimeout = (int)TimeSpan.FromMinutes(1).TotalMilliseconds;
-                    //defaut is 2 minutes
-                    ServicePointManager.DnsRefreshTimeout = (int)TimeSpan.FromMinutes(1).TotalMilliseconds;
-                    //increases the concurrent outbound connections
-                    if (ServicePointManager.DefaultConnectionLimit < 1024)
-                    {
-                        ServicePointManager.DefaultConnectionLimit = 1024;
-                    }
-                    //only allow secure protocols
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
                 }
 
                 return _httpClient;
@@ -112,12 +88,9 @@ namespace AnnoDesigner
         {
             var result = new List<AvailableRelease>();
 
-            if (AllReleases == null)
-            {
-                AllReleases = await GetAllAvailableReleases().ConfigureAwait(false);
-            }
+            AllReleases ??= await GetAllAvailableReleases().ConfigureAwait(false);
 
-            foreach (ReleaseType curReleaseType in Enum.GetValues(typeof(ReleaseType)))
+            foreach (var curReleaseType in Enum.GetValues<ReleaseType>())
             {
                 var foundRelease = CheckForAvailableRelease(curReleaseType);
                 if (foundRelease != null)
@@ -131,18 +104,10 @@ namespace AnnoDesigner
 
         public async Task<AvailableRelease> GetAvailableReleasesAsync(ReleaseType releaseType)
         {
-            if (AllReleases == null)
-            {
-                AllReleases = await GetAllAvailableReleases().ConfigureAwait(false);
-            }
+            AllReleases ??= await GetAllAvailableReleases().ConfigureAwait(false);
 
             var foundRelease = CheckForAvailableRelease(releaseType);
-            if (foundRelease == null)
-            {
-                return null;
-            }
-
-            return foundRelease;
+            return foundRelease ?? null;
         }
 
         public async Task<string> DownloadReleaseAsync(AvailableRelease releaseToDownload)
@@ -194,7 +159,7 @@ namespace AnnoDesigner
                 }
 
                 //move file to app directory
-                var tempFileInfo = new FileInfo(pathToDownloadedFile);
+                var tempFileInfo = _fileSystem.FileInfo.New(pathToDownloadedFile);
 
                 var pathToUpdatedPresetsFile = GetPathToUpdatedPresetsFile(releaseToDownload.Type);
                 if (string.IsNullOrWhiteSpace(pathToUpdatedPresetsFile))
@@ -203,10 +168,10 @@ namespace AnnoDesigner
                     return null;
                 }
 
-                if (File.Exists(pathToUpdatedPresetsFile))
+                if (_fileSystem.File.Exists(pathToUpdatedPresetsFile))
                 {
                     FileHelper.ResetFileAttributes(pathToUpdatedPresetsFile);
-                    File.Delete(pathToUpdatedPresetsFile);
+                    _fileSystem.File.Delete(pathToUpdatedPresetsFile);
                 }
 
                 tempFileInfo.MoveTo(pathToUpdatedPresetsFile);
@@ -225,10 +190,10 @@ namespace AnnoDesigner
         {
             return Task.Run(() =>
             {
-                foreach (ReleaseType curReleaseType in Enum.GetValues(typeof(ReleaseType)))
+                foreach (var curReleaseType in Enum.GetValues<ReleaseType>())
                 {
                     var pathToUpdatedPresetsFile = GetPathToUpdatedPresetsFile(curReleaseType);
-                    if (string.IsNullOrWhiteSpace(pathToUpdatedPresetsFile) || !File.Exists(pathToUpdatedPresetsFile))
+                    if (string.IsNullOrWhiteSpace(pathToUpdatedPresetsFile) || !_fileSystem.File.Exists(pathToUpdatedPresetsFile))
                     {
                         continue;
                     }
@@ -246,10 +211,10 @@ namespace AnnoDesigner
             {
                 await Task.Run(async () =>
                 {
-                    foreach (ReleaseType curReleaseType in Enum.GetValues(typeof(ReleaseType)))
+                    foreach (var curReleaseType in Enum.GetValues<ReleaseType>())
                     {
                         var pathToUpdatedPresetsFile = GetPathToUpdatedPresetsFile(curReleaseType);
-                        if (string.IsNullOrWhiteSpace(pathToUpdatedPresetsFile) || !File.Exists(pathToUpdatedPresetsFile))
+                        if (string.IsNullOrWhiteSpace(pathToUpdatedPresetsFile) || !_fileSystem.File.Exists(pathToUpdatedPresetsFile))
                         {
                             continue;
                         }
@@ -265,12 +230,12 @@ namespace AnnoDesigner
                                     var destinationPath = Path.Combine(Path.GetDirectoryName(pathToUpdatedPresetsFile), curEntry.FullName);
                                     var destinationDirectory = Path.GetDirectoryName(destinationPath);
 
-                                    if (!Directory.Exists(destinationDirectory))
+                                    if (!_fileSystem.Directory.Exists(destinationDirectory))
                                     {
-                                        Directory.CreateDirectory(destinationDirectory);
+                                        _ = _fileSystem.Directory.CreateDirectory(destinationDirectory);
                                     }
 
-                                    if (File.Exists(destinationPath))
+                                    if (_fileSystem.File.Exists(destinationPath))
                                     {
                                         FileHelper.ResetFileAttributes(destinationPath);
                                     }
@@ -285,8 +250,7 @@ namespace AnnoDesigner
 
                             //wait extra time for extraction to finish (sometimes the disk needs extra time)
                             await Task.Delay(TimeSpan.FromMilliseconds(200));
-
-                            File.Delete(pathToUpdatedPresetsFile);
+                            _fileSystem.File.Delete(pathToUpdatedPresetsFile);
 
                             logger.Debug("Finished extracting updated presets file.");
 
@@ -295,13 +259,12 @@ namespace AnnoDesigner
 
                         var originalPresetsFileName = Path.GetFileName(pathToUpdatedPresetsFile).Replace(CoreConstants.PrefixUpdatedPresetsFile, string.Empty);
                         var pathToOriginalPresetsFile = Path.Combine(Path.GetDirectoryName(pathToUpdatedPresetsFile), originalPresetsFileName);
-                        if (File.Exists(pathToOriginalPresetsFile))
+                        if (_fileSystem.File.Exists(pathToOriginalPresetsFile))
                         {
                             FileHelper.ResetFileAttributes(pathToOriginalPresetsFile);
-                            File.Delete(pathToOriginalPresetsFile);
+                            _fileSystem.File.Delete(pathToOriginalPresetsFile);
                         }
-
-                        File.Move(pathToUpdatedPresetsFile, pathToOriginalPresetsFile);
+                        _fileSystem.File.Move(pathToUpdatedPresetsFile, pathToOriginalPresetsFile);
 
                         logger.Debug("Finished replacing presets with update.");
                     }
@@ -311,19 +274,16 @@ namespace AnnoDesigner
             {
                 logger.Error(ex, "Error replacing updated presets file.");
 
-                _messageBoxService.ShowError(_localizationHelper.GetLocalization("UpdateErrorPresetMessage"),
-                    _localizationHelper.GetLocalization("Error"));
+                messageBoxServiceToUse.ShowError(localizationHelperToUse.GetLocalization("UpdateErrorPresetMessage"),
+                    localizationHelperToUse.GetLocalization("Error"));
             }
         }
 
         public async Task<(bool, Version)> IsNewAppVersionAvailableAsync()
         {
-            if (_appSettings.UpdateSupportsPrerelease)
+            if (appSettingsToUse.UpdateSupportsPrerelease)
             {
-                if (AllReleases == null)
-                {
-                    AllReleases = await GetAllAvailableReleases().ConfigureAwait(false);
-                }
+                AllReleases ??= await GetAllAvailableReleases().ConfigureAwait(false);
 
                 var foundRelease = CheckForAvailableRelease(ReleaseType.AnnoDesigner);
                 if (foundRelease is null)
@@ -340,10 +300,11 @@ namespace AnnoDesigner
             else
             {
                 var downloadedContent = "0.1";
-                using (var webClient = new WebClient())
+                using (var httpClient = new HttpClient())
                 {
-                    downloadedContent = await webClient.DownloadStringTaskAsync(new Uri("https://raw.githubusercontent.com/AnnoDesigner/anno-designer/master/version.txt"));
+                    downloadedContent = await httpClient.GetStringAsync(new Uri("https://raw.githubusercontent.com/AnnoDesigner/anno-designer/master/version.txt"));
                 }
+
 
                 var isNewVersionAvailable = Version.TryParse(downloadedContent, out var parsedVersion) && parsedVersion > Constants.Version;
 
@@ -363,19 +324,14 @@ namespace AnnoDesigner
                 {
                     logger.Info("Could not establish a connection to the internet.");
 
-                    _messageBoxService.ShowError(_localizationHelper.GetLocalization("UpdateNoConnectionMessage"),
-                            _localizationHelper.GetLocalization("Error"));
+                    messageBoxServiceToUse.ShowError(localizationHelperToUse.GetLocalization("UpdateNoConnectionMessage"),
+                            localizationHelperToUse.GetLocalization("Error"));
 
                     return null;
                 }
 
                 var releases = await ApiClient.Repository.Release.GetAll(GITHUB_USERNAME, GITHUB_PROJECTNAME).ConfigureAwait(false);
-                if (releases == null || releases.Count < 1)
-                {
-                    return null;
-                }
-
-                return releases;
+                return releases == null || releases.Count < 1 ? null : releases;
             }
             catch (Exception ex)
             {
@@ -396,7 +352,7 @@ namespace AnnoDesigner
 
             logger.Debug($"Check for updates with tag: \"{tagToCheck}\"");
 
-            var supportPrerelease = _appSettings.UpdateSupportsPrerelease;
+            var supportPrerelease = appSettingsToUse.UpdateSupportsPrerelease;
             logger.Debug($"Update supports prereleases: {supportPrerelease}");
 
             Release foundPrerelease = null;
@@ -425,29 +381,24 @@ namespace AnnoDesigner
                 return result;
             }
 
-            if (versionPrerelease != default && versionPrerelease > versionRelease)
-            {
-                result = new AvailableRelease
+            result = versionPrerelease != default && versionPrerelease > versionRelease
+                ? new AvailableRelease
                 {
                     Id = foundPrerelease.Id,
                     Type = releaseType,
                     Version = versionPrerelease
-                };
-            }
-            else
-            {
-                result = new AvailableRelease
+                }
+                : new AvailableRelease
                 {
                     Id = foundRelease.Id,
                     Type = releaseType,
                     Version = versionRelease
                 };
-            }
 
             return result;
         }
 
-        private Version ParseVersionFromTag(Release release, string tagToCheck)
+        private static Version ParseVersionFromTag(Release release, string tagToCheck)
         {
             var result = default(Version);
 
@@ -463,7 +414,7 @@ namespace AnnoDesigner
             return result;
         }
 
-        private string GetTagForReleaseType(ReleaseType releaseType)
+        private static string GetTagForReleaseType(ReleaseType releaseType)
         {
             var result = string.Empty;
 
@@ -493,7 +444,7 @@ namespace AnnoDesigner
             return result;
         }
 
-        private string GetAssetNameForReleaseType(ReleaseType releaseType)
+        private static string GetAssetNameForReleaseType(ReleaseType releaseType)
         {
             var result = string.Empty;
 
@@ -531,19 +482,19 @@ namespace AnnoDesigner
             switch (releaseType)
             {
                 case ReleaseType.Presets:
-                    result = Path.Combine(_basePath, CoreConstants.PrefixUpdatedPresetsFile + GetAssetNameForReleaseType(releaseType));
+                    result = _fileSystem.Path.Combine(basePathToUse, CoreConstants.PrefixUpdatedPresetsFile + GetAssetNameForReleaseType(releaseType));
                     break;
                 case ReleaseType.PresetsAndIcons:
-                    result = Path.Combine(_basePath, CoreConstants.PrefixUpdatedPresetsFile + GetAssetNameForReleaseType(releaseType));
+                    result = _fileSystem.Path.Combine(basePathToUse, CoreConstants.PrefixUpdatedPresetsFile + GetAssetNameForReleaseType(releaseType));
                     break;
                 case ReleaseType.PresetsIcons:
-                    result = Path.Combine(_basePath, CoreConstants.PrefixUpdatedPresetsFile + GetAssetNameForReleaseType(releaseType));
+                    result = _fileSystem.Path.Combine(basePathToUse, CoreConstants.PrefixUpdatedPresetsFile + GetAssetNameForReleaseType(releaseType));
                     break;
                 case ReleaseType.PresetsColors:
-                    result = Path.Combine(_basePath, CoreConstants.PrefixUpdatedPresetsFile + GetAssetNameForReleaseType(releaseType));
+                    result = _fileSystem.Path.Combine(basePathToUse, CoreConstants.PrefixUpdatedPresetsFile + GetAssetNameForReleaseType(releaseType));
                     break;
                 case ReleaseType.PresetsWikiBuildingInfo:
-                    result = Path.Combine(_basePath, CoreConstants.PrefixUpdatedPresetsFile + GetAssetNameForReleaseType(releaseType));
+                    result = _fileSystem.Path.Combine(basePathToUse, CoreConstants.PrefixUpdatedPresetsFile + GetAssetNameForReleaseType(releaseType));
                     break;
                 case ReleaseType.Unknown:
                 default:

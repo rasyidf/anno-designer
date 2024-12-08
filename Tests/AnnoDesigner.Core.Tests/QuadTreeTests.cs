@@ -7,7 +7,7 @@ namespace AnnoDesigner.Core.Tests
 {
     public class QuadTreeTests
     {
-        class Bounded : IBounded
+        private class Bounded : IBounded
         {
             private Rect bounds;
 
@@ -18,14 +18,14 @@ namespace AnnoDesigner.Core.Tests
 
         #region EnsureBounds
 
-        private static readonly Vector Top = new Vector(0, -1);
-        private static readonly Vector Right = new Vector(1, 0);
-        private static readonly Vector Bottom = new Vector(0, 1);
-        private static readonly Vector Left = new Vector(-1, 0);
+        private static readonly Vector Top = new(0, -1);
+        private static readonly Vector Right = new(1, 0);
+        private static readonly Vector Bottom = new(0, 1);
+        private static readonly Vector Left = new(-1, 0);
 
-        private static readonly Rect DefaultRect = new Rect(0, 0, 1, 1);
-        private static readonly Point Center = new Point(0.5, 0.5);
-        private static readonly Size SmallRectSize = new Size(0.1, 0.1);
+        private static readonly Rect DefaultRect = new(0, 0, 1, 1);
+        private static readonly Point Center = new(0.5, 0.5);
+        private static readonly Size SmallRectSize = new(0.1, 0.1);
 
         [Fact]
         public void EnsureBounds_Top_ShouldBeInflatedToTopRight()

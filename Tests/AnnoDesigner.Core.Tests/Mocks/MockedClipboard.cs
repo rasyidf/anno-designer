@@ -6,8 +6,8 @@ namespace AnnoDesigner.Core.Tests.Mocks
 {
     public class MockedClipboard : IClipboard
     {
-        private List<string> _files = new List<string>();
-        private Dictionary<string, object> _data = new Dictionary<string, object>();
+        private readonly List<string> _files = [];
+        private readonly Dictionary<string, object> _data = [];
         private string _text;
 
         public void AddFilesToClipboard(List<string> filesToAdd)
@@ -39,17 +39,7 @@ namespace AnnoDesigner.Core.Tests.Mocks
 
         public object GetData(string format)
         {
-            if (format is null)
-            {
-                throw new ArgumentNullException(nameof(format));
-            }
-
-            if (!_data.ContainsKey(format))
-            {
-                return null;
-            }
-
-            return _data[format];
+            return format is null ? throw new ArgumentNullException(nameof(format)) : !_data.TryGetValue(format, out var value) ? null : value;
         }
 
         public IReadOnlyList<string> GetFileDropList()
@@ -59,12 +49,7 @@ namespace AnnoDesigner.Core.Tests.Mocks
 
         public string GetText()
         {
-            if (string.IsNullOrEmpty(_text))
-            {
-                return string.Empty;
-            }
-
-            return _text;
+            return string.IsNullOrEmpty(_text) ? string.Empty : _text;
         }
 
         public void SetText(string text)
@@ -78,7 +63,7 @@ namespace AnnoDesigner.Core.Tests.Mocks
             {
                 var copiedData = new System.IO.MemoryStream();
                 stream.CopyTo(copiedData);
-                copiedData.Seek(0, System.IO.SeekOrigin.Begin);
+                _ = copiedData.Seek(0, System.IO.SeekOrigin.Begin);
                 _data[format] = copiedData;
                 return;
             }

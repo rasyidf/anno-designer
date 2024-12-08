@@ -37,22 +37,12 @@ namespace AnnoDesigner.Core.Extensions
 
         public static bool ShowQuestion(this IMessageBoxService service, string message, string title = "Question")
         {
-            if (service == null)
-            {
-                throw new ArgumentNullException(nameof(service));
-            }
-
-            return service.ShowQuestion(null, message, title);
+            return service == null ? throw new ArgumentNullException(nameof(service)) : service.ShowQuestion(null, message, title);
         }
 
         public static bool? ShowQuestionWithCancel(this IMessageBoxService service, string message, string title = "Question")
         {
-            if (service == null)
-            {
-                throw new ArgumentNullException(nameof(service));
-            }
-
-            return service.ShowQuestionWithCancel(null, message, title);
+            return service == null ? throw new ArgumentNullException(nameof(service)) : service.ShowQuestionWithCancel(null, message, title);
         }
     }
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnnoDesigner.Core.Models;
+﻿using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.RecentFiles;
 using Moq;
 using Xunit;
@@ -15,7 +10,7 @@ namespace AnnoDesigner.Core.Tests
         private IRecentFilesSerializer GetSerializer(IAppSettings appSettingsToUse = null)
         {
             var mockedSettings = new Mock<IAppSettings>();
-            mockedSettings.SetupAllProperties();
+            _ = mockedSettings.SetupAllProperties();
 
             var settings = appSettingsToUse ?? mockedSettings.Object;
 
@@ -32,8 +27,8 @@ namespace AnnoDesigner.Core.Tests
         {
             // Arrange
             var mockedSettings = new Mock<IAppSettings>();
-            mockedSettings.SetupAllProperties();
-            mockedSettings.SetupGet(x => x.RecentFiles).Returns(() => savedList);
+            _ = mockedSettings.SetupAllProperties();
+            _ = mockedSettings.SetupGet(x => x.RecentFiles).Returns(() => savedList);
 
             var serializer = GetSerializer(mockedSettings.Object);
 
@@ -49,8 +44,8 @@ namespace AnnoDesigner.Core.Tests
         {
             // Arrange
             var mockedSettings = new Mock<IAppSettings>();
-            mockedSettings.SetupAllProperties();
-            mockedSettings.SetupGet(x => x.RecentFiles).Returns(() => "[{\"myPath\":\"dummyPath\"}]");
+            _ = mockedSettings.SetupAllProperties();
+            _ = mockedSettings.SetupGet(x => x.RecentFiles).Returns(() => "[{\"myPath\":\"dummyPath\"}]");
 
             var serializer = GetSerializer(mockedSettings.Object);
 
@@ -83,13 +78,13 @@ namespace AnnoDesigner.Core.Tests
         {
             // Arrange
             var mockedSettings = new Mock<IAppSettings>();
-            mockedSettings.SetupAllProperties();
-            mockedSettings.SetupGet(x => x.RecentFiles).Returns(() => string.Empty);
+            _ = mockedSettings.SetupAllProperties();
+            _ = mockedSettings.SetupGet(x => x.RecentFiles).Returns(() => string.Empty);
 
             var serializer = GetSerializer(mockedSettings.Object);
 
             // Act
-            serializer.Serialize(new List<RecentFile>());
+            serializer.Serialize([]);
 
             // Assert
             mockedSettings.Verify(x => x.Save(), Times.Once);

@@ -38,7 +38,7 @@ namespace AnnoDesigner.ViewModels
             _localizationHelper = localizationHelperToUse;
             _commons = commonsToUse;
 
-            Items = new ObservableCollection<GenericTreeItem>();
+            Items = [];
             FilteredItems = CollectionViewSource.GetDefaultView(Items);
 
             DoubleClickCommand = new RelayCommand(DoubleClick, null);
@@ -52,25 +52,25 @@ namespace AnnoDesigner.ViewModels
         public ObservableCollection<GenericTreeItem> Items
         {
             get { return _items; }
-            set { UpdateProperty(ref _items, value); }
+            set { _ = UpdateProperty(ref _items, value); }
         }
 
         public ICollectionView FilteredItems
         {
             get { return _filteredItems; }
-            set { UpdateProperty(ref _filteredItems, value); }
+            set { _ = UpdateProperty(ref _filteredItems, value); }
         }
 
         public GenericTreeItem SelectedItem
         {
             get { return _selectedItem; }
-            private set { UpdateProperty(ref _selectedItem, value); }
+            private set { _ = UpdateProperty(ref _selectedItem, value); }
         }
 
         public string BuildingPresetsVersion
         {
             get { return _buildingPresetsVersion; }
-            private set { UpdateProperty(ref _buildingPresetsVersion, value); }
+            private set { _ = UpdateProperty(ref _buildingPresetsVersion, value); }
         }
 
         public string FilterText
@@ -150,7 +150,7 @@ namespace AnnoDesigner.ViewModels
             BuildingPresetsVersion = buildingPresets.Version;
 
 #if DEBUG
-            Stopwatch sw = new Stopwatch();
+            var sw = new Stopwatch();
             sw.Start();
 #endif
 
@@ -163,7 +163,7 @@ namespace AnnoDesigner.ViewModels
                 Items.Add(curRoad);
             }
 
-            if (!buildingPresets.Buildings.Any())
+            if (buildingPresets.Buildings.Count == 0)
             {
                 return;
             }
@@ -338,7 +338,7 @@ namespace AnnoDesigner.ViewModels
             return result;
         }
 
-        private CoreConstants.GameVersion GetGameVersion(string gameHeader)
+        private static CoreConstants.GameVersion GetGameVersion(string gameHeader)
         {
             var result = CoreConstants.GameVersion.Unknown;
 
@@ -371,13 +371,13 @@ namespace AnnoDesigner.ViewModels
 
             foreach (var curNode in Items)
             {
-                GetCondensedTreeState(curNode, result);
+                _ = GetCondensedTreeState(curNode, result);
             }
 
             return result;
         }
 
-        private Dictionary<int, bool> GetCondensedTreeState(GenericTreeItem node, Dictionary<int, bool> result)
+        private static Dictionary<int, bool> GetCondensedTreeState(GenericTreeItem node, Dictionary<int, bool> result)
         {
             if (!node.Children.Any())
             {
@@ -395,7 +395,7 @@ namespace AnnoDesigner.ViewModels
 
             foreach (var curChildNode in node.Children)
             {
-                GetCondensedTreeState(curChildNode, result);
+                _ = GetCondensedTreeState(curChildNode, result);
             }
 
             return result;
@@ -427,19 +427,19 @@ namespace AnnoDesigner.ViewModels
             }
         }
 
-        private void SetCondensedTreeState(GenericTreeItem node, Dictionary<int, bool> savedTreeState)
+        private static void SetCondensedTreeState(GenericTreeItem node, Dictionary<int, bool> savedTreeState)
         {
             if (!node.Children.Any())
             {
                 return;
             }
 
-            if (!savedTreeState.ContainsKey(node.Id))
+            if (!savedTreeState.TryGetValue(node.Id, out var value))
             {
                 return;
             }
 
-            node.IsExpanded = savedTreeState[node.Id];
+            node.IsExpanded = value;
 
             foreach (var curChildNode in node.Children)
             {

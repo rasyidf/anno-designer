@@ -22,7 +22,7 @@
     MinHeight="480"
     d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel,
                                      IsDesignTimeCreatable=False}"
-    d:DesignHeight="480"
+    d:DesignHeight="756"
     d:DesignWidth="640"
     Closing="WindowClosing"
     Icon="/AnnoDesigner;component/icon.ico"
@@ -68,17 +68,8 @@
             <Menu
                 Name="Menu"
                 Grid.ColumnSpan="3"
-                Height="23"
                 VerticalAlignment="Top">
-                <Menu.Resources>
-                    <Style TargetType="{x:Type MenuItem}">
-                        <Style.Triggers>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Menu.Resources>
+
                 <MenuItem Header="{l:Localize File}" TabIndex="20">
                     <MenuItem
                         Command="ApplicationCommands.New"
@@ -127,15 +118,18 @@
                 <MenuItem Header="{l:Localize Export}" TabIndex="22">
                     <MenuItem Command="{Binding ExportImageCommand}" Header="{l:Localize ExportImage}" />
                     <Separator />
-                    <MenuItem Header="{l:Localize UseCurrentZoomOnExportedImage}"
-                              IsCheckable="True"
-                              IsChecked="{Binding UseCurrentZoomOnExportedImageValue}" />
-                    <MenuItem Header="{l:Localize RenderSelectionHighlightsOnExportedImage}"
-                              IsCheckable="True"
-                              IsChecked="{Binding RenderSelectionHighlightsOnExportedImageValue}" />
-                    <MenuItem Header="{l:Localize RenderVersionOnExportedImage}"
-                              IsCheckable="True"
-                              IsChecked="{Binding RenderVersionOnExportedImageValue}" />
+                    <MenuItem
+                        Header="{l:Localize UseCurrentZoomOnExportedImage}"
+                        IsCheckable="True"
+                        IsChecked="{Binding UseCurrentZoomOnExportedImageValue}" />
+                    <MenuItem
+                        Header="{l:Localize RenderSelectionHighlightsOnExportedImage}"
+                        IsCheckable="True"
+                        IsChecked="{Binding RenderSelectionHighlightsOnExportedImageValue}" />
+                    <MenuItem
+                        Header="{l:Localize RenderVersionOnExportedImage}"
+                        IsCheckable="True"
+                        IsChecked="{Binding RenderVersionOnExportedImageValue}" />
                 </MenuItem>
                 <MenuItem
                     Header="{l:Localize Language}"
@@ -265,7 +259,8 @@
                     Grid.Column="2"
                     Width="5"
                     HorizontalAlignment="Center"
-                    VerticalAlignment="Stretch" />
+                    VerticalAlignment="Stretch"
+                    Background="{DynamicResource LayerFillColorDefaultBrush}" />
 
                 <my:StatisticsView
                     x:Name="statisticsView"
@@ -279,7 +274,8 @@
                 Grid.Column="1"
                 Width="5"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Stretch" />
+                VerticalAlignment="Stretch"
+                Background="{DynamicResource LayerFillColorDefaultBrush}" />
 
             <DockPanel
                 Name="BuildingsPanel"
@@ -291,7 +287,6 @@
                         <Label Content="{l:Localize Version}" />
                         <TextBox
                             Width="140"
-                            Height="23"
                             DockPanel.Dock="Right"
                             IsEnabled="True"
                             Text="{Binding LayoutSettingsViewModel.LayoutVersionDisplayValue}" />
@@ -303,7 +298,6 @@
                             <Label Content="{l:Localize Size}" />
                             <xctk:IntegerUpDown
                                 Width="50"
-                                Height="23"
                                 DefaultValue="4"
                                 DisplayDefaultValueOnEmptyText="True"
                                 DockPanel.Dock="Right"
@@ -315,7 +309,6 @@
                             <Label Content="x" DockPanel.Dock="Right" />
                             <xctk:IntegerUpDown
                                 Width="50"
-                                Height="23"
                                 DefaultValue="4"
                                 DisplayDefaultValueOnEmptyText="True"
                                 DockPanel.Dock="Right"
@@ -487,36 +480,32 @@
                                 </ScrollViewer>
                             </Expander>
                         </DockPanel>
-                        <DockPanel Height="26" LastChildFill="False">
+                        <DockPanel LastChildFill="False">
                             <Label Content="{l:Localize Label}" />
                             <TextBox
                                 Width="140"
-                                Height="23"
                                 DockPanel.Dock="Right"
                                 IsEnabled="True"
                                 TabIndex="4"
                                 Text="{Binding BuildingSettingsViewModel.BuildingName}" />
                             <TextBox
                                 Width="140"
-                                Height="10"
                                 DockPanel.Dock="Right"
                                 IsEnabled="False"
                                 Text="{Binding BuildingSettingsViewModel.BuildingIdentifier}"
                                 Visibility="Collapsed" />
                             <TextBox
                                 Width="140"
-                                Height="10"
                                 DockPanel.Dock="Right"
                                 IsEnabled="False"
                                 Text="{Binding BuildingSettingsViewModel.BuildingRealName}"
                                 Visibility="Collapsed" />
                         </DockPanel>
-                        <DockPanel Height="46" LastChildFill="False">
+                        <DockPanel LastChildFill="False">
                             <Label VerticalAlignment="Center" Content="{l:Localize Icon}" />
                             <ComboBox
                                 x:Name="comboBoxIcon"
                                 Width="140"
-                                Height="46"
                                 DockPanel.Dock="Right"
                                 IsEnabled="True"
                                 ItemsSource="{Binding AvailableIcons}"
@@ -543,10 +532,7 @@
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
                                             <Viewbox Margin="5">
-                                                <Image
-                                                    Width="23"
-                                                    Height="23"
-                                                    Source="{Binding Icon}" />
+                                                <Image Width="23" Source="{Binding Icon}" />
                                             </Viewbox>
                                             <TextBlock
                                                 Margin="0,5,5,5"
@@ -557,11 +543,10 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                         </DockPanel>
-                        <DockPanel Height="26" LastChildFill="False">
+                        <DockPanel LastChildFill="False">
                             <Label Content="{l:Localize InfluenceType}" />
                             <ComboBox
                                 Width="140"
-                                Height="22"
                                 DisplayMemberPath="Name"
                                 DockPanel.Dock="Right"
                                 IsEnabled="True"
@@ -569,14 +554,10 @@
                                 SelectedItem="{Binding BuildingSettingsViewModel.SelectedBuildingInfluence}"
                                 TabIndex="6" />
                         </DockPanel>
-                        <DockPanel
-                            Height="26"
-                            LastChildFill="False"
-                            Visibility="{Binding BuildingSettingsViewModel.IsBuildingInfluenceInputRadiusVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}}">
+                        <DockPanel LastChildFill="False" Visibility="{Binding BuildingSettingsViewModel.IsBuildingInfluenceInputRadiusVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}}">
                             <Label Content="{l:Localize Radius}" />
                             <xctk:DoubleUpDown
                                 Width="140"
-                                Height="23"
                                 DefaultValue="0"
                                 DisplayDefaultValueOnEmptyText="True"
                                 DockPanel.Dock="Right"
@@ -586,14 +567,10 @@
                                 TabIndex="8"
                                 Value="{Binding BuildingSettingsViewModel.BuildingRadius}" />
                         </DockPanel>
-                        <DockPanel
-                            Height="26"
-                            LastChildFill="False"
-                            Visibility="{Binding BuildingSettingsViewModel.IsBuildingInfluenceInputRangeVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}}">
+                        <DockPanel LastChildFill="False" Visibility="{Binding BuildingSettingsViewModel.IsBuildingInfluenceInputRangeVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}}">
                             <Label Content="{l:Localize Distance}" />
                             <xctk:DoubleUpDown
                                 Width="140"
-                                Height="23"
                                 AllowSpin="True"
                                 DefaultValue="0"
                                 DisplayDefaultValueOnEmptyText="True"
@@ -604,10 +581,7 @@
                                 TabIndex="9"
                                 Value="{Binding BuildingSettingsViewModel.BuildingInfluenceRange}" />
                         </DockPanel>
-                        <DockPanel
-                            Height="25"
-                            LastChildFill="False"
-                            Visibility="{Binding BuildingSettingsViewModel.IsBuildingInfluenceInputRangeVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}}">
+                        <DockPanel LastChildFill="False" Visibility="{Binding BuildingSettingsViewModel.IsBuildingInfluenceInputRangeVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}}">
                             <CheckBox
                                 Margin="0,3,0,5"
                                 Content="{l:Localize PavedStreet}"
@@ -654,7 +628,6 @@
                             </StackPanel>
                         </DockPanel>
                         <Button
-                            Height="23"
                             Command="{Binding PlaceBuildingCommand}"
                             Content="{l:Localize PlaceBuilding}"
                             TabIndex="12" />
@@ -671,7 +644,7 @@
                     IsEnabled="True">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="23" />
+                            <RowDefinition />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <xctk:WatermarkTextBox

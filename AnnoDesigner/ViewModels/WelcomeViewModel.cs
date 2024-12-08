@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
@@ -23,31 +17,33 @@ namespace AnnoDesigner.ViewModels
             _commons = commonsToUse;
             _appSettings = appSettingsToUse;
 
-            Languages = new ObservableCollection<SupportedLanguage>();
-            Languages.Add(new SupportedLanguage("English")
-            {
-                FlagPath = "Flags/United Kingdom.png"
-            });
-            Languages.Add(new SupportedLanguage("Deutsch")
-            {
-                FlagPath = "Flags/Germany.png"
-            });
-            Languages.Add(new SupportedLanguage("Français")
-            {
-                FlagPath = "Flags/France.png"
-            });
-            Languages.Add(new SupportedLanguage("Polski")
-            {
-                FlagPath = "Flags/Poland.png"
-            });
-            Languages.Add(new SupportedLanguage("Русский")
-            {
-                FlagPath = "Flags/Russia.png"
-            });
-            Languages.Add(new SupportedLanguage("Español")
-            {
-                FlagPath = "Flags/Spain.png"
-            });
+            Languages =
+            [
+                new SupportedLanguage("English")
+                {
+                    FlagPath = "Flags/United Kingdom.png"
+                },
+                new SupportedLanguage("Deutsch")
+                {
+                    FlagPath = "Flags/Germany.png"
+                },
+                new SupportedLanguage("Français")
+                {
+                    FlagPath = "Flags/France.png"
+                },
+                new SupportedLanguage("Polski")
+                {
+                    FlagPath = "Flags/Poland.png"
+                },
+                new SupportedLanguage("Русский")
+                {
+                    FlagPath = "Flags/Russia.png"
+                },
+                new SupportedLanguage("Español")
+                {
+                    FlagPath = "Flags/Spain.png"
+                },
+            ];
 
             ContinueCommand = new RelayCommand(Continue, CanContinue);
         }
@@ -55,13 +51,13 @@ namespace AnnoDesigner.ViewModels
         public ObservableCollection<SupportedLanguage> Languages
         {
             get { return _languages; }
-            set { UpdateProperty(ref _languages, value); }
+            set { _ = UpdateProperty(ref _languages, value); }
         }
 
         public SupportedLanguage SelectedItem
         {
             get { return _selectedItem; }
-            set { UpdateProperty(ref _selectedItem, value); }
+            set { _ = UpdateProperty(ref _selectedItem, value); }
         }
 
         public ICommand ContinueCommand { get; private set; }

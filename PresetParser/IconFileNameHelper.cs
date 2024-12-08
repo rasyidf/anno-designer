@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
+﻿using System.Xml;
 
 namespace PresetParser
 {
@@ -11,7 +6,7 @@ namespace PresetParser
     {
         public string GetIconFilename(XmlNode iconNode, string annoVersion)
         {
-            string annoIndexNumber = string.Empty;
+            var annoIndexNumber = string.Empty;
 
             if (annoVersion == Constants.ANNO_VERSION_1404)
             {

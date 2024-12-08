@@ -3,7 +3,7 @@ using System.CommandLine;
 using System.CommandLine.Binding;
 using System.Threading.Tasks;
 
-namespace AnnoDesigner.CommandLine.Arguments
+namespace AnnoDesigner.CommandLine
 {
     public abstract class ArgsBinderBase<T> : BinderBase<T>
     {

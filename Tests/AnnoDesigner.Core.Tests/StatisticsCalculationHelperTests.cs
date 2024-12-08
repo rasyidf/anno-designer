@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Text;
 using AnnoDesigner.Core.Layout;
 using AnnoDesigner.Core.Layout.Helper;
@@ -12,19 +13,17 @@ namespace AnnoDesigner.Core.Tests
 {
     public class StatisticsCalculationHelperTests
     {
+        private static readonly IFileSystem _fileSystem = new FileSystem();
         #region testdata
 
         private static readonly string testData_layout_with_blocking_tiles;
-
         #endregion
-
         static StatisticsCalculationHelperTests()
         {
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
-
-            testData_layout_with_blocking_tiles = File.ReadAllText(Path.Combine(basePath, "Testdata", "StatisticsCalculation", "layout_with_block_tiles.ad"), Encoding.UTF8);
+            var basePath = AppDomain.CurrentDomain.BaseDirectory;
+            testData_layout_with_blocking_tiles = _fileSystem.File.ReadAllText(_fileSystem.Path.Combine(basePath, "Testdata", "StatisticsCalculation", "layout_with_block_tiles.ad"), Encoding.UTF8);
+            
         }
-
         private StatisticsCalculationHelper GetHelper()
         {
             return new StatisticsCalculationHelper();
@@ -57,7 +56,7 @@ namespace AnnoDesigner.Core.Tests
             var result = StatisticsCalculationResult.Empty;
 
             // Act
-            var ex = Record.Exception(() => result = helper.CalculateStatistics(new List<AnnoObject>()));
+            var ex = Record.Exception(() => result = helper.CalculateStatistics([]));
 
             // Assert
             Assert.Null(ex);
@@ -72,8 +71,7 @@ namespace AnnoDesigner.Core.Tests
 
             var objects = new List<AnnoObject>
             {
-                new AnnoObject
-                {
+                new() {
                     Template = "Blocker"
                 }
             };
@@ -95,12 +93,10 @@ namespace AnnoDesigner.Core.Tests
 
             var objects = new List<AnnoObject>
             {
-                new AnnoObject
-                {
+                new() {
                     Template = "Blocker"
                 },
-                new AnnoObject
-                {
+                new() {
                     Template = "Dummy",
                     Position = new System.Windows.Point(42,42),
                     Size = new System.Windows.Size(3,3),

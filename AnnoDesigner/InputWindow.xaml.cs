@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 using AnnoDesigner.ViewModels;
 
 namespace AnnoDesigner
@@ -40,20 +28,15 @@ namespace AnnoDesigner
 
         private void InputWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            input.Focus();
+            _ = input.Focus();
         }
 
         public static string Prompt(MainViewModel context, string message, string title, string defaultValue = "")
         {
             var inputWindow = new InputWindow(context, message, title, defaultValue);
-            inputWindow.ShowDialog();
+            _ = inputWindow.ShowDialog();
 
-            if (inputWindow.DialogResult == true)
-            {
-                return inputWindow.ResponseText;
-            }
-
-            return null;
+            return inputWindow.DialogResult == true ? inputWindow.ResponseText : null;
         }
 
         public string ResponseText

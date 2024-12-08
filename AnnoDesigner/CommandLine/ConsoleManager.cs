@@ -17,7 +17,7 @@ namespace AnnoDesigner.CommandLine
     {
         public class LazyConsole : IConsole
         {
-            private readonly SystemConsole systemConsole = new SystemConsole();
+            private readonly SystemConsole systemConsole = new();
 
             public IStandardStreamWriter Out
             {
@@ -99,7 +99,7 @@ namespace AnnoDesigner.CommandLine
 
             if (!AttachConsole(ATTACH_PARENT_PROCESS))
             {
-                AllocConsole();
+                _ = AllocConsole();
 
                 StartedWithoutConsole = true;
             }
@@ -116,7 +116,7 @@ namespace AnnoDesigner.CommandLine
         {
             if (HasConsole)
             {
-                FreeConsole();
+                _ = FreeConsole();
             }
         }
 

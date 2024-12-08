@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AnnoDesigner.Core.Models;
 
 namespace AnnoDesigner.Models
@@ -21,7 +17,7 @@ namespace AnnoDesigner.Models
         public string Path
         {
             get { return _path; }
-            private set { UpdateProperty(ref _path, value); }
+            private set { _ = UpdateProperty(ref _path, value); }
         }
 
         /// <summary>

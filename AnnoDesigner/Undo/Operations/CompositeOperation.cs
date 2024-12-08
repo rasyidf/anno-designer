@@ -5,7 +5,7 @@ namespace AnnoDesigner.Undo.Operations
 {
     public class CompositeOperation : BaseOperation
     {
-        public ICollection<IOperation> Operations { get; set; } = new List<IOperation>();
+        public ICollection<IOperation> Operations { get; set; } = [];
 
         protected override void RedoOperation()
         {

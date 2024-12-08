@@ -4,7 +4,7 @@ using AnnoDesigner.Undo.Operations;
 using Moq;
 using Xunit;
 
-namespace AnnoDesigner.Tests.Undo
+namespace AnnoDesigner.Undo.Tests
 {
     public class UndoManagerTests
     {
@@ -21,7 +21,7 @@ namespace AnnoDesigner.Tests.Undo
             }
         }
 
-        private UndoManager _undoManager;
+        private readonly UndoManager _undoManager;
 
         public UndoManagerTests()
         {
@@ -37,7 +37,7 @@ namespace AnnoDesigner.Tests.Undo
         public void IsDirty_SetIsDirtyToTrue_ShouldThrowException()
         {
             // Arrange/Act/Assert
-            Assert.Throws<ArgumentException>(() => _undoManager.IsDirty = true);
+            _ = Assert.Throws<ArgumentException>(() => _undoManager.IsDirty = true);
         }
 
         [Fact]
@@ -167,7 +167,7 @@ namespace AnnoDesigner.Tests.Undo
         public void Undo_EmptyStack_ShouldNotThrow()
         {
             // Arrange/Act
-            var ex = Record.Exception(() => _undoManager.Undo());
+            var ex = Record.Exception(_undoManager.Undo);
 
             // Assert
             Assert.Null(ex);
@@ -215,7 +215,7 @@ namespace AnnoDesigner.Tests.Undo
 
             // Assert
             Assert.Empty(_undoManager.UndoStack);
-            Assert.Single(_undoManager.RedoStack);
+            _ = Assert.Single(_undoManager.RedoStack);
         }
 
         #endregion
@@ -226,7 +226,7 @@ namespace AnnoDesigner.Tests.Undo
         public void Redo_EmptyStack_ShouldNotThrow()
         {
             // Arrange/Act
-            var ex = Record.Exception(() => _undoManager.Redo());
+            var ex = Record.Exception(_undoManager.Redo);
 
             // Assert
             Assert.Null(ex);
@@ -274,7 +274,7 @@ namespace AnnoDesigner.Tests.Undo
 
             // Assert
             Assert.Empty(_undoManager.RedoStack);
-            Assert.Single(_undoManager.UndoStack);
+            _ = Assert.Single(_undoManager.UndoStack);
         }
 
         #endregion

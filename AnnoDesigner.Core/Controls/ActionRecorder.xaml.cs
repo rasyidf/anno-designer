@@ -1,20 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.CustomEventArgs;
+using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.Models;
 
 namespace AnnoDesigner.Core.Controls
@@ -187,7 +177,7 @@ namespace AnnoDesigner.Core.Controls
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            Focus();
+            _ = Focus();
             if (startNewRecording)
             {
                 StartNewRecording();
@@ -270,18 +260,7 @@ namespace AnnoDesigner.Core.Controls
 
         private void EnsureCorrectResultType()
         {
-            if (recordingKeyCombination)
-            {
-                ResultType = ActionType.KeyAction;
-            }
-            else if (recordingMouseCombination)
-            {
-                ResultType = ActionType.MouseAction;
-            }
-            else
-            {
-                ResultType = ActionType.None;
-            }
+            ResultType = recordingKeyCombination ? ActionType.KeyAction : recordingMouseCombination ? ActionType.MouseAction : ActionType.None;
         }
 
         private void StartNewRecording()

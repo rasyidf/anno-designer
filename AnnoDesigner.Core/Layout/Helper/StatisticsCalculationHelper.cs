@@ -52,15 +52,29 @@ namespace AnnoDesigner.Core.Layout.Helper
                 var curMaxX = curPosX + curSize.Width;
                 var curMaxY = curPosY + curSize.Height;
 
-                if (curMaxX > maxX) maxX = curMaxX;
-                if (curPosX < minX) minX = curPosX;
+                if (curMaxX > maxX)
+                {
+                    maxX = curMaxX;
+                }
 
-                if (curMaxY > maxY) maxY = curMaxY;
-                if (curPosY < minY) minY = curPosY;
+                if (curPosX < minX)
+                {
+                    minX = curPosX;
+                }
+
+                if (curMaxY > maxY)
+                {
+                    maxY = curMaxY;
+                }
+
+                if (curPosY < minY)
+                {
+                    minY = curPosY;
+                }
 
                 if (includeRoads || !curObject.Road)
                 {
-                    sum += (curSize.Width * curSize.Height);
+                    sum += curSize.Width * curSize.Height;
                 }
             }
 

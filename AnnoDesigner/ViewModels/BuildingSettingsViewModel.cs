@@ -72,16 +72,16 @@ namespace AnnoDesigner.ViewModels
             IsEnableLabelChecked = false;
             IsBorderlessChecked = false;
             IsRoadChecked = false;
-            ColorsInLayout = new ObservableCollection<SerializableColor>();
+            ColorsInLayout = [];
 
-            BuildingInfluences = new ObservableCollection<BuildingInfluence>();
+            BuildingInfluences = [];
             InitBuildingInfluences();
             SelectedBuildingInfluence = BuildingInfluences.SingleOrDefault(x => x.Type == BuildingInfluenceType.None);
         }
 
         private void InitBuildingInfluences()
         {
-            foreach (BuildingInfluenceType curInfluenceType in Enum.GetValues(typeof(BuildingInfluenceType)))
+            foreach (var curInfluenceType in Enum.GetValues<BuildingInfluenceType>())
             {
                 BuildingInfluences.Add(new BuildingInfluence
                 {
@@ -106,73 +106,73 @@ namespace AnnoDesigner.ViewModels
         public Color? SelectedColor
         {
             get { return _selectedColor; }
-            set { UpdateProperty(ref _selectedColor, value); }
+            set { _ = UpdateProperty(ref _selectedColor, value); }
         }
 
         public int BuildingHeight
         {
             get { return _buildingHeight; }
-            set { UpdateProperty(ref _buildingHeight, value); }
+            set { _ = UpdateProperty(ref _buildingHeight, value); }
         }
 
         public int BuildingWidth
         {
             get { return _buildingWidth; }
-            set { UpdateProperty(ref _buildingWidth, value); }
+            set { _ = UpdateProperty(ref _buildingWidth, value); }
         }
 
         public string BuildingTemplate
         {
             get { return _buildingTemplate; }
-            set { UpdateProperty(ref _buildingTemplate, value); }
+            set { _ = UpdateProperty(ref _buildingTemplate, value); }
         }
 
         public string BuildingName
         {
             get { return _buildingName; }
-            set { UpdateProperty(ref _buildingName, value); }
+            set { _ = UpdateProperty(ref _buildingName, value); }
         }
 
         public string BuildingRealName
         {
             get { return _buildingRealName; }
-            set { UpdateProperty(ref _buildingRealName, value); }
+            set { _ = UpdateProperty(ref _buildingRealName, value); }
         }
 
         public string BuildingIdentifier
         {
             get { return _buildingIdentifier; }
-            set { UpdateProperty(ref _buildingIdentifier, value); }
+            set { _ = UpdateProperty(ref _buildingIdentifier, value); }
         }
 
         public double BuildingRadius
         {
             get { return _buildingRadius; }
-            set { UpdateProperty(ref _buildingRadius, value); }
+            set { _ = UpdateProperty(ref _buildingRadius, value); }
         }
 
         public double BuildingInfluenceRange
         {
             get { return _buildingInfluenceRange; }
-            set { UpdateProperty(ref _buildingInfluenceRange, value); }
+            set { _ = UpdateProperty(ref _buildingInfluenceRange, value); }
         }
 
         public double BuildingBlockedAreaLength
         {
             get { return _buildingBlockedAreaLength; }
-            set { UpdateProperty(ref _buildingBlockedAreaLength, value); }
+            set { _ = UpdateProperty(ref _buildingBlockedAreaLength, value); }
         }
 
         public double BuildingBlockedAreaWidth
         {
             get { return _buildingBlockedAreaWidth; }
-            set { UpdateProperty(ref _buildingBlockedAreaWidth, value); }
+            set { _ = UpdateProperty(ref _buildingBlockedAreaWidth, value); }
         }
 
         public GridDirection BuildingDirection
         {
             get { return _buildingDirection; }
-            set { UpdateProperty(ref _buildingDirection, value); }
+            set { _ = UpdateProperty(ref _buildingDirection, value); }
         }
 
         public bool IsPavedStreet
@@ -190,19 +190,19 @@ namespace AnnoDesigner.ViewModels
         public bool IsEnableLabelChecked
         {
             get { return _isEnableLabelChecked; }
-            set { UpdateProperty(ref _isEnableLabelChecked, value); }
+            set { _ = UpdateProperty(ref _isEnableLabelChecked, value); }
         }
 
         public bool IsBorderlessChecked
         {
             get { return _isBorderlessChecked; }
-            set { UpdateProperty(ref _isBorderlessChecked, value); }
+            set { _ = UpdateProperty(ref _isBorderlessChecked, value); }
         }
 
         public bool IsRoadChecked
         {
             get { return _isRoadChecked; }
-            set { UpdateProperty(ref _isRoadChecked, value); }
+            set { _ = UpdateProperty(ref _isRoadChecked, value); }
         }
 
         public IAnnoCanvas AnnoCanvasToUse
@@ -230,32 +230,32 @@ namespace AnnoDesigner.ViewModels
             get { return _colorsInLayout; }
             set
             {
-                UpdateProperty(ref _colorsInLayout, value);
+                _ = UpdateProperty(ref _colorsInLayout, value);
                 OnPropertyChanged(nameof(ShowColorsInLayout));
             }
         }
 
         private ColorHueSaturationBrightnessComparer ColorSorter
         {
-            get { return _colorSorter ?? (_colorSorter = new ColorHueSaturationBrightnessComparer()); }
+            get { return _colorSorter ??= new ColorHueSaturationBrightnessComparer(); }
         }
 
         public ObservableCollection<BuildingInfluence> BuildingInfluences
         {
             get { return _buildingInfluences; }
-            set { UpdateProperty(ref _buildingInfluences, value); }
+            set { _ = UpdateProperty(ref _buildingInfluences, value); }
         }
 
         public bool IsBuildingInfluenceInputRadiusVisible
         {
             get { return _isBuildingInfluenceInputRadiusVisible; }
-            set { UpdateProperty(ref _isBuildingInfluenceInputRadiusVisible, value); }
+            set { _ = UpdateProperty(ref _isBuildingInfluenceInputRadiusVisible, value); }
         }
 
         public bool IsBuildingInfluenceInputRangeVisible
         {
             get { return _isBuildingInfluenceInputRangeVisible; }
-            set { UpdateProperty(ref _isBuildingInfluenceInputRangeVisible, value); }
+            set { _ = UpdateProperty(ref _isBuildingInfluenceInputRangeVisible, value); }
         }
 
         public BuildingInfluence SelectedBuildingInfluence
@@ -337,17 +337,9 @@ namespace AnnoDesigner.ViewModels
                 //sum for range on paved street for City Institution Building = n*1.38 (Police, Fire stations and Hospials)
                 //to round up, there must be added 0.5 to the numbers after the multiplier
                 //WYSWYG : the minus 2 is what gamers see as they count the Dark Green area on Paved Street
-                if (string.Equals(buildingInfo.Template, "CityInstitutionBuilding", StringComparison.OrdinalIgnoreCase))
-                {
-                    BuildingInfluenceRange = Math.Round(((buildingInfo.InfluenceRange * 1.38) + 0.5) - 2);
-                }
-                //sum for range on paved street for Public Service Building = n*1.43 (Marketplaces, Pubs, Banks, ... (etc))
-                //to round up, there must be added 0.5 to the numbers after the multiplier
-                //WYSWYG : the minus 2 is what gamers see as they count the Dark Green area on Paved Street
-                else
-                {
-                    BuildingInfluenceRange = Math.Round(((buildingInfo.InfluenceRange * 1.43) + 0.5) - 2);
-                }
+                BuildingInfluenceRange = string.Equals(buildingInfo.Template, "CityInstitutionBuilding", StringComparison.OrdinalIgnoreCase)
+                    ? Math.Round((buildingInfo.InfluenceRange * 1.38) + 0.5 - 2)
+                    : Math.Round((buildingInfo.InfluenceRange * 1.43) + 0.5 - 2);
 
                 return true;
             }

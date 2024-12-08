@@ -8,7 +8,6 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using AnnoDesigner.CommandLine;
 using AnnoDesigner.CommandLine.Arguments;
-using AnnoDesigner.Core.Extensions;
 using AnnoDesigner.Core.Layout;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.ViewModels;
@@ -146,7 +145,7 @@ namespace AnnoDesigner
             {
                 //used to fix issue with misplaced caret in TextBox
                 TextBoxSearchPresets.UpdateLayout();
-                TextBoxSearchPresets.Dispatcher.Invoke(DispatcherPriority.Render, new Action(() => { }));
+                _ = TextBoxSearchPresets.Dispatcher.Invoke(DispatcherPriority.Render, new Action(() => { }));
                 //TextBoxSearchPresets.InvalidateVisual();                
             }
         }
