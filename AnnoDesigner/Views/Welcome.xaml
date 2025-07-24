@@ -12,13 +12,12 @@
     x:Name="welcomeWindow"
     Title="Welcome"
     Width="525"
-    Height="705"
+    Height="609"
     MinWidth="300"
     MinHeight="300"
     Padding="10,10,10,10"
     d:DataContext="{d:DesignInstance Type=viewModel:WelcomeViewModel,
                                      IsDesignTimeCreatable=False}"
-    d:DesignHeight="705"
     d:DesignWidth="525"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
@@ -64,7 +63,7 @@
                 FontSize="18"><Run Text="Please select a language:" /></TextBlock>
         </Grid>
         <ui:ListView
-            Margin="0,86,0,30"
+            Margin="0,86,0,50"
             HorizontalContentAlignment="Stretch"
             d:ItemsSource="{d:SampleData ItemCount=5}"
             Background="#FFECECEC"
@@ -84,7 +83,7 @@
                         Margin="20"
                         HorizontalAlignment="Stretch"
                         Orientation="Horizontal">
-                        <Image Width="100" Source="{Binding FlagPath}" />
+                        <ui:ImageIcon Width="100" Source="{Binding FlagPath}" />
                         <Label
                             Width="Auto"
                             Margin="8,0,0,0"
@@ -97,7 +96,7 @@
         </ui:ListView>
         <Button
             Height="33"
-            Margin="181,0,181,0"
+            Margin="181,0,181,10"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Bottom"
             Command="{Binding ContinueCommand}"

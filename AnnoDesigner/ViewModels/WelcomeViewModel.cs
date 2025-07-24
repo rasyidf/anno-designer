@@ -21,27 +21,27 @@ public class WelcomeViewModel : Notify
         [
             new SupportedLanguage("English")
             {
-                FlagPath = "Flags/United Kingdom.png"
+                FlagPath = "/Flags/United Kingdom.png"
             },
             new SupportedLanguage("Deutsch")
             {
-                FlagPath = "Flags/Germany.png"
+                FlagPath = "/Flags/Germany.png"
             },
             new SupportedLanguage("Français")
             {
-                FlagPath = "Flags/France.png"
+                FlagPath = "/Flags/France.png"
             },
             new SupportedLanguage("Polski")
             {
-                FlagPath = "Flags/Poland.png"
+                FlagPath = "/Flags/Poland.png"
             },
             new SupportedLanguage("Русский")
             {
-                FlagPath = "Flags/Russia.png"
+                FlagPath = "/Flags/Russia.png"
             },
             new SupportedLanguage("Español")
             {
-                FlagPath = "Flags/Spain.png"
+                FlagPath = "/Flags/Spain.png"
             },
         ];
 

@@ -23,8 +23,8 @@
     MinHeight="480"
     d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel,
                                      IsDesignTimeCreatable=False}"
-    d:DesignHeight="1038"
-    d:DesignWidth="1036"
+    d:DesignHeight="1039.5"
+    d:DesignWidth="1337.5"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Closing="WindowClosing"
@@ -65,16 +65,16 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <ui:TitleBar Grid.Row="0" Icon="/AnnoDesigner;component/icon.ico">
+        <ui:TitleBar Grid.Row="0"   d:Title="Untitled*">
+            <ui:TitleBar.Icon>
+                <ui:ImageIcon Source="/Icon.ico"/>
+            </ui:TitleBar.Icon>
             <ui:TitleBar.Title>
                 <MultiBinding Converter="{StaticResource converterUnsavedChanges}">
                     <Binding Path="MainWindowTitle" />
                     <Binding Path="AnnoCanvas.UndoManager.IsDirty" />
                 </MultiBinding>
             </ui:TitleBar.Title>
-            <ui:TitleBar.Header>
-                <ui:Button Appearance="Secondary" Content="Profile" />
-            </ui:TitleBar.Header>
         </ui:TitleBar>
         <xctk:BusyIndicator x:Name="busyIndicator" Grid.Row="1">
             <Grid>
@@ -264,40 +264,149 @@
                     Grid.Row="1"
                     Grid.Column="0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="17*" MinWidth="100" />
-                        <ColumnDefinition Width="31*" />
+                        <ColumnDefinition Width="1*" MinWidth="100" />
+                        <ColumnDefinition Width="5" />
+                        <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="5" />
                         <ColumnDefinition
                             x:Name="colStatisticsView"
-                            Width="Auto"
-                            MinWidth="100" />
+                            Width="1*"
+                            MinWidth="205.28" />
                     </Grid.ColumnDefinitions>
+
+                    <DockPanel Grid.Row="0" LastChildFill="True">
+
+                        <Expander
+                            x:Name="GroupBoxSearchPresets"
+                            DockPanel.Dock="Top"
+                            Header="{l:Localize Search}"
+                            HeaderStringFormat=" {0}:"
+                            IsEnabled="True"
+                            IsExpanded="True" Height="131">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="32" />
+                                    <RowDefinition Height="1*" />
+                                </Grid.RowDefinitions>
+                                <ui:AutoSuggestBox
+                                    x:Name="TextBoxSearchPresets"
+                                    VerticalContentAlignment="Center"
+                                    KeyUp="TextBoxSearchPresetsKeyUp"
+                                    PlaceholderText="Search"
+                                    Text="{Binding PresetsTreeSearchViewModel.SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                    ToolTip="{l:Localize SearchToolTip}">
+
+                                    <b:Interaction.Triggers>
+                                        <b:EventTrigger EventName="GotFocus">
+                                            <b:InvokeCommandAction Command="{Binding PresetsTreeSearchViewModel.GotFocusCommand}" />
+                                        </b:EventTrigger>
+                                        <b:EventTrigger EventName="LostFocus">
+                                            <b:InvokeCommandAction Command="{Binding PresetsTreeSearchViewModel.LostFocusCommand}" />
+                                        </b:EventTrigger>
+                                    </b:Interaction.Triggers>
+                                    <ui:AutoSuggestBox.InputBindings>
+                                        <KeyBinding
+                                            Key="Esc"
+                                            Command="{Binding PresetsTreeSearchViewModel.ClearSearchTextCommand}"
+                                            CommandParameter="{Binding ElementName=TextBoxSearchPresets}" />
+                                    </ui:AutoSuggestBox.InputBindings>
+                                </ui:AutoSuggestBox>
+                                <xctk:CheckComboBox
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Command="{Binding PresetsTreeSearchViewModel.GameVersionFilterChangedCommand}"
+                                    Delimiter=", "
+                                    DisplayMemberPath="Name"
+                                    IsEditable="False"
+                                    IsSelectAllActive="True"
+                                    ItemsSource="{Binding PresetsTreeSearchViewModel.GameVersionFilters}"
+                                    SelectAllContent="{l:Localize SelectAll}"
+                                    SelectedMemberPath="IsSelected"
+                                    Visibility="Visible" />
+                            </Grid>
+                        </Expander>
+
+                        <Expander
+                                x:Name="GroupBoxPresets"
+                                Header="{Binding PresetsSectionHeader}"
+                                IsEnabled="True"
+                                IsExpanded="True">
+                            <DockPanel LastChildFill="True">
+                                <TreeView
+                                        x:Name="PresetsTree"
+                                        VerticalContentAlignment="Stretch"
+                                        ItemsSource="{Binding PresetsTreeViewModel.FilteredItems}">
+                                    <TreeView.Resources>
+                                        <HierarchicalDataTemplate DataType="{x:Type modelPresetsTree:GameHeaderTreeItem}" ItemsSource="{Binding Children}">
+                                            <TextBlock FontWeight="SemiBold" Text="{Binding Header}" />
+                                        </HierarchicalDataTemplate>
+                                        <HierarchicalDataTemplate DataType="{x:Type modelPresetsTree:GenericTreeItem}" ItemsSource="{Binding Children}">
+                                            <TextBlock Text="{Binding Header}" />
+                                        </HierarchicalDataTemplate>
+                                    </TreeView.Resources>
+                                    <!--<TreeView.ItemContainerStyle>
+                  <Style TargetType="{x:Type TreeViewItem}">
+                      <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                      <Setter Property="Visibility" Value="{Binding IsVisible, Mode=TwoWay, Converter={StaticResource converterBoolToVisibilityCollapsed}}" />
+                      <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                  </Style>
+              </TreeView.ItemContainerStyle>-->
+                                    <!--
+                          virtualization brings the SelectedItem out of view
+                          VirtualizingStackPanel.IsVirtualizing="True"
+                          VirtualizingStackPanel.VirtualizationMode="Recycling"
+                      -->
+                                    <TreeView.InputBindings>
+                                        <KeyBinding
+                                                Key="Return"
+                                                Command="{Binding PresetsTreeViewModel.ReturnKeyPressedCommand}"
+                                                CommandParameter="{Binding SelectedItem, ElementName=PresetsTree}" />
+                                    </TreeView.InputBindings>
+                                    <b:Interaction.Triggers>
+                                        <b:EventTrigger EventName="MouseDoubleClick">
+                                            <b:InvokeCommandAction Command="{Binding PresetsTreeViewModel.DoubleClickCommand}" CommandParameter="{Binding SelectedItem, ElementName=PresetsTree}" />
+                                        </b:EventTrigger>
+                                        <!--<b:EventTrigger EventName="SelectedItemChanged">
+                  <b:InvokeCommandAction Command="{Binding PresetsTreeViewModel.SelectedItemChangedCommand}"
+                                         CommandParameter="{Binding SelectedItem, ElementName=PresetsTree}" />
+              </b:EventTrigger>-->
+                                    </b:Interaction.Triggers>
+                                </TreeView>
+                            </DockPanel>
+                        </Expander>
+                    </DockPanel>
+
+                    <GridSplitter
+                        x:Name="splitterToolboxView"
+                        Grid.Column="1"
+                        Width="5"
+                        HorizontalAlignment="Center"
+                        Background="{DynamicResource ControlElevationBorderBrush}" />
+
                     <!--
                         ScrollViewer steals focus (all key events) unless `Focusable` is set to false. Scrolling via arrow keys and page up/down stil works
                         as the event will still bubble up to the scroll viewer as its not handled in AnnoCanvas
                     -->
                     <ScrollViewer
-                        Grid.Column="0"
-                        Grid.ColumnSpan="2"
+                        Grid.Column="2" 
                         CanContentScroll="True"
                         Focusable="False"
                         HorizontalScrollBarVisibility="{Binding ShowScrollbars}"
-                        VerticalScrollBarVisibility="{Binding ShowScrollbars}">
+                        VerticalScrollBarVisibility="{Binding ShowScrollbars}" Grid.ColumnSpan="1" Margin="5,0,0,0">
                         <my:AnnoCanvas x:Name="annoCanvas" />
                     </ScrollViewer>
 
                     <GridSplitter
                         x:Name="splitterStatisticsView"
-                        Grid.Column="2"
+                        Grid.Column="3"
                         Width="5"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Stretch"
-                        Background="{DynamicResource ControlElevationBorderBrush}" />
+                        HorizontalAlignment="Left"
+                        Background="{DynamicResource ControlElevationBorderBrush}" Grid.ColumnSpan="1"   />
 
                     <my:StatisticsView
                         x:Name="statisticsView"
-                        Grid.Column="3"
-                        DataContext="{Binding StatisticsViewModel}" />
+                        Grid.Column="4"
+                        DataContext="{Binding StatisticsViewModel}" Margin="1,0,0,0" />
 
                 </Grid>
 
@@ -688,8 +797,6 @@
                             </StackPanel>
                         </Expander>
 
-
-
                     </DockPanel>
                     <GridSplitter
                         Grid.Row="1"
@@ -698,109 +805,8 @@
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Center"
                         Background="{DynamicResource ControlElevationBorderBrush}" />
-                    <StackPanel Grid.Row="2" Orientation="Vertical">
-                        <Expander
-                            x:Name="GroupBoxSearchPresets"
-                            HorizontalAlignment="Stretch"
-                            DockPanel.Dock="Top"
-                            Header="{l:Localize Search}"
-                            HeaderStringFormat=" {0}:"
-                            IsEnabled="True"
-                            IsExpanded="True">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="32" />
-                                    <RowDefinition Height="1*" />
-                                </Grid.RowDefinitions>
-                                <ui:AutoSuggestBox
-                                    x:Name="TextBoxSearchPresets"
-                                    VerticalContentAlignment="Center"
-                                    KeyUp="TextBoxSearchPresetsKeyUp"
-                                    PlaceholderText="Search"
-                                    Text="{Binding PresetsTreeSearchViewModel.SearchText, UpdateSourceTrigger=PropertyChanged}"
-                                    ToolTip="{l:Localize SearchToolTip}">
-
-                                    <b:Interaction.Triggers>
-                                        <b:EventTrigger EventName="GotFocus">
-                                            <b:InvokeCommandAction Command="{Binding PresetsTreeSearchViewModel.GotFocusCommand}" />
-                                        </b:EventTrigger>
-                                        <b:EventTrigger EventName="LostFocus">
-                                            <b:InvokeCommandAction Command="{Binding PresetsTreeSearchViewModel.LostFocusCommand}" />
-                                        </b:EventTrigger>
-                                    </b:Interaction.Triggers>
-                                    <ui:AutoSuggestBox.InputBindings>
-                                        <KeyBinding
-                                            Key="Esc"
-                                            Command="{Binding PresetsTreeSearchViewModel.ClearSearchTextCommand}"
-                                            CommandParameter="{Binding ElementName=TextBoxSearchPresets}" />
-                                    </ui:AutoSuggestBox.InputBindings>
-                                </ui:AutoSuggestBox>
-                                <!--<xctk:CheckComboBox
-              Grid.Row="1"
-              Grid.Column="0"
-              Command="{Binding PresetsTreeSearchViewModel.GameVersionFilterChangedCommand}"
-              Delimiter=", "
-              DisplayMemberPath="Name"
-              IsEditable="False"
-              IsSelectAllActive="True"
-              ItemsSource="{Binding PresetsTreeSearchViewModel.GameVersionFilters}"
-              SelectAllContent="{l:Localize SelectAll}"
-              SelectedMemberPath="IsSelected"
-              Visibility="Visible" />-->
-                            </Grid>
-                        </Expander>
-                        <Expander
-                            x:Name="GroupBoxPresets"
-                            Width="{Binding ActualWidth, ElementName=BuildingsPanel, Mode=OneWay}"
-                            Header="{Binding PresetsSectionHeader}"
-                            IsEnabled="True"
-                            IsExpanded="True">
-                            <DockPanel LastChildFill="True">
-                                <TreeView
-                                    x:Name="PresetsTree"
-                                    VerticalContentAlignment="Stretch"
-                                    ItemsSource="{Binding PresetsTreeViewModel.FilteredItems}">
-                                    <TreeView.Resources>
-                                        <HierarchicalDataTemplate DataType="{x:Type modelPresetsTree:GameHeaderTreeItem}" ItemsSource="{Binding Children}">
-                                            <TextBlock FontWeight="SemiBold" Text="{Binding Header}" />
-                                        </HierarchicalDataTemplate>
-                                        <HierarchicalDataTemplate DataType="{x:Type modelPresetsTree:GenericTreeItem}" ItemsSource="{Binding Children}">
-                                            <TextBlock Text="{Binding Header}" />
-                                        </HierarchicalDataTemplate>
-                                    </TreeView.Resources>
-                                    <!--<TreeView.ItemContainerStyle>
-                                <Style TargetType="{x:Type TreeViewItem}">
-                                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                                    <Setter Property="Visibility" Value="{Binding IsVisible, Mode=TwoWay, Converter={StaticResource converterBoolToVisibilityCollapsed}}" />
-                                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                                </Style>
-                            </TreeView.ItemContainerStyle>-->
-                                    <!--
-                                        virtualization brings the SelectedItem out of view
-                                        VirtualizingStackPanel.IsVirtualizing="True"
-                                        VirtualizingStackPanel.VirtualizationMode="Recycling"
-                                    -->
-                                    <TreeView.InputBindings>
-                                        <KeyBinding
-                                            Key="Return"
-                                            Command="{Binding PresetsTreeViewModel.ReturnKeyPressedCommand}"
-                                            CommandParameter="{Binding SelectedItem, ElementName=PresetsTree}" />
-                                    </TreeView.InputBindings>
-                                    <b:Interaction.Triggers>
-                                        <b:EventTrigger EventName="MouseDoubleClick">
-                                            <b:InvokeCommandAction Command="{Binding PresetsTreeViewModel.DoubleClickCommand}" CommandParameter="{Binding SelectedItem, ElementName=PresetsTree}" />
-                                        </b:EventTrigger>
-                                        <!--<b:EventTrigger EventName="SelectedItemChanged">
-                                <b:InvokeCommandAction Command="{Binding PresetsTreeViewModel.SelectedItemChangedCommand}"
-                                                       CommandParameter="{Binding SelectedItem, ElementName=PresetsTree}" />
-                            </b:EventTrigger>-->
-                                    </b:Interaction.Triggers>
-                                </TreeView>
-                            </DockPanel>
-                        </Expander>
-                    </StackPanel>
                 </Grid>
-                <StatusBar Grid.Row="2" Grid.ColumnSpan="3">
+                <StatusBar Grid.Row="2" Grid.ColumnSpan="3" Padding="0">
                     <StatusBarItem Content="{l:Localize StatusBarControls}" />
                     <StatusBarItem Margin="10,0,0,0" Content="{Binding StatusMessage}" />
                     <StatusBarItem

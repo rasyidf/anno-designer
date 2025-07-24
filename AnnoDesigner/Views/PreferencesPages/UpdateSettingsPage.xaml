@@ -12,13 +12,13 @@
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     d:DataContext="{d:DesignInstance Type=viewModels:UpdateSettingsViewModel,
                                      IsDesignTimeCreatable=False}"
-    d:DesignHeight="450"
+    d:DesignHeight="687.503"
     d:DesignWidth="800"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Margin="0,0,0,100">
     <Page.Resources>
         <coreConverters:BoolToVisibilityConverter
             x:Key="converterBoolToVisibilityCollapsed"
@@ -26,7 +26,7 @@
             TrueValue="Visible" />
     </Page.Resources>
     <xctk:BusyIndicator BusyContent="{Binding BusyContent}" IsBusy="{Binding IsBusy}">
-        <StackPanel Margin="10,5,0,0" Orientation="Vertical">
+        <StackPanel Margin="10,5,0,100" Orientation="Vertical">
 
             <!--#region Current Version-->
 
@@ -172,7 +172,7 @@
             </TextBlock>
 
             <TextBlock
-                Margin="20,5,0,0"
+                Margin="20,5,0,100"
                 FontWeight="Bold"
                 Text="{l:Localize UpdatePreferencesNewPresetsUpdateAvailable}"
                 TextWrapping="Wrap"

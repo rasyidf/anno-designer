@@ -24,13 +24,16 @@
     mc:Ignorable="d">
     <Page.Resources>
         <models:ManageKeybindingsHotkeyDataTemplateSelector x:Key="dataTemplateSelector" />
-        <Style x:Key="HotkeyEditButton" TargetType="{x:Type Button}">
+        <Style x:Key="HotkeyEditButton"
+       TargetType="{x:Type Button}"
+       BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Width" Value="100" />
             <Setter Property="Margin" Value="20,12,0,12" />
             <Setter Property="Padding" Value="3" />
         </Style>
+
         <Style x:Key="HotkeyDescription" TargetType="{x:Type TextBlock}">
             <Setter Property="FontSize" Value="15" />
             <Setter Property="Padding" Value="10,0,10,0" />

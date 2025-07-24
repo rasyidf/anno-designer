@@ -10,10 +10,9 @@
     x:Name="aboutWindow"
     Title="Anno Designer"
     Width="575"
-    Height="420"
+    Height="466"
     d:DataContext="{d:DesignInstance Type=viewModel:AboutViewModel,
                                      IsDesignTimeCreatable=True}"
-    d:DesignHeight="420"
     d:DesignWidth="575"
     Icon="/AnnoDesigner;component/icon.ico"
     Left="{Binding Source={x:Static properties:Settings.Default}, Path=AboutLeft, Mode=TwoWay}"
@@ -52,7 +51,6 @@
             Content="Anno Designer"
             FontSize="24" />
         <Label
-            Height="20"
             Margin="82,48,0,0"
             VerticalAlignment="Top"
             Content="{l:Localize BuildingLayoutDesigner}" />
@@ -64,38 +62,32 @@
             FontSize="14" />
         <!--  Can't use StringFormat with label elements  -->
         <TextBlock
-            Height="16"
-            Margin="24,132,0,0"
+            Margin="24,135,0,0"
             VerticalAlignment="Top"
             Text="{l:Localize OriginalApplicationBy,
                               StringFormat=\{0\} Jan Christoph Bernack (ZackSchneider)}" />
         <TextBlock
-            Height="16"
-            Margin="24,153,0,0"
+            Margin="24,155,0,0"
             VerticalAlignment="Top"
             Text="{l:Localize CombinedForAnnoVersions,
                               StringFormat='\{0\} Anno 1404, 2070, 2205 and 1800'}" />
         <TextBlock
-            Height="16"
-            Margin="24,171,0,0"
+            Margin="24,175,0,0"
             VerticalAlignment="Top"
             Text="{l:Localize BuildingPresets,
                               StringFormat='\{0\} Anno 1404 by &quot;&lt;Unknown&gt;&quot;'}" />
         <TextBlock
-            Height="16"
-            Margin="24,189,0,0"
+            Margin="24,195,0,0"
             VerticalAlignment="Top"
             Text="{l:Localize BuildingPresets,
                               StringFormat='\{0\} Anno 2070 by Peter Hozak (DeathApril)'}" />
         <TextBlock
-            Height="16"
-            Margin="24,207,0,0"
+            Margin="24,216,0,0"
             VerticalAlignment="Top"
             Text="{l:Localize BuildingPresets,
                               StringFormat='\{0\} Anno 2205 by PickledWhispers'}" />
         <TextBlock
-            Height="16"
-            Margin="24,225,0,0"
+            Margin="24,237,0,0"
             VerticalAlignment="Top"
             Text="{l:Localize BuildingPresets,
                               StringFormat='\{0\} Anno 1800 by Sting McRay'}" />
@@ -152,7 +144,6 @@
             CommandParameter="{Binding ElementName=aboutWindow}"
             Content="{l:Localize Close}" />
         <TextBlock
-            Height="16"
             Margin="24,115,-1,0"
             VerticalAlignment="Top"
             Text="Developed By @rasyidf" />
