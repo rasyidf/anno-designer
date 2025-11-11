@@ -3,12 +3,10 @@ using AnnoDesigner.Core.DataStructures;
 using AnnoDesigner.Core.Extensions;
 using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.Layout;
-using AnnoDesigner.Core.Layout.Exceptions;
 using AnnoDesigner.Core.Layout.Helper;
 using AnnoDesigner.Core.Layout.Models;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Helper;
-using AnnoDesigner.Core.Presets.Loader;
 using AnnoDesigner.Core.Presets.Models;
 using AnnoDesigner.Core.Services;
 using AnnoDesigner.CustomEventArgs;
@@ -27,10 +25,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -55,39 +51,11 @@ public class MainViewModel : Notify
     private readonly IRecentFilesHelper _recentFilesHelper;
     private readonly IMessageBoxService _messageBoxService;
     private readonly IUpdateHelper _updateHelper;
-    private readonly ILocalizationHelper _localizationHelper;
     private readonly IFileSystem _fileSystem;
 
     public event EventHandler<EventArgs> ShowStatisticsChanged;
 
-    private IAnnoCanvas _annoCanvas;
     private Dictionary<int, bool> _treeViewState;
-    private bool _canvasShowGrid;
-    private bool _canvasShowIcons;
-    private bool _canvasShowLabels;
-    private bool _canvasShowTrueInfluenceRange;
-    private bool _canvasShowInfluences;
-    private bool _canvasShowHarborBlockedArea;
-    private bool _canvasShowPanorama;
-    private bool _useCurrentZoomOnExportedImageValue;
-    private bool _renderSelectionHighlightsOnExportedImageValue;
-    private bool _renderVersionOnExportedImageValue;
-    private bool _isLanguageChange;
-    private bool _isBusy;
-    private string _statusMessage;
-    private ObservableCollection<SupportedLanguage> _languages;
-    private ObservableCollection<IconImage> _availableIcons;
-    private IconImage _selectedIcon;
-    private string _mainWindowTitle;
-    private string _presetsSectionHeader;
-    private double _mainWindowHeight;
-    private double _mainWindowWidth;
-    private double _mainWindowLeft;
-    private double _mainWindowTop;
-    private WindowState _minWindowWindowState;
-    private HotkeyCommandManager _hotkeyCommandManager;
-    private ObservableCollection<RecentFileItem> _recentFiles;
-    private string statusMessageClipboard;
     private readonly TreeLocalizationContainer _treeLocalizationContainer;
 
     //for identifier checking process
@@ -117,7 +85,7 @@ public class MainViewModel : Notify
         _recentFilesHelper = recentFilesHelperToUse;
         _messageBoxService = messageBoxServiceToUse;
         _updateHelper = updateHelperToUse;
-        _localizationHelper = localizationHelperToUse;
+        LocalizationHelper = localizationHelperToUse;
         _fileSystem = fileSystemToUse;
 
         _layoutLoader = layoutLoaderToUse ?? new LayoutLoader();
@@ -125,22 +93,22 @@ public class MainViewModel : Notify
         _brushCache = brushCacheToUse ?? new BrushCache();
         _penCache = penCacheToUse ?? new PenCache();
         _adjacentCellGrouper = adjacentCellGrouper ?? new AdjacentCellGrouper();
-        
+
         _layoutFileService = layoutFileServiceToUse ?? new LayoutFileService(
             _layoutLoader,
             _fileSystem,
             _messageBoxService,
-            _localizationHelper);
+            LocalizationHelper);
 
-        HotkeyCommandManager = new HotkeyCommandManager(_localizationHelper);
+        HotkeyCommandManager = new HotkeyCommandManager(LocalizationHelper);
 
-        StatisticsViewModel = new StatisticsViewModel(_localizationHelper, _commons, appSettingsToUse)
+        StatisticsViewModel = new StatisticsViewModel(LocalizationHelper, _commons, appSettingsToUse)
         {
             IsVisible = _appSettings.StatsShowStats,
             ShowStatisticsBuildingCount = _appSettings.StatsShowBuildingCount
         };
 
-        BuildingSettingsViewModel = new BuildingSettingsViewModel(_appSettings, _messageBoxService, _localizationHelper);
+        BuildingSettingsViewModel = new BuildingSettingsViewModel(_appSettings, _messageBoxService, LocalizationHelper);
 
         // load tree localization            
         try
@@ -150,7 +118,7 @@ public class MainViewModel : Notify
         catch (Exception ex)
         {
             _messageBoxService.ShowError(ex.Message,
-                  _localizationHelper.GetLocalization("LoadingTreeLocalizationFailed"));
+                  LocalizationHelper.GetLocalization("LoadingTreeLocalizationFailed"));
         }
 
         PresetsTreeViewModel = new PresetsTreeViewModel(new TreeLocalization(_commons, _treeLocalizationContainer), _commons);
@@ -163,8 +131,8 @@ public class MainViewModel : Notify
 
         AboutViewModel = new AboutViewModel();
 
-        PreferencesUpdateViewModel = new UpdateSettingsViewModel(_commons, _appSettings, _messageBoxService, _updateHelper, _localizationHelper);
-        PreferencesKeyBindingsViewModel = new ManageKeybindingsViewModel(HotkeyCommandManager, _commons, _messageBoxService, _localizationHelper);
+        PreferencesUpdateViewModel = new UpdateSettingsViewModel(_commons, _appSettings, _messageBoxService, _updateHelper, LocalizationHelper);
+        PreferencesKeyBindingsViewModel = new ManageKeybindingsViewModel(HotkeyCommandManager, _commons, _messageBoxService, LocalizationHelper);
         PreferencesGeneralViewModel = new GeneralSettingsViewModel(_appSettings, _commons, _recentFilesHelper);
 
         LayoutSettingsViewModel = new LayoutSettingsViewModel();
@@ -258,7 +226,7 @@ public class MainViewModel : Notify
 
         foreach (string curLanguageCode in _commons.LanguageCodeMap.Values)
         {
-            string curTranslationOfNone = _localizationHelper.GetLocalization("NoIcon", curLanguageCode);
+            string curTranslationOfNone = LocalizationHelper.GetLocalization("NoIcon", curLanguageCode);
             localizations.Add(curLanguageCode, curTranslationOfNone);
         }
 
@@ -372,8 +340,8 @@ public class MainViewModel : Notify
         {
             logger.Error(ex, "Error applying preset.");
             _messageBoxService.ShowError(
-                _localizationHelper.GetLocalization("LayoutLoadingError"),
-               _localizationHelper.GetLocalization("Error"));
+                LocalizationHelper.GetLocalization("LayoutLoadingError"),
+               LocalizationHelper.GetLocalization("Error"));
         }
     }
 
@@ -406,7 +374,7 @@ public class MainViewModel : Notify
         {
             if (obj.Icon.StartsWith("A5_"))
             {
-                objIconFileName = obj.Icon.Remove(0, 3) + ".png"; //when Anno 2070, it use not A5_ in the original naming.
+                objIconFileName = obj.Icon[3..] + ".png"; //when Anno 2070, it use not A5_ in the original naming.
             }
             else
             {
@@ -797,7 +765,7 @@ public class MainViewModel : Notify
             logger.Error(ex, "Error opening layout file.");
             _messageBoxService.ShowError(
                 ex.Message,
-                _localizationHelper.GetLocalization("Error"));
+                LocalizationHelper.GetLocalization("Error"));
         }
     }
 
@@ -813,9 +781,9 @@ public class MainViewModel : Notify
 
         // Clear existing objects
         AnnoCanvas.SelectedObjects.Clear();
-        
+
         // Clear PlacedObjects properly for both V1 and V2
-        if (AnnoCanvas.PlacedObjects is QuadTree<LayoutObject> quadTree)
+        if (AnnoCanvas.PlacedObjects is not null)
         {
             AnnoCanvas.PlacedObjects = new QuadTree<LayoutObject>(new Rect(0, 0, 1, 1));
         }
@@ -823,7 +791,7 @@ public class MainViewModel : Notify
         {
             AnnoCanvas.PlacedObjects.Clear();
         }
-        
+
         AnnoCanvas.UndoManager.Clear();
 
         // Create layout objects from the loaded layout
@@ -866,11 +834,11 @@ public class MainViewModel : Notify
         try
         {
             AnnoCanvas.Normalize(1);
-            
+
             LayoutFile layoutToSave = _layoutFileService.CreateLayoutFile(
                 AnnoCanvas.PlacedObjects,
                 LayoutSettingsViewModel.LayoutVersion);
-            
+
             _layoutFileService.SaveLayoutToFile(layoutToSave, filePath);
             AnnoCanvas.UndoManager.IsDirty = false;
         }
@@ -887,28 +855,28 @@ public class MainViewModel : Notify
     /// <param name="e">exception containing error information</param>
     private void IOErrorMessageBox(Exception e)
     {
-        _messageBoxService.ShowError(e.Message, _localizationHelper.GetLocalization("IOErrorMessage"));
+        _messageBoxService.ShowError(e.Message, LocalizationHelper.GetLocalization("IOErrorMessage"));
     }
 
     #region properties
 
     public IAnnoCanvas AnnoCanvas
     {
-        get => _annoCanvas;
+        get;
         set
         {
-            if (_annoCanvas != null)
+            if (field != null)
             {
-                _annoCanvas.StatisticsUpdated -= AnnoCanvas_StatisticsUpdated;
+                field.StatisticsUpdated -= AnnoCanvas_StatisticsUpdated;
             }
 
-            _annoCanvas = value;
-            _annoCanvas.StatisticsUpdated += AnnoCanvas_StatisticsUpdated;
-            _annoCanvas.OnCurrentObjectChanged += UpdateUIFromObject;
-            _annoCanvas.OnStatusMessageChanged += AnnoCanvas_StatusMessageChanged;
-            _annoCanvas.OnLoadedFileChanged += AnnoCanvas_LoadedFileChanged;
-            _annoCanvas.OpenFileRequested += AnnoCanvas_OpenFileRequested;
-            _annoCanvas.SaveFileRequested += AnnoCanvas_SaveFileRequested;
+            field = value;
+            field.StatisticsUpdated += AnnoCanvas_StatisticsUpdated;
+            field.OnCurrentObjectChanged += UpdateUIFromObject;
+            field.OnStatusMessageChanged += AnnoCanvas_StatusMessageChanged;
+            field.OnLoadedFileChanged += AnnoCanvas_LoadedFileChanged;
+            field.OpenFileRequested += AnnoCanvas_OpenFileRequested;
+            field.SaveFileRequested += AnnoCanvas_SaveFileRequested;
 
             // If using the V2 adapter, subscribe to its request events which ask the host to show dialogs
             if (value is AnnoDesigner.CanvasV2.Integration.CanvasV2Adapter adapter)
@@ -916,7 +884,10 @@ public class MainViewModel : Notify
                 adapter.RequestOpenFile += async (s, e) =>
                 {
                     // Check for unsaved changes before opening
-                    if (!await AnnoCanvas.CheckUnsavedChanges()) return;
+                    if (!await AnnoCanvas.CheckUnsavedChanges())
+                    {
+                        return;
+                    }
 
                     // Show OpenFileDialog and open selected file
                     OpenFileDialog dialog = new()
@@ -954,11 +925,14 @@ public class MainViewModel : Notify
                 adapter.RequestNewFile += async (s, e) =>
                 {
                     // New file request: ensure unsaved changes handled and then clear canvas
-                    if (!await AnnoCanvas.CheckUnsavedChanges()) return;
-                    
+                    if (!await AnnoCanvas.CheckUnsavedChanges())
+                    {
+                        return;
+                    }
+
                     // Clear canvas - for QuadTree we need to create a new instance
                     AnnoCanvas.SelectedObjects.Clear();
-                    
+
                     // For Canvas V2, PlacedObjects is a QuadTree - clear it properly
                     if (AnnoCanvas.PlacedObjects is QuadTree<LayoutObject> quadTree)
                     {
@@ -969,7 +943,7 @@ public class MainViewModel : Notify
                     {
                         AnnoCanvas.PlacedObjects.Clear();
                     }
-                    
+
                     AnnoCanvas.UndoManager.Clear();
                     AnnoCanvas.LoadedFile = string.Empty;
                     AnnoCanvas.Normalize(1);
@@ -978,154 +952,133 @@ public class MainViewModel : Notify
                     AnnoCanvas.RaiseColorsInLayoutUpdated();
                 };
             }
-            BuildingSettingsViewModel.AnnoCanvasToUse = _annoCanvas;
+            BuildingSettingsViewModel.AnnoCanvasToUse = field;
 
-            _annoCanvas.RenderGrid = CanvasShowGrid;
-            _annoCanvas.RenderIcon = CanvasShowIcons;
-            _annoCanvas.RenderLabel = CanvasShowLabels;
-            _annoCanvas.RenderTrueInfluenceRange = CanvasShowTrueInfluenceRange;
-            _annoCanvas.RenderInfluences = CanvasShowInfluences;
-            _annoCanvas.RenderHarborBlockedArea = CanvasShowHarborBlockedArea;
-            _annoCanvas.RenderPanorama = CanvasShowPanorama;
+            field.RenderGrid = CanvasShowGrid;
+            field.RenderIcon = CanvasShowIcons;
+            field.RenderLabel = CanvasShowLabels;
+            field.RenderTrueInfluenceRange = CanvasShowTrueInfluenceRange;
+            field.RenderInfluences = CanvasShowInfluences;
+            field.RenderHarborBlockedArea = CanvasShowHarborBlockedArea;
+            field.RenderPanorama = CanvasShowPanorama;
         }
     }
 
     public bool CanvasShowGrid
     {
-        get => _canvasShowGrid;
+        get;
         set
         {
-            _ = UpdateProperty(ref _canvasShowGrid, value);
-            if (AnnoCanvas != null)
-            {
-                AnnoCanvas.RenderGrid = _canvasShowGrid;
-            }
+            _ = UpdateProperty(ref field, value);
+            _ = AnnoCanvas?.RenderGrid = field;
         }
     }
 
     public bool CanvasShowIcons
     {
-        get => _canvasShowIcons;
+        get;
         set
         {
-            _ = UpdateProperty(ref _canvasShowIcons, value);
-            if (AnnoCanvas != null)
-            {
-                AnnoCanvas.RenderIcon = _canvasShowIcons;
-            }
+            _ = UpdateProperty(ref field, value);
+            _ = AnnoCanvas?.RenderIcon = field;
         }
     }
 
     public bool CanvasShowLabels
     {
-        get => _canvasShowLabels;
+        get;
         set
         {
-            _ = UpdateProperty(ref _canvasShowLabels, value);
-            if (AnnoCanvas != null)
-            {
-                AnnoCanvas.RenderLabel = _canvasShowLabels;
-            }
+            _ = UpdateProperty(ref field, value);
+            _ = AnnoCanvas?.RenderLabel = field;
         }
     }
 
     public bool CanvasShowTrueInfluenceRange
     {
-        get => _canvasShowTrueInfluenceRange;
+        get;
         set
         {
-            _ = UpdateProperty(ref _canvasShowTrueInfluenceRange, value);
-            if (AnnoCanvas != null)
-            {
-                AnnoCanvas.RenderTrueInfluenceRange = _canvasShowTrueInfluenceRange;
-            }
+            _ = UpdateProperty(ref field, value);
+            _ = AnnoCanvas?.RenderTrueInfluenceRange = field;
         }
     }
 
     public bool CanvasShowInfluences
     {
-        get => _canvasShowInfluences;
+        get;
         set
         {
-            _ = UpdateProperty(ref _canvasShowInfluences, value);
-            if (AnnoCanvas != null)
-            {
-                AnnoCanvas.RenderInfluences = _canvasShowInfluences;
-            }
+            _ = UpdateProperty(ref field, value);
+            _ = AnnoCanvas?.RenderInfluences = field;
         }
     }
 
     public bool CanvasShowHarborBlockedArea
     {
-        get => _canvasShowHarborBlockedArea;
+        get;
         set
         {
-            _ = UpdateProperty(ref _canvasShowHarborBlockedArea, value);
-            if (AnnoCanvas != null)
-            {
-                AnnoCanvas.RenderHarborBlockedArea = _canvasShowHarborBlockedArea;
-            }
+            _ = UpdateProperty(ref field, value);
+            _ = AnnoCanvas?.RenderHarborBlockedArea = field;
         }
     }
 
     public bool CanvasShowPanorama
     {
-        get => _canvasShowPanorama;
+        get;
         set
         {
-            _ = UpdateProperty(ref _canvasShowPanorama, value);
-            if (AnnoCanvas != null)
-            {
-                AnnoCanvas.RenderPanorama = _canvasShowPanorama;
-            }
+            _ = UpdateProperty(ref field, value);
+            _ = AnnoCanvas?.RenderPanorama = field;
         }
     }
 
     public bool UseCurrentZoomOnExportedImageValue
     {
-        get => _useCurrentZoomOnExportedImageValue;
-        set => UpdateProperty(ref _useCurrentZoomOnExportedImageValue, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool RenderSelectionHighlightsOnExportedImageValue
     {
-        get => _renderSelectionHighlightsOnExportedImageValue;
-        set => UpdateProperty(ref _renderSelectionHighlightsOnExportedImageValue, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool RenderVersionOnExportedImageValue
     {
-        get => _renderVersionOnExportedImageValue;
-        set => UpdateProperty(ref _renderVersionOnExportedImageValue, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool IsLanguageChange
     {
-        get => _isLanguageChange;
-        set => UpdateProperty(ref _isLanguageChange, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool IsBusy
     {
-        get => _isBusy;
-        set => UpdateProperty(ref _isBusy, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string StatusMessage
     {
-        get => _statusMessage;
-        set => UpdateProperty(ref _statusMessage, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string StatusMessageClipboard
     {
-        get => statusMessageClipboard;
-        set => UpdateProperty(ref statusMessageClipboard,value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
     public ObservableCollection<SupportedLanguage> Languages
     {
-        get => _languages;
-        set => UpdateProperty(ref _languages, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     private void InitLanguageMenu(string selectedLanguage)
@@ -1139,70 +1092,70 @@ public class MainViewModel : Notify
 
     public ObservableCollection<IconImage> AvailableIcons
     {
-        get => _availableIcons;
-        set => UpdateProperty(ref _availableIcons, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public IconImage SelectedIcon
     {
-        get => _selectedIcon;
-        set => UpdateProperty(ref _selectedIcon, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string MainWindowTitle
     {
-        get => _mainWindowTitle;
-        set => UpdateProperty(ref _mainWindowTitle, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string PresetsSectionHeader
     {
-        get => _presetsSectionHeader;
-        set => UpdateProperty(ref _presetsSectionHeader, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public double MainWindowHeight
     {
-        get => _mainWindowHeight;
-        set => UpdateProperty(ref _mainWindowHeight, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public double MainWindowWidth
     {
-        get => _mainWindowWidth;
-        set => UpdateProperty(ref _mainWindowWidth, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public double MainWindowLeft
     {
-        get => _mainWindowLeft;
-        set => UpdateProperty(ref _mainWindowLeft, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public double MainWindowTop
     {
-        get => _mainWindowTop;
-        set => UpdateProperty(ref _mainWindowTop, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public WindowState MainWindowWindowState
     {
-        get => _minWindowWindowState;
-        set => UpdateProperty(ref _minWindowWindowState, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public HotkeyCommandManager HotkeyCommandManager
     {
-        get => _hotkeyCommandManager;
-        set => UpdateProperty(ref _hotkeyCommandManager, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public ObservableCollection<RecentFileItem> RecentFiles
     {
-        get => _recentFiles;
+        get;
         set
         {
-            if (UpdateProperty(ref _recentFiles, value))
+            if (UpdateProperty(ref field, value))
             {
                 OnPropertyChanged(nameof(HasRecentFiles));
             }
@@ -1320,8 +1273,8 @@ public class MainViewModel : Notify
             return;
         }
 
-        string input = InputWindow.Prompt(this, _localizationHelper.GetLocalization("LoadLayoutMessage"),
-            _localizationHelper.GetLocalization("LoadLayoutHeader"));
+        string input = InputWindow.Prompt(this, LocalizationHelper.GetLocalization("LoadLayoutMessage"),
+            LocalizationHelper.GetLocalization("LoadLayoutHeader"));
 
         if (string.IsNullOrWhiteSpace(input))
         {
@@ -1343,8 +1296,8 @@ public class MainViewModel : Notify
         {
             logger.Error(ex, "Error loading layout from JSON input.");
             _messageBoxService.ShowError(
-                _localizationHelper.GetLocalization("LayoutLoadingError"),
-                _localizationHelper.GetLocalization("Error"));
+                LocalizationHelper.GetLocalization("LayoutLoadingError"),
+                LocalizationHelper.GetLocalization("Error"));
         }
     }
 
@@ -1386,9 +1339,9 @@ public class MainViewModel : Notify
 
     private void ShowRegistrationMessageBox(bool isDeregistration)
     {
-        string message = isDeregistration ? _localizationHelper.GetLocalization("UnregisterFileExtensionSuccessful") : _localizationHelper.GetLocalization("RegisterFileExtensionSuccessful");
+        string message = isDeregistration ? LocalizationHelper.GetLocalization("UnregisterFileExtensionSuccessful") : LocalizationHelper.GetLocalization("RegisterFileExtensionSuccessful");
 
-        _messageBoxService.ShowMessage(message, _localizationHelper.GetLocalization("Successful"));
+        _messageBoxService.ShowMessage(message, LocalizationHelper.GetLocalization("Successful"));
     }
 
     public ICommand ExportImageCommand { get; private set; }
@@ -1424,15 +1377,15 @@ public class MainViewModel : Notify
                 RenderToFile(dialog.FileName, 1, exportZoom, exportSelection, StatisticsViewModel.IsVisible, exportVersion);
 
                 _messageBoxService.ShowMessage(Application.Current.MainWindow,
-                   _localizationHelper.GetLocalization("ExportImageSuccessful"),
-                   _localizationHelper.GetLocalization("Successful"));
+                   LocalizationHelper.GetLocalization("ExportImageSuccessful"),
+                   LocalizationHelper.GetLocalization("Successful"));
             }
             catch (Exception ex)
             {
                 logger.Error(ex, "Error exporting image.");
                 _messageBoxService.ShowError(Application.Current.MainWindow,
-                    _localizationHelper.GetLocalization("ExportImageError"),
-                    _localizationHelper.GetLocalization("Error"));
+                    LocalizationHelper.GetLocalization("ExportImageError"),
+                    LocalizationHelper.GetLocalization("Error"));
             }
         }
     }
@@ -1561,7 +1514,7 @@ public class MainViewModel : Notify
 
         if (renderSettings.RenderStatistics)
         {
-            StatisticsViewModel exportStatisticsViewModel = new(_localizationHelper, _commons, _appSettings);
+            StatisticsViewModel exportStatisticsViewModel = new(LocalizationHelper, _commons, _appSettings);
             _ = exportStatisticsViewModel.UpdateStatisticsAsync(UpdateMode.All, [.. target.PlacedObjects], target.SelectedObjects, target.BuildingPresets);
             exportStatisticsViewModel.ShowBuildingList = StatisticsViewModel.ShowBuildingList;
 
@@ -1607,11 +1560,11 @@ public class MainViewModel : Notify
         try
         {
             AnnoCanvas.Normalize(1);
-            
+
             LayoutFile layoutToSave = _layoutFileService.CreateLayoutFile(
                 AnnoCanvas.PlacedObjects,
                 LayoutSettingsViewModel.LayoutVersion);
-            
+
             string jsonString = _layoutFileService.SerializeLayoutToJson(layoutToSave);
 
             if (!string.IsNullOrEmpty(jsonString))
@@ -1619,8 +1572,8 @@ public class MainViewModel : Notify
                 Clipboard.SetText(jsonString, TextDataFormat.UnicodeText);
 
                 _messageBoxService.ShowMessage(
-                    _localizationHelper.GetLocalization("ClipboardContainsLayoutAsJson"),
-                    _localizationHelper.GetLocalization("Successful"));
+                    LocalizationHelper.GetLocalization("ClipboardContainsLayoutAsJson"),
+                    LocalizationHelper.GetLocalization("Successful"));
             }
         }
         catch (Exception ex)
@@ -1628,7 +1581,7 @@ public class MainViewModel : Notify
             logger.Error(ex, "Error copying layout to clipboard.");
             _messageBoxService.ShowError(
                 ex.Message,
-                _localizationHelper.GetLocalization("LayoutSavingError"));
+                LocalizationHelper.GetLocalization("LayoutSavingError"));
         }
     }
 
@@ -1709,8 +1662,8 @@ public class MainViewModel : Notify
         catch (Exception)
         {
             _messageBoxService.ShowError(
-                _localizationHelper.GetLocalization("InvalidBuildingConfiguration"),
-               _localizationHelper.GetLocalization("Error"));
+                LocalizationHelper.GetLocalization("InvalidBuildingConfiguration"),
+               LocalizationHelper.GetLocalization("Error"));
         }
     }
 
@@ -1749,7 +1702,7 @@ public class MainViewModel : Notify
         });
 
         preferencesWindow.DataContext = vm;
-        preferencesWindow.ShowDialog();
+        _ = preferencesWindow.ShowDialog();
     }
 
     public ICommand ShowLicensesWindowCommand { get; private set; }
@@ -1787,8 +1740,8 @@ public class MainViewModel : Notify
         {
             _recentFilesHelper.RemoveFile(new RecentFile(recentFile.Path, recentFile.LastUsed));
             _messageBoxService.ShowWarning(Application.Current.MainWindow,
-                _localizationHelper.GetLocalization("FileNotFound"),
-                _localizationHelper.GetLocalization("Warning"));
+                LocalizationHelper.GetLocalization("FileNotFound"),
+                LocalizationHelper.GetLocalization("Warning"));
         }
     }
 
@@ -1815,13 +1768,10 @@ public class MainViewModel : Notify
     public GeneralSettingsViewModel PreferencesGeneralViewModel { get; set; }
 
     public LayoutSettingsViewModel LayoutSettingsViewModel { get; set; }
-    
+
     public CanvasV2.FloatingToolboxViewModel FloatingToolboxViewModel { get; set; }
-    
-    public ILocalizationHelper LocalizationHelper
-    {
-        get { return _localizationHelper; }
-    }
+
+    public ILocalizationHelper LocalizationHelper { get; }
 
     #endregion
 }

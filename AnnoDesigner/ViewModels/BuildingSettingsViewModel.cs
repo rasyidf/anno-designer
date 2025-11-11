@@ -24,28 +24,6 @@ public class BuildingSettingsViewModel : Notify
     private readonly ILocalizationHelper _localizationHelper;
 
     private Color? _selectedColor;
-    private int _buildingHeight;
-    private int _buildingWidth;
-    private string _buildingTemplate;
-    private string _buildingName;
-    private string _buildingRealName;
-    private string _buildingIdentifier;
-    private double _buildingRadius;
-    private double _buildingInfluenceRange;
-    private double _buildingBlockedAreaLength;
-    private double _buildingBlockedAreaWidth;
-    private GridDirection _buildingDirection;
-    private bool _isPavedStreet;
-    private bool _isEnableLabelChecked;
-    private bool _isBorderlessChecked;
-    private bool _isRoadChecked;
-    private ObservableCollection<SerializableColor> _colorsInLayout;
-    private IAnnoCanvas _annoCanvasToUse;
-    private ColorHueSaturationBrightnessComparer _colorSorter;
-    private ObservableCollection<BuildingInfluence> _buildingInfluences;
-    private BuildingInfluence _selectedBuildingInfluence;
-    private bool _isBuildingInfluenceInputRadiusVisible;
-    private bool _isBuildingInfluenceInputRangeVisible;
 
     /// <summary>
     /// only used for databinding
@@ -112,76 +90,76 @@ public class BuildingSettingsViewModel : Notify
 
     public int BuildingHeight
     {
-        get => _buildingHeight;
-        set => UpdateProperty(ref _buildingHeight, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public int BuildingWidth
     {
-        get => _buildingWidth;
-        set => UpdateProperty(ref _buildingWidth, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string BuildingTemplate
     {
-        get => _buildingTemplate;
-        set => UpdateProperty(ref _buildingTemplate, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string BuildingName
     {
-        get => _buildingName;
-        set => UpdateProperty(ref _buildingName, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string BuildingRealName
     {
-        get => _buildingRealName;
-        set => UpdateProperty(ref _buildingRealName, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string BuildingIdentifier
     {
-        get => _buildingIdentifier;
-        set => UpdateProperty(ref _buildingIdentifier, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public double BuildingRadius
     {
-        get => _buildingRadius;
-        set => UpdateProperty(ref _buildingRadius, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public double BuildingInfluenceRange
     {
-        get => _buildingInfluenceRange;
-        set => UpdateProperty(ref _buildingInfluenceRange, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public double BuildingBlockedAreaLength
     {
-        get => _buildingBlockedAreaLength;
-        set => UpdateProperty(ref _buildingBlockedAreaLength, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public double BuildingBlockedAreaWidth
     {
-        get => _buildingBlockedAreaWidth;
-        set => UpdateProperty(ref _buildingBlockedAreaWidth, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public GridDirection BuildingDirection
     {
-        get => _buildingDirection;
-        set => UpdateProperty(ref _buildingDirection, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool IsPavedStreet
     {
-        get => _isPavedStreet;
+        get;
         set
         {
-            if (UpdateProperty(ref _isPavedStreet, value))
+            if (UpdateProperty(ref field, value))
             {
                 HandleIsPavedStreet();
             }
@@ -190,34 +168,34 @@ public class BuildingSettingsViewModel : Notify
 
     public bool IsEnableLabelChecked
     {
-        get => _isEnableLabelChecked;
-        set => UpdateProperty(ref _isEnableLabelChecked, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool IsBorderlessChecked
     {
-        get => _isBorderlessChecked;
-        set => UpdateProperty(ref _isBorderlessChecked, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool IsRoadChecked
     {
-        get => _isRoadChecked;
-        set => UpdateProperty(ref _isRoadChecked, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public IAnnoCanvas AnnoCanvasToUse
     {
-        get => _annoCanvasToUse;
+        get;
         set
         {
-            if (_annoCanvasToUse != null)
+            if (field != null)
             {
-                _annoCanvasToUse.ColorsInLayoutUpdated -= AnnoCanvasToUse_ColorsUpdated;
+                field.ColorsInLayoutUpdated -= AnnoCanvasToUse_ColorsUpdated;
             }
 
-            _annoCanvasToUse = value;
-            _annoCanvasToUse.ColorsInLayoutUpdated += AnnoCanvasToUse_ColorsUpdated;
+            field = value;
+            field.ColorsInLayoutUpdated += AnnoCanvasToUse_ColorsUpdated;
         }
     }
 
@@ -225,42 +203,42 @@ public class BuildingSettingsViewModel : Notify
 
     public ObservableCollection<SerializableColor> ColorsInLayout
     {
-        get => _colorsInLayout;
+        get;
         set
         {
-            _ = UpdateProperty(ref _colorsInLayout, value);
+            _ = UpdateProperty(ref field, value);
             OnPropertyChanged(nameof(ShowColorsInLayout));
         }
     }
 
-    private ColorHueSaturationBrightnessComparer ColorSorter => _colorSorter ??= new ColorHueSaturationBrightnessComparer();
+    private ColorHueSaturationBrightnessComparer ColorSorter => field ??= new ColorHueSaturationBrightnessComparer();
 
     public ObservableCollection<BuildingInfluence> BuildingInfluences
     {
-        get => _buildingInfluences;
-        set => UpdateProperty(ref _buildingInfluences, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool IsBuildingInfluenceInputRadiusVisible
     {
-        get => _isBuildingInfluenceInputRadiusVisible;
-        set => UpdateProperty(ref _isBuildingInfluenceInputRadiusVisible, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool IsBuildingInfluenceInputRangeVisible
     {
-        get => _isBuildingInfluenceInputRangeVisible;
-        set => UpdateProperty(ref _isBuildingInfluenceInputRangeVisible, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public BuildingInfluence SelectedBuildingInfluence
     {
-        get => _selectedBuildingInfluence;
+        get;
         set
         {
-            if (UpdateProperty(ref _selectedBuildingInfluence, value))
+            if (UpdateProperty(ref field, value))
             {
-                UpdateBuildingInfluenceInputVisibility(_selectedBuildingInfluence.Type);
+                UpdateBuildingInfluenceInputVisibility(field.Type);
             }
         }
     }

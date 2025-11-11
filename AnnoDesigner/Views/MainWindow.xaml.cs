@@ -1,12 +1,12 @@
-﻿using AnnoDesigner.CommandLine;
+﻿using AnnoDesigner.CanvasV2.FeatureFlags;
+using AnnoDesigner.CanvasV2.Integration;
+using AnnoDesigner.CommandLine;
 using AnnoDesigner.CommandLine.Arguments;
 using AnnoDesigner.Core.Layout;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Extensions;
+using AnnoDesigner.Models;
 using AnnoDesigner.ViewModels;
-using AnnoDesigner.CanvasV2;
-using AnnoDesigner.CanvasV2.FeatureFlags;
-using AnnoDesigner.CanvasV2.Integration;
 using NLog;
 using System;
 using System.ComponentModel;
@@ -15,7 +15,6 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using System.Windows.Controls;
 using Wpf.Ui.Controls;
 
 namespace AnnoDesigner;
@@ -30,7 +29,7 @@ public partial class MainWindow : FluentWindow, ICloseable
     private MainViewModel _mainViewModel;
     private readonly IAppSettings _appSettings;
     private readonly IFeatureFlags _featureFlags;
-    private bool _useCanvasV2;
+    private readonly bool _useCanvasV2;
 
     public new MainViewModel DataContext { get => base.DataContext as MainViewModel; set => base.DataContext = value; }
 
@@ -59,7 +58,7 @@ public partial class MainWindow : FluentWindow, ICloseable
             canvasScrollViewer.Content = null;
 
             // Create a self-contained adapter which constructs the V2 viewmodel and view internally.
-            var canvasAdapter = new CanvasV2Adapter(
+            CanvasV2Adapter canvasAdapter = new(
                 featureFlags: _featureFlags,
                 undoManager: annoCanvas.UndoManager,
                 clipboardService: annoCanvas.ClipboardService,
@@ -176,7 +175,7 @@ public partial class MainWindow : FluentWindow, ICloseable
         else if (App.StartupArguments is ExportArgs exportArgs && !string.IsNullOrEmpty(exportArgs.LayoutFilePath) && !string.IsNullOrEmpty(exportArgs.ExportedImageFilePath))
         {
             Core.Layout.Models.LayoutFile layout = new LayoutLoader().LoadLayout(exportArgs.LayoutFilePath);
-            var settings = new Models.CanvasRenderSetting()
+            CanvasRenderSetting settings = new()
             {
                 GridSize = exportArgs.GridSize,
                 RenderGrid = exportArgs.RenderGrid ?? (!exportArgs.UseUserSettings || _appSettings.ShowGrid),
@@ -250,16 +249,10 @@ public partial class MainWindow : FluentWindow, ICloseable
 
     private async void WindowClosing(object sender, CancelEventArgs e)
     {
-        bool canClose = true;
+        bool canClose = _mainViewModel?.AnnoCanvas != null
+            ? await _mainViewModel.AnnoCanvas.CheckUnsavedChanges()
+            : await annoCanvas.CheckUnsavedChanges();
         // Prefer the canvas exposed on the MainViewModel (adapter-aware). Fall back to the v1 control if necessary.
-        if (_mainViewModel?.AnnoCanvas != null)
-        {
-            canClose = await _mainViewModel.AnnoCanvas.CheckUnsavedChanges();
-        }
-        else
-        {
-            canClose = await annoCanvas.CheckUnsavedChanges();
-        }
 
         if (!canClose)
         {

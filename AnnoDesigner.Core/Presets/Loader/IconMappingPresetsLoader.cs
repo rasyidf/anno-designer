@@ -3,7 +3,7 @@ using AnnoDesigner.Core.Presets.Models;
 using NLog;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.IO.Abstractions;
 
 namespace AnnoDesigner.Core.Presets.Loader;
 
@@ -12,7 +12,12 @@ namespace AnnoDesigner.Core.Presets.Loader;
 /// </summary>
 public class IconMappingPresetsLoader
 {
+    private readonly IFileSystem _fileSystem;
     private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+    public IconMappingPresetsLoader()
+    {
+        _fileSystem = new FileSystem();
+    }
 
     public IconMappingPresets LoadFromFile(string pathToIconNameMappingFile)
     {
@@ -20,7 +25,7 @@ public class IconMappingPresetsLoader
         {
             throw new ArgumentNullException(nameof(pathToIconNameMappingFile));
         }
-        var fileContents = File.ReadAllText(pathToIconNameMappingFile);
+        string fileContents = _fileSystem.File.ReadAllText(pathToIconNameMappingFile);
         return Load(fileContents);
     }
 
@@ -30,7 +35,7 @@ public class IconMappingPresetsLoader
         {
             throw new ArgumentNullException(nameof(jsonString));
         }
-        var result = new IconMappingPresets();
+        IconMappingPresets result = new();
         try
         {
             result = SerializationHelper.LoadFromJsonString<IconMappingPresets>(jsonString);
@@ -38,7 +43,7 @@ public class IconMappingPresetsLoader
         catch (Newtonsoft.Json.JsonSerializationException)
         {
             //failed deserialization = old version of file without version info
-            var oldIconMapping = SerializationHelper.LoadFromJsonString<List<IconNameMap>>(jsonString);
+            List<IconNameMap> oldIconMapping = SerializationHelper.LoadFromJsonString<List<IconNameMap>>(jsonString);
             result.IconNameMappings = oldIconMapping;
             result.Version = string.Empty;
         }

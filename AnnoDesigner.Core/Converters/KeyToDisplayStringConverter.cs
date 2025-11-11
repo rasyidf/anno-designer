@@ -1,8 +1,8 @@
-﻿using System;
+﻿using AnnoDesigner.Core.Helper;
+using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Input;
-using AnnoDesigner.Core.Helper;
 
 namespace AnnoDesigner.Core.Converters;
 
@@ -17,7 +17,7 @@ public class KeyToDisplayStringConverter : IValueConverter
     {
         if (value is Key key)
         {
-            var s = KeyboardInteropHelper.GetDisplayString(key);
+            string s = KeyboardInteropHelper.GetDisplayString(key);
             return string.IsNullOrWhiteSpace(s) ? key.ToString() : s;
         }
 #if DEBUG

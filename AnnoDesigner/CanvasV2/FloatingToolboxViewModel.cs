@@ -1,11 +1,9 @@
+using AnnoDesigner.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using AnnoDesigner.Core.Models;
-using AnnoDesigner.ViewModels;
 
 namespace AnnoDesigner.CanvasV2;
 
@@ -15,7 +13,6 @@ namespace AnnoDesigner.CanvasV2;
 /// </summary>
 public class FloatingToolboxViewModel : INotifyPropertyChanged
 {
-    private CanvasTool _selectedTool = CanvasTool.Select;
     private readonly Dictionary<CanvasTool, ToolMetadata> _toolMetadata;
 
     public event PropertyChangedEventHandler PropertyChanged;
@@ -26,23 +23,23 @@ public class FloatingToolboxViewModel : INotifyPropertyChanged
     /// </summary>
     public CanvasTool SelectedTool
     {
-        get => _selectedTool;
+        get;
         set
         {
-            if (_selectedTool != value)
+            if (field != value)
             {
-                _selectedTool = value;
+                field = value;
                 RaisePropertyChanged();
                 SelectedToolChanged?.Invoke(this, value);
-                
+
                 // Refresh all tool selection states
-                foreach (var tool in _toolMetadata.Values)
+                foreach (ToolMetadata tool in _toolMetadata.Values)
                 {
                     tool.RefreshIsSelected();
                 }
             }
         }
-    }
+    } = CanvasTool.Select;
 
     /// <summary>
     /// Gets the collection of available tools with their metadata.
@@ -135,7 +132,7 @@ public class FloatingToolboxViewModel : INotifyPropertyChanged
     /// </summary>
     public ToolMetadata GetToolMetadata(CanvasTool tool)
     {
-        return _toolMetadata.TryGetValue(tool, out var metadata) ? metadata : null;
+        return _toolMetadata.TryGetValue(tool, out ToolMetadata metadata) ? metadata : null;
     }
 
     /// <summary>
@@ -143,7 +140,7 @@ public class FloatingToolboxViewModel : INotifyPropertyChanged
     /// </summary>
     private bool IsToolEnabled(CanvasTool tool)
     {
-        return _toolMetadata.TryGetValue(tool, out var metadata) && metadata.IsEnabled;
+        return _toolMetadata.TryGetValue(tool, out ToolMetadata metadata) && metadata.IsEnabled;
     }
 
     private void RaisePropertyChanged([CallerMemberName] string propertyName = null)

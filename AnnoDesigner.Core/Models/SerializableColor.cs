@@ -39,7 +39,7 @@ public struct SerializableColor : IEquatable<SerializableColor>
     }
 
     //Needed for Databinding. Implicit converter is not called
-    public Color MediaColor { get { return this; } }
+    public Color MediaColor => this;
 
     public static implicit operator SerializableColor(Color color)
     {

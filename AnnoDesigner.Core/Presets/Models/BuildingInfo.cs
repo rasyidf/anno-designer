@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+﻿using AnnoDesigner.Core.Models;
+using System.Diagnostics;
 using System.Runtime.Serialization;
-using AnnoDesigner.Core.Models;
 
 namespace AnnoDesigner.Core.Presets.Models;
 

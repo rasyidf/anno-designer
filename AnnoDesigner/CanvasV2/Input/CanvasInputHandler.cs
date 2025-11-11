@@ -1,15 +1,13 @@
+using AnnoDesigner.Core.Models;
+using AnnoDesigner.Models;
+using AnnoDesigner.Services;
+using AnnoDesigner.Undo.Operations;
+using AnnoDesigner.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using AnnoDesigner.Core.Helper;
-using AnnoDesigner.Core.Layout.Models;
-using AnnoDesigner.Core.Models;
-using AnnoDesigner.Models;
-using AnnoDesigner.Undo.Operations;
-using AnnoDesigner.ViewModels;
-using AnnoDesigner.Services;
 
 namespace AnnoDesigner.CanvasV2.Input;
 
@@ -27,7 +25,7 @@ public class CanvasInputHandler
     private Point _mouseDragStart;
     private Rect _selectionRect;
     private Rect _collisionRect;
-    private readonly List<(LayoutObject Item, Rect OldGridRect)> _oldObjectPositions = new();
+    private readonly List<(LayoutObject Item, Rect OldGridRect)> _oldObjectPositions = [];
 
     public CanvasInputHandler(
         IInputHandlerHost host,
@@ -49,7 +47,7 @@ public class CanvasInputHandler
 
     // Compatibility constructor (deprecated - use the simpler one above)
     public CanvasInputHandler(
-        IInputHandlerHost host, 
+        IInputHandlerHost host,
         HotkeyCommandManager hotkeys,
         ICoordinateHelper coordinateHelper,
         IAppSettings appSettings)
@@ -90,15 +88,15 @@ public class CanvasInputHandler
             if (_host.SelectedObjects.Count > 0 && _host.SelectedObjects.Any(o => !string.IsNullOrWhiteSpace(o.Identifier)))
             {
                 // Get the first selected object with a valid identifier
-                var referenceObject = _host.SelectedObjects.FirstOrDefault(o => !string.IsNullOrWhiteSpace(o.Identifier));
+                LayoutObject referenceObject = _host.SelectedObjects.FirstOrDefault(o => !string.IsNullOrWhiteSpace(o.Identifier));
                 if (referenceObject != null)
                 {
                     string targetIdentifier = referenceObject.Identifier;
-                    
+
                     // Select all objects with this identifier
-                    var allObjectsWithIdentifier = _host.PlacedObjects.Where(o => o.Identifier == targetIdentifier).ToList();
+                    List<LayoutObject> allObjectsWithIdentifier = _host.PlacedObjects.Where(o => o.Identifier == targetIdentifier).ToList();
                     _host.AddSelectedObjects(allObjectsWithIdentifier);
-                    
+
                     _host.RecalculateSelectionContainsNotIgnoredObject();
                     _host.UpdateStatistics(includeBuildings: true);
                     _host.InvalidateRender();
@@ -174,7 +172,7 @@ public class CanvasInputHandler
         _host.MoveCurrentObjectsToMouse(mousePosition);
 
         // Check if user begins to drag (moved at least 1 pixel)
-        if (Math.Abs(_mouseDragStart.X - _mousePosition.X) >= 1 || 
+        if (Math.Abs(_mouseDragStart.X - _mousePosition.X) >= 1 ||
             Math.Abs(_mouseDragStart.Y - _mousePosition.Y) >= 1)
         {
             switch (_host.CurrentMode)
@@ -357,13 +355,13 @@ public class CanvasInputHandler
         // Adjust selection rectangle
         _selectionRect = new Rect(_mouseDragStart, _mousePosition);
         _host.SetSelectionRect(_selectionRect);
-        
+
         // Select intersecting objects
         Rect selectionRectGrid = _host.CoordinateHelper.ScreenToGrid(_selectionRect, _host.GridSize);
         Rect viewport = _host.Viewport;
         selectionRectGrid.X += viewport.X;
         selectionRectGrid.Y += viewport.Y;
-        
+
         _host.AddSelectedObjects(_host.PlacedObjects.GetItemsIntersecting(selectionRectGrid),
                                 ShouldAffectObjectsWithIdentifier());
         _host.RecalculateSelectionContainsNotIgnoredObject();
@@ -382,7 +380,7 @@ public class CanvasInputHandler
         double deltaY = _mousePosition.Y - _mouseDragStart.Y;
         int dx = (int)_host.CoordinateHelper.ScreenToGrid(deltaX, _host.GridSize);
         int dy = (int)_host.CoordinateHelper.ScreenToGrid(deltaY, _host.GridSize);
-        
+
         if (dx == 0 && dy == 0)
         {
             return; // No movement
@@ -399,10 +397,10 @@ public class CanvasInputHandler
         {
             Point originalPosition = curLayoutObject.Position;
             curLayoutObject.Position = new Point(curLayoutObject.Position.X + dx, curLayoutObject.Position.Y + dy);
-            
+
             bool collides = unselectedObjects.Any(_ => _host.ObjectIntersectionExists(curLayoutObject, _));
             curLayoutObject.Position = originalPosition;
-            
+
             if (collides)
             {
                 collisionsExist = true;
@@ -417,7 +415,7 @@ public class CanvasInputHandler
             {
                 curLayoutObject.Position = new Point(curLayoutObject.Position.X + dx, curLayoutObject.Position.Y + dy);
             }
-            
+
             _mouseDragStart.X += _host.CoordinateHelper.GridToScreen(dx, _host.GridSize);
             _mouseDragStart.Y += _host.CoordinateHelper.GridToScreen(dy, _host.GridSize);
 
@@ -425,7 +423,7 @@ public class CanvasInputHandler
             _collisionRect.Y += dy;
 
             _host.UpdateStatistics(includeBuildings: false);
-            
+
             Rect oldLayoutBounds = _host.Viewport;
             _host.InvalidateBounds();
             if (oldLayoutBounds != _host.Viewport)
@@ -471,10 +469,10 @@ public class CanvasInputHandler
 
         _host.ReindexMovedObjects();
         _oldObjectPositions.Clear();
-        
+
         // Bring moved objects to front
         _host.BringObjectsToFront(_host.SelectedObjects);
-        
+
         if (_host.SelectedObjects.Count == 1)
         {
             _host.SelectedObjects.Clear();
@@ -495,7 +493,7 @@ public class CanvasInputHandler
                 }
                 _host.CurrentMode = MouseMode.Standard;
                 break;
-                
+
             case MouseMode.DragSelection:
                 _host.UndoManager.RegisterOperation(new MoveObjectsOperation<LayoutObject>()
                 {
@@ -513,25 +511,33 @@ public class CanvasInputHandler
                 }
                 _host.CurrentMode = MouseMode.Standard;
                 break;
-                
+
             case MouseMode.SelectSameIdentifier:
                 _host.CurrentMode = MouseMode.Standard;
                 break;
         }
     }
 
-    private static bool IsControlPressed() => 
-        (Keyboard.Modifiers & ModifierKeys.Control) != 0;
+    private static bool IsControlPressed()
+    {
+        return (Keyboard.Modifiers & ModifierKeys.Control) != 0;
+    }
 
-    private static bool IsShiftPressed() => 
-        (Keyboard.Modifiers & ModifierKeys.Shift) != 0;
+    private static bool IsShiftPressed()
+    {
+        return (Keyboard.Modifiers & ModifierKeys.Shift) != 0;
+    }
 
-    private static bool ShouldAffectObjectsWithIdentifier() => 
-        IsShiftPressed();
+    private static bool ShouldAffectObjectsWithIdentifier()
+    {
+        return IsShiftPressed();
+    }
 
-    private static bool IsIgnoredObject(LayoutObject obj) =>
-        obj.WrappedAnnoObject?.Template == "OrnamentalBuilding" ||
+    private static bool IsIgnoredObject(LayoutObject obj)
+    {
+        return obj.WrappedAnnoObject?.Template == "OrnamentalBuilding" ||
         obj.WrappedAnnoObject?.Road is not null;
+    }
 
     #endregion
 }

@@ -31,6 +31,7 @@ public class UpdateHelper(string basePathToUse,
     IMessageBoxService messageBoxServiceToUse,
     ILocalizationHelper localizationHelperToUse) : IUpdateHelper
 {
+    private readonly IFileSystem _fileSystem;
     private readonly FileSystem _fileSystem = new();
     private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -43,16 +44,13 @@ public class UpdateHelper(string basePathToUse,
     private const string TAG_PRESETS_WIKIBUILDINGINFO = "PresetsWikiBuildingInfov";
     private const string TAG_ANNO_DESIGNER = "AnnoDesignerv";
 
-    private GitHubClient _apiClient;
-    private HttpClient _httpClient;
-
     private GitHubClient ApiClient
     {
         get
         {
-            _apiClient ??= new GitHubClient(new Octokit.ProductHeaderValue($"anno-designer-{Constants.Version}", "1.0"));
+            field ??= new GitHubClient(new Octokit.ProductHeaderValue($"anno-designer-{Constants.Version}", "1.0"));
 
-            return _apiClient;
+            return field;
         }
     }
 
@@ -60,7 +58,7 @@ public class UpdateHelper(string basePathToUse,
     {
         get
         {
-            if (_httpClient == null)
+            if (field == null)
             {
                 HttpClientHandler handler = new();
                 if (handler.SupportsAutomaticDecompression)
@@ -68,11 +66,11 @@ public class UpdateHelper(string basePathToUse,
                     handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
                 }
 
-                _httpClient = new HttpClient(handler, true)
+                field = new HttpClient(handler, true)
                 {
                     Timeout = TimeSpan.FromSeconds(30)
                 };
-                _httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"anno-designer-{Constants.Version}", "1.0"));
+                field.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"anno-designer-{Constants.Version}", "1.0"));
 
                 //detect DNS changes (default is infinite)
                 //ServicePointManager.FindServicePoint(new Uri(BASE_URI)).ConnectionLeaseTimeout = (int)TimeSpan.FromMinutes(1).TotalMilliseconds;
@@ -87,12 +85,15 @@ public class UpdateHelper(string basePathToUse,
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
             }
 
-            return _httpClient;
+            return field;
         }
     }
 
     private IReadOnlyList<Release> AllReleases { get; set; }
-
+    public UpdateHelper()
+    {
+        _fileSystem = new FileSystem();
+    }
     #region IUpdateHelper members        
 
     public async Task<List<AvailableRelease>> GetAvailableReleasesAsync()

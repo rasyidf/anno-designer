@@ -1,5 +1,5 @@
-﻿using System;
-using AnnoDesigner.ViewModels;
+﻿using AnnoDesigner.ViewModels;
+using System;
 using Xunit;
 
 namespace AnnoDesigner.Tests
@@ -20,7 +20,7 @@ namespace AnnoDesigner.Tests
         public void Ctor_ShouldSetDefaultValues()
         {
             // Arrange/Act
-            var viewModel = new LayoutSettingsViewModel();
+            LayoutSettingsViewModel viewModel = new();
 
             // Assert
             Assert.Equal(new Version(1, 0, 0, 0), viewModel.LayoutVersion);
@@ -35,7 +35,7 @@ namespace AnnoDesigner.Tests
         public void LayoutVersion_ValueIsChanged_ShouldRaisePropertyChangedEvent()
         {
             // Arrange
-            var viewModel = GetViewModel();
+            LayoutSettingsViewModel viewModel = GetViewModel();
 
             // Act/Assert
             Assert.PropertyChanged(viewModel, nameof(viewModel.LayoutVersion), () => viewModel.LayoutVersion = new Version(42, 42, 42, 42));
@@ -45,7 +45,7 @@ namespace AnnoDesigner.Tests
         public void LayoutVersion_ValueIsChanged_ShouldRaisePropertyChangedEventForLayoutVersionDisplayValue()
         {
             // Arrange
-            var viewModel = GetViewModel();
+            LayoutSettingsViewModel viewModel = GetViewModel();
 
             // Act/Assert
             Assert.PropertyChanged(viewModel, nameof(viewModel.LayoutVersionDisplayValue), () => viewModel.LayoutVersion = new Version(42, 42, 42, 42));
@@ -59,7 +59,7 @@ namespace AnnoDesigner.Tests
         public void LayoutVersionDisplayValue_ValueIsChangedToValid_ShouldRaisePropertyChangedEvent()
         {
             // Arrange
-            var viewModel = GetViewModel();
+            LayoutSettingsViewModel viewModel = GetViewModel();
 
             // Act/Assert
             Assert.PropertyChanged(viewModel, nameof(viewModel.LayoutVersionDisplayValue), () => viewModel.LayoutVersionDisplayValue = "42.42.42.42");
@@ -69,7 +69,7 @@ namespace AnnoDesigner.Tests
         public void LayoutVersionDisplayValue_ValueIsChangedToValid_ShouldRaisePropertyChangedEventForLayoutVersion()
         {
             // Arrange
-            var viewModel = GetViewModel();
+            LayoutSettingsViewModel viewModel = GetViewModel();
 
             // Act/Assert
             Assert.PropertyChanged(viewModel, nameof(viewModel.LayoutVersion), () => viewModel.LayoutVersionDisplayValue = "42.42.42.42");
@@ -79,7 +79,7 @@ namespace AnnoDesigner.Tests
         public void LayoutVersionDisplayValue_ValueIsChangedToValid_ShouldSetLayoutVersion()
         {
             // Arrange
-            var viewModel = GetViewModel();
+            LayoutSettingsViewModel viewModel = GetViewModel();
 
             // Act
             viewModel.LayoutVersionDisplayValue = "42.42.42.42";
@@ -92,8 +92,8 @@ namespace AnnoDesigner.Tests
         public void LayoutVersionDisplayValue_ValueIsChangedToInvalid_ShouldNotSetLayoutVersionAndNotThrow()
         {
             // Arrange
-            var viewModel = GetViewModel();
-            var oldVersion = viewModel.LayoutVersion;
+            LayoutSettingsViewModel viewModel = GetViewModel();
+            Version oldVersion = viewModel.LayoutVersion;
 
             // Act
             viewModel.LayoutVersionDisplayValue = "not a valid version";

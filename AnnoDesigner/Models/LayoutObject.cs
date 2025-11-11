@@ -19,17 +19,13 @@ namespace AnnoDesigner.Models;
 public class LayoutObject : IBounded
 {
     private readonly IFileSystem _fileSystem;
-    private AnnoObject _wrappedAnnoObject;
     private readonly ICoordinateHelper _coordinateHelper;
     private readonly IBrushCache _brushCache;
     private readonly IPenCache _penCache;
 
     private Color? _transparentColor;
-    private SolidColorBrush _transparentBrush;
     private Color? _renderColor;
-    private SolidColorBrush _renderBrush;
     private Color? _blockedAreaColor;
-    private SolidColorBrush _blockedAreaBrush;
     private Pen _borderlessPen;
     private int _gridSizeScreenRect;
     private Point _position;
@@ -37,8 +33,6 @@ public class LayoutObject : IBounded
     private Rect? _blockedAreaScreenRect;
     private Rect _collisionRect;
     private Size _collisionSize;
-    private string _iconNameWithoutExtension;
-    private string _identifier;
     private Size _size;
     private FormattedText _formattedText;
     private CultureInfo _usedTextCulture;
@@ -61,7 +55,6 @@ public class LayoutObject : IBounded
     private double _borderlessPenThickness; //hot path optimization (avoid access of DependencyProperty)
     private Brush _borderlessPenBrush; //hot path optimization (avoid access of DependencyProperty)
     private Rect? _bounds;
-    private int _zIndex; // Z-index for rendering order (higher values render on top)
     /// <summary>
     /// Creates a new instance of a wrapper for <see cref = "AnnoObject"/>.
     /// </summary>
@@ -78,11 +71,11 @@ public class LayoutObject : IBounded
     }
     public AnnoObject WrappedAnnoObject
     {
-        get => _wrappedAnnoObject;
+        get;
         private set
         {
-            _wrappedAnnoObject = value;
-            _blockedAreaLength = _wrappedAnnoObject.BlockedAreaLength;
+            field = value;
+            _blockedAreaLength = field.BlockedAreaLength;
         }
     }
 
@@ -106,10 +99,12 @@ public class LayoutObject : IBounded
     {
         get
         {
-            _transparentBrush ??= _brushCache.GetSolidBrush(TransparentColor);
+            field ??= _brushCache.GetSolidBrush(TransparentColor);
 
-            return _transparentBrush;
+            return field;
         }
+
+        private set;
     }
 
     public Color RenderColor
@@ -129,10 +124,12 @@ public class LayoutObject : IBounded
     {
         get
         {
-            _renderBrush ??= _brushCache.GetSolidBrush(RenderColor);
+            field ??= _brushCache.GetSolidBrush(RenderColor);
 
-            return _renderBrush;
+            return field;
         }
+
+        private set;
     }
 
     public Color BlockedAreaColor
@@ -155,9 +152,9 @@ public class LayoutObject : IBounded
     {
         get
         {
-            _blockedAreaBrush ??= _brushCache.GetSolidBrush(BlockedAreaColor);
+            field ??= _brushCache.GetSolidBrush(BlockedAreaColor);
 
-            return _blockedAreaBrush;
+            return field;
         }
     }
 
@@ -202,8 +199,8 @@ public class LayoutObject : IBounded
         }
     }
 
-    public double BlockedAreaWidth => _wrappedAnnoObject.BlockedAreaWidth > 0
-                ? _wrappedAnnoObject.BlockedAreaWidth
+    public double BlockedAreaWidth => WrappedAnnoObject.BlockedAreaWidth > 0
+                ? WrappedAnnoObject.BlockedAreaWidth
                 : Direction switch
                 {
                     GridDirection.Up or GridDirection.Down => Size.Width - 0.5,
@@ -330,9 +327,9 @@ public class LayoutObject : IBounded
     {
         get
         {
-            _iconNameWithoutExtension ??= Path.GetFileNameWithoutExtension(WrappedAnnoObject.Icon);
+            field ??= Path.GetFileNameWithoutExtension(WrappedAnnoObject.Icon);
 
-            return _iconNameWithoutExtension;
+            return field;
         }
     }
 
@@ -342,14 +339,14 @@ public class LayoutObject : IBounded
     {
         get
         {
-            _identifier ??= WrappedAnnoObject.Identifier;
+            field ??= WrappedAnnoObject.Identifier;
 
-            return _identifier;
+            return field;
         }
         set
         {
             WrappedAnnoObject.Identifier = value;
-            _identifier = value;
+            field = value;
         }
     }
 
@@ -514,9 +511,9 @@ public class LayoutObject : IBounded
             _color = value;
 
             _transparentColor = null;
-            _transparentBrush = null;
+            TransparentBrush = null;
             _renderColor = null;
-            _renderBrush = null;
+            RenderBrush = null;
         }
     }
     /// <summary>
@@ -524,11 +521,7 @@ public class LayoutObject : IBounded
     /// Higher values render on top of lower values.
     /// Objects are brought to front when moved.
     /// </summary>
-    public int ZIndex
-    {
-        get => _zIndex;
-        set => _zIndex = value;
-    }
+    public int ZIndex { get; set; }
 
     public Rect GridRect
     {

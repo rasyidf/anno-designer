@@ -15,11 +15,11 @@ public class LocalizeConverter : IValueConverter, IMultiValueConverter
         {
             return translation;
         }
-//#if DEBUG
+        //#if DEBUG
         //throw new Exception($"Missing translation or not string translation key \"{parameter}\"");
-//#else
+        //#else
         return $"!{parameter}";
-//#endif
+        //#endif
     }
 
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)

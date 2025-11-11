@@ -1,7 +1,7 @@
-﻿using System.Collections;
+﻿using AnnoDesigner.Core.Models;
+using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
-using AnnoDesigner.Core.Models;
 
 namespace AnnoDesigner.Core.DataStructures;
 
@@ -51,8 +51,8 @@ public class QuadTree<T> : IQuadTree<T>
             Extent = extent;
             ItemsInQuadrant = new List<T>(4);
 
-            var w = Extent.Width / 2;
-            var h = Extent.Height / 2;
+            double w = Extent.Width / 2;
+            double h = Extent.Height / 2;
 
             topRightBounds = new Rect(Extent.Left + w, Extent.Top, w, h);
             topLeftBounds = new Rect(Extent.Left, Extent.Top, w, h);
@@ -66,9 +66,9 @@ public class QuadTree<T> : IQuadTree<T>
         /// </summary>
         public static Quadrant Inflate(Quadrant quadrant, ResizeDirection direction)
         {
-            var oldWidth = new Vector(quadrant.Extent.Width, 0);
-            var oldHeight = new Vector(0, quadrant.Extent.Height);
-            var newSize = new Size(quadrant.Extent.Width * 2, quadrant.Extent.Height * 2);
+            Vector oldWidth = new(quadrant.Extent.Width, 0);
+            Vector oldHeight = new(0, quadrant.Extent.Height);
+            Size newSize = new(quadrant.Extent.Width * 2, quadrant.Extent.Height * 2);
 
             return direction switch
             {
@@ -95,7 +95,10 @@ public class QuadTree<T> : IQuadTree<T>
             };
         }
 
-        public void Add(T item) => Add(item, item.Bounds);
+        public void Add(T item)
+        {
+            Add(item, item.Bounds);
+        }
 
         /// <summary>
         /// Adds a new item into the Quadrant.
@@ -136,7 +139,10 @@ public class QuadTree<T> : IQuadTree<T>
             Count++;
         }
 
-        public bool Remove(T item) => Remove(item, item.Bounds);
+        public bool Remove(T item)
+        {
+            return Remove(item, item.Bounds);
+        }
 
         /// <summary>
         /// Removes an item from this Quadrant.
@@ -144,30 +150,18 @@ public class QuadTree<T> : IQuadTree<T>
         /// </summary>
         public bool Remove(T item, Rect bounds)
         {
-            bool removed;
-
-            if (TopRight != null && topRightBounds.Contains(bounds))
+            bool removed = TopRight != null && topRightBounds.Contains(bounds)
+                ? TopRight.Remove(item, bounds)
+                : TopLeft != null && topLeftBounds.Contains(bounds)
+                    ? TopLeft.Remove(item, bounds)
+                    : BottomRight != null && bottomRightBounds.Contains(bounds)
+                    ? BottomRight.Remove(item, bounds)
+                    : BottomLeft != null && bottomLeftBounds.Contains(bounds) ? BottomLeft.Remove(item, bounds) : ItemsInQuadrant.Remove(item);
+            if (removed)
             {
-                removed = TopRight.Remove(item, bounds);
-            }
-            else if (TopLeft != null && topLeftBounds.Contains(bounds))
-            {
-                removed = TopLeft.Remove(item, bounds);
-            }
-            else if (BottomRight != null && bottomRightBounds.Contains(bounds))
-            {
-                removed = BottomRight.Remove(item, bounds);
-            }
-            else if (BottomLeft != null && bottomLeftBounds.Contains(bounds))
-            {
-                removed = BottomLeft.Remove(item, bounds);
-            }
-            else
-            {
-                removed = ItemsInQuadrant.Remove(item);
+                Count--;
             }
 
-            if (removed) Count--;
             return removed;
         }
 
@@ -189,11 +183,11 @@ public class QuadTree<T> : IQuadTree<T>
         /// </summary>
         public bool Contains(T item)
         {
-            var bounds = item.Bounds;
-            return TopRight != null && TopRight.Extent.IntersectsWith(bounds) && TopRight.Contains(item) ||
-                   TopLeft != null && TopLeft.Extent.IntersectsWith(bounds) && TopLeft.Contains(item) ||
-                   BottomRight != null && BottomRight.Extent.IntersectsWith(bounds) && BottomRight.Contains(item) ||
-                   BottomLeft != null && BottomLeft.Extent.IntersectsWith(bounds) && BottomLeft.Contains(item) ||
+            Rect bounds = item.Bounds;
+            return (TopRight != null && TopRight.Extent.IntersectsWith(bounds) && TopRight.Contains(item)) ||
+                   (TopLeft != null && TopLeft.Extent.IntersectsWith(bounds) && TopLeft.Contains(item)) ||
+                   (BottomRight != null && BottomRight.Extent.IntersectsWith(bounds) && BottomRight.Contains(item)) ||
+                   (BottomLeft != null && BottomLeft.Extent.IntersectsWith(bounds) && BottomLeft.Contains(item)) ||
                    ItemsInQuadrant.Contains(item);
         }
 
@@ -202,13 +196,16 @@ public class QuadTree<T> : IQuadTree<T>
         /// </summary>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            foreach (var item in this)
+            foreach (T item in this)
             {
                 array[arrayIndex++] = item;
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
         /// <summary>
         /// Returns enumerator for iterating all items in this collection.
@@ -217,7 +214,7 @@ public class QuadTree<T> : IQuadTree<T>
         {
             if (TopRight != null)
             {
-                foreach (var item in TopRight)
+                foreach (T item in TopRight)
                 {
                     yield return item;
                 }
@@ -225,7 +222,7 @@ public class QuadTree<T> : IQuadTree<T>
 
             if (TopLeft != null)
             {
-                foreach (var item in TopLeft)
+                foreach (T item in TopLeft)
                 {
                     yield return item;
                 }
@@ -233,7 +230,7 @@ public class QuadTree<T> : IQuadTree<T>
 
             if (BottomRight != null)
             {
-                foreach (var item in BottomRight)
+                foreach (T item in BottomRight)
                 {
                     yield return item;
                 }
@@ -241,14 +238,14 @@ public class QuadTree<T> : IQuadTree<T>
 
             if (BottomLeft != null)
             {
-                foreach (var item in BottomLeft)
+                foreach (T item in BottomLeft)
                 {
                     yield return item;
                 }
             }
 
             //add all the items in this quadrant that intersect the given bounds
-            foreach (var item in ItemsInQuadrant)
+            foreach (T item in ItemsInQuadrant)
             {
                 yield return item;
             }
@@ -261,7 +258,7 @@ public class QuadTree<T> : IQuadTree<T>
         {
             if (TopRight?.Extent.IntersectsWith(bounds) ?? false)
             {
-                foreach (var item in TopRight.GetItemsIntersecting(bounds))
+                foreach (T item in TopRight.GetItemsIntersecting(bounds))
                 {
                     yield return item;
                 }
@@ -269,7 +266,7 @@ public class QuadTree<T> : IQuadTree<T>
 
             if (TopLeft?.Extent.IntersectsWith(bounds) ?? false)
             {
-                foreach (var item in TopLeft.GetItemsIntersecting(bounds))
+                foreach (T item in TopLeft.GetItemsIntersecting(bounds))
                 {
                     yield return item;
                 }
@@ -277,7 +274,7 @@ public class QuadTree<T> : IQuadTree<T>
 
             if (BottomRight?.Extent.IntersectsWith(bounds) ?? false)
             {
-                foreach (var item in BottomRight.GetItemsIntersecting(bounds))
+                foreach (T item in BottomRight.GetItemsIntersecting(bounds))
                 {
                     yield return item;
                 }
@@ -285,14 +282,14 @@ public class QuadTree<T> : IQuadTree<T>
 
             if (BottomLeft?.Extent.IntersectsWith(bounds) ?? false)
             {
-                foreach (var item in BottomLeft.GetItemsIntersecting(bounds))
+                foreach (T item in BottomLeft.GetItemsIntersecting(bounds))
                 {
                     yield return item;
                 }
             }
 
             //add all the items in this quadrant that intersect the given bounds
-            foreach (var item in ItemsInQuadrant)
+            foreach (T item in ItemsInQuadrant)
             {
                 if (item.Bounds.IntersectsWith(bounds))
                 {
@@ -333,14 +330,13 @@ public class QuadTree<T> : IQuadTree<T>
         /// Retrieves a list of Rects that make up this quadrant and the quadrants beneath it.
         /// Used when debugging to draw quadrants to a canvas.
         /// </summary>
-        /// <param name="rects"></param>
         public IEnumerable<Rect> GetQuadrantRects()
         {
             yield return Extent;
 
             if (TopLeft != null)
             {
-                foreach (var rect in TopLeft.GetQuadrantRects())
+                foreach (Rect rect in TopLeft.GetQuadrantRects())
                 {
                     yield return rect;
                 }
@@ -348,7 +344,7 @@ public class QuadTree<T> : IQuadTree<T>
 
             if (TopRight != null)
             {
-                foreach (var rect in TopRight.GetQuadrantRects())
+                foreach (Rect rect in TopRight.GetQuadrantRects())
                 {
                     yield return rect;
                 }
@@ -356,7 +352,7 @@ public class QuadTree<T> : IQuadTree<T>
 
             if (BottomLeft != null)
             {
-                foreach (var rect in BottomLeft.GetQuadrantRects())
+                foreach (Rect rect in BottomLeft.GetQuadrantRects())
                 {
                     yield return rect;
                 }
@@ -364,7 +360,7 @@ public class QuadTree<T> : IQuadTree<T>
 
             if (BottomRight != null)
             {
-                foreach (var rect in BottomRight.GetQuadrantRects())
+                foreach (Rect rect in BottomRight.GetQuadrantRects())
                 {
                     yield return rect;
                 }
@@ -400,7 +396,7 @@ public class QuadTree<T> : IQuadTree<T>
     /// </summary>
     public void Add(T item)
     {
-        var bounds = item.Bounds;
+        Rect bounds = item.Bounds;
         EnsureBounds(bounds);
 
         root.Add(item, bounds);
@@ -422,13 +418,25 @@ public class QuadTree<T> : IQuadTree<T>
         root = new Quadrant(root.Extent);
     }
 
-    public bool Contains(T item) => root.Contains(item);
+    public bool Contains(T item)
+    {
+        return root.Contains(item);
+    }
 
-    public void CopyTo(T[] array, int arrayIndex) => root.CopyTo(array, arrayIndex);
+    public void CopyTo(T[] array, int arrayIndex)
+    {
+        root.CopyTo(array, arrayIndex);
+    }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 
-    public IEnumerator<T> GetEnumerator() => root.GetEnumerator();
+    public IEnumerator<T> GetEnumerator()
+    {
+        return root.GetEnumerator();
+    }
 
     /// <summary>
     /// Ensures specified bound is in Extent of this QuadTree.
@@ -447,14 +455,14 @@ public class QuadTree<T> : IQuadTree<T>
     {
         while (!Extent.Contains(bounds))
         {
-            var newExtent = Extent;
+            Rect newExtent = Extent;
             newExtent.Union(bounds);
 
             // calculate on which sides the newExtent is larger than Extent (and therefore need to be inflated in that direction)
-            var top = Extent.Top > newExtent.Top;
-            var bottom = newExtent.Bottom > Extent.Bottom;
-            var left = Extent.Left > newExtent.Left;
-            var right = newExtent.Right > Extent.Right;
+            bool top = Extent.Top > newExtent.Top;
+            bool bottom = newExtent.Bottom > Extent.Bottom;
+            bool left = Extent.Left > newExtent.Left;
+            bool right = newExtent.Right > Extent.Right;
 
             if (top && !left)
             {
@@ -490,7 +498,7 @@ public class QuadTree<T> : IQuadTree<T>
     {
         if (root.GetContainingQuadrant(item.Bounds) != root.GetContainingQuadrant(oldBounds))
         {
-            root.Remove(item, oldBounds);
+            _ = root.Remove(item, oldBounds);
             root.Add(item);
         }
     }
@@ -500,7 +508,7 @@ public class QuadTree<T> : IQuadTree<T>
     /// </summary>
     public void Move(T item, Rect newBounds)
     {
-        var oldBounds = item.Bounds;
+        Rect oldBounds = item.Bounds;
 
         item.Position = newBounds.TopLeft;
         item.Size = newBounds.Size;
@@ -513,7 +521,7 @@ public class QuadTree<T> : IQuadTree<T>
     /// </summary>
     public void Move(T item, Vector offset)
     {
-        var oldBounds = item.Bounds;
+        Rect oldBounds = item.Bounds;
 
         item.Position += offset;
 
@@ -532,7 +540,7 @@ public class QuadTree<T> : IQuadTree<T>
 
     public void AddRange(IEnumerable<T> collection)
     {
-        foreach (var item in collection)
+        foreach (T item in collection)
         {
             Add(item);
         }

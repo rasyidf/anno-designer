@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using PresetParser.Models;
+﻿using PresetParser.Models;
+using System.Collections.Generic;
 
 namespace PresetParser;
 

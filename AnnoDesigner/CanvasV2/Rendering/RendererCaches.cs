@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Windows.Media;
 
 namespace AnnoDesigner.CanvasV2.Rendering;
@@ -11,7 +9,6 @@ namespace AnnoDesigner.CanvasV2.Rendering;
 public sealed class RendererCaches
 {
     // Version token for cache invalidation
-    private int _cacheVersion;
 
     // Grid and selection
     private Pen? _gridPen;
@@ -31,7 +28,7 @@ public sealed class RendererCaches
 
     public RendererCaches()
     {
-        _cacheVersion = 0;
+        CacheVersion = 0;
         InitializePensAndBrushes();
     }
 
@@ -40,11 +37,11 @@ public sealed class RendererCaches
     /// </summary>
     public void Invalidate()
     {
-        _cacheVersion++;
+        CacheVersion++;
         _lastObjectSelectionVersion = -1;
     }
 
-    public int CacheVersion => _cacheVersion;
+    public int CacheVersion { get; private set; }
 
     private void InitializePensAndBrushes()
     {

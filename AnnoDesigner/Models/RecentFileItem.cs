@@ -7,8 +7,6 @@ namespace AnnoDesigner.Models;
 [DebuggerDisplay("{" + nameof(Path) + ",nq}")]
 public class RecentFileItem : Notify
 {
-    private string _path;
-
     public RecentFileItem(string pathToUse)
     {
         Path = pathToUse;
@@ -16,8 +14,8 @@ public class RecentFileItem : Notify
 
     public string Path
     {
-        get => _path;
-        private set => UpdateProperty(ref _path, value);
+        get;
+        private set => UpdateProperty(ref field, value);
     }
 
     /// <summary>

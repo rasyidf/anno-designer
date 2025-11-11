@@ -15,7 +15,9 @@ public sealed record CanvasFeatureFlags(
     bool RenderPanorama,
     bool DebugMode)
 {
-    public static CanvasFeatureFlags From(IFeatureFlags source) => new(
+    public static CanvasFeatureFlags From(IFeatureFlags source)
+    {
+        return new(
         UseCanvasV2: source.IsEnabled(CanvasFeatureFlagNames.UseCanvasV2),
         RenderGrid: source.IsEnabled(CanvasFeatureFlagNames.RenderGrid),
         RenderInfluences: source.IsEnabled(CanvasFeatureFlagNames.RenderInfluences),
@@ -26,17 +28,21 @@ public sealed record CanvasFeatureFlags(
         RenderPanorama: source.IsEnabled(CanvasFeatureFlagNames.RenderPanorama),
         DebugMode: source.IsEnabled(CanvasFeatureFlagNames.DebugMode)
     );
+    }
 
-    public ImmutableDictionary<string, object?> ToDictionary() => new Dictionary<string, object?>
+    public ImmutableDictionary<string, object?> ToDictionary()
     {
-        [CanvasFeatureFlagNames.UseCanvasV2] = UseCanvasV2,
-        [CanvasFeatureFlagNames.RenderGrid] = RenderGrid,
-        [CanvasFeatureFlagNames.RenderInfluences] = RenderInfluences,
-        [CanvasFeatureFlagNames.RenderIcons] = RenderIcons,
-        [CanvasFeatureFlagNames.RenderLabels] = RenderLabels,
-        [CanvasFeatureFlagNames.RenderTrueInfluenceRange] = RenderTrueInfluenceRange,
-        [CanvasFeatureFlagNames.RenderHarborBlockedArea] = RenderHarborBlockedArea,
-        [CanvasFeatureFlagNames.RenderPanorama] = RenderPanorama,
-        [CanvasFeatureFlagNames.DebugMode] = DebugMode,
-    }.ToImmutableDictionary();
+        return new Dictionary<string, object?>
+        {
+            [CanvasFeatureFlagNames.UseCanvasV2] = UseCanvasV2,
+            [CanvasFeatureFlagNames.RenderGrid] = RenderGrid,
+            [CanvasFeatureFlagNames.RenderInfluences] = RenderInfluences,
+            [CanvasFeatureFlagNames.RenderIcons] = RenderIcons,
+            [CanvasFeatureFlagNames.RenderLabels] = RenderLabels,
+            [CanvasFeatureFlagNames.RenderTrueInfluenceRange] = RenderTrueInfluenceRange,
+            [CanvasFeatureFlagNames.RenderHarborBlockedArea] = RenderHarborBlockedArea,
+            [CanvasFeatureFlagNames.RenderPanorama] = RenderPanorama,
+            [CanvasFeatureFlagNames.DebugMode] = DebugMode,
+        }.ToImmutableDictionary();
+    }
 }

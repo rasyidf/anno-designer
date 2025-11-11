@@ -22,22 +22,6 @@ public class UpdateSettingsViewModel : Notify
     private readonly IUpdateHelper _updateHelper;
     private readonly ILocalizationHelper _localizationHelper;
 
-    private bool _automaticUpdateCheck;
-    private bool _updateSupportsPrerelease;
-    private bool _showMultipleInstanceWarning;
-    private string _versionValue;
-    private string _updatedVersionValue;
-    private string _fileVersionValue;
-    private string _presetsVersionValue;
-    private string _colorPresetsVersionValue;
-    private string _treeLocalizationVersionValue;
-    private bool _isUpdateAvailable;
-    private bool _isPresetUpdateAvailable;
-    private bool _isAppUpToDate;
-    private bool _isUpdateError;
-    private bool _isBusy;
-    private string _busyContent;
-
     public UpdateSettingsViewModel(ICommons commonsToUse,
         IAppSettings appSettingsToUse,
         IMessageBoxService messageBoxServiceToUse,
@@ -218,10 +202,10 @@ public class UpdateSettingsViewModel : Notify
 
     public bool AutomaticUpdateCheck
     {
-        get => _automaticUpdateCheck;
+        get;
         set
         {
-            if (UpdateProperty(ref _automaticUpdateCheck, value))
+            if (UpdateProperty(ref field, value))
             {
                 _appSettings.Save();
             }
@@ -230,28 +214,28 @@ public class UpdateSettingsViewModel : Notify
 
     public string VersionValue
     {
-        get => _versionValue;
-        set => UpdateProperty(ref _versionValue, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string FileVersionValue
     {
-        get => _fileVersionValue;
-        set => UpdateProperty(ref _fileVersionValue, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string PresetsVersionValue
     {
-        get => _presetsVersionValue;
-        set => UpdateProperty(ref _presetsVersionValue, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool UpdateSupportsPrerelease
     {
-        get => _updateSupportsPrerelease;
+        get;
         set
         {
-            if (UpdateProperty(ref _updateSupportsPrerelease, value))
+            if (UpdateProperty(ref field, value))
             {
                 _appSettings.Save();
             }
@@ -260,10 +244,10 @@ public class UpdateSettingsViewModel : Notify
 
     public bool ShowMultipleInstanceWarning
     {
-        get => _showMultipleInstanceWarning;
+        get;
         set
         {
-            if (UpdateProperty(ref _showMultipleInstanceWarning, value))
+            if (UpdateProperty(ref field, value))
             {
                 _appSettings.Save();
             }
@@ -272,55 +256,55 @@ public class UpdateSettingsViewModel : Notify
 
     public bool IsUpdateAvailable
     {
-        get => _isUpdateAvailable;
-        set => UpdateProperty(ref _isUpdateAvailable, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool IsPresetUpdateAvailable
     {
-        get => _isPresetUpdateAvailable;
-        set => UpdateProperty(ref _isPresetUpdateAvailable, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool IsAppUpToDate
     {
-        get => _isAppUpToDate;
-        set => UpdateProperty(ref _isAppUpToDate, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool IsUpdateError
     {
-        get => _isUpdateError;
-        set => UpdateProperty(ref _isUpdateError, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool IsBusy
     {
-        get => _isBusy;
-        set => UpdateProperty(ref _isBusy, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string BusyContent
     {
-        get => _busyContent;
-        set => UpdateProperty(ref _busyContent, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string ColorPresetsVersionValue
     {
-        get => _colorPresetsVersionValue;
-        set => UpdateProperty(ref _colorPresetsVersionValue, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string TreeLocalizationVersionValue
     {
-        get => _treeLocalizationVersionValue;
-        set => UpdateProperty(ref _treeLocalizationVersionValue, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string UpdatedVersionValue
     {
-        get => _updatedVersionValue;
-        set => UpdateProperty(ref _updatedVersionValue, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 }

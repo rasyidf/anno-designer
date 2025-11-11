@@ -1,16 +1,16 @@
-﻿using System.Windows;
-using AnnoDesigner.Core.DataStructures;
+﻿using AnnoDesigner.Core.DataStructures;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
 using AnnoDesigner.Undo.Operations;
 using Moq;
+using System.Windows;
 using Xunit;
 
 namespace AnnoDesigner.Tests.Undo
 {
     public class AddObjectsOperationTests
     {
-        private QuadTree<LayoutObject> Collection => new QuadTree<LayoutObject>(new Rect(-16, -16, 32, 32));
+        private QuadTree<LayoutObject> Collection => new(new Rect(-16, -16, 32, 32));
 
         private LayoutObject CreateLayoutObject(double x, double y, double width, double height)
         {
@@ -27,10 +27,10 @@ namespace AnnoDesigner.Tests.Undo
         public void Undo_AddSingleObject_ShouldRemoveObjectFromCollection()
         {
             // Arrange
-            var collection = Collection;
-            var obj = CreateLayoutObject(5, 5, 2, 2);
+            QuadTree<LayoutObject> collection = Collection;
+            LayoutObject obj = CreateLayoutObject(5, 5, 2, 2);
             collection.Add(obj);
-            var operation = new AddObjectsOperation<LayoutObject>()
+            AddObjectsOperation<LayoutObject> operation = new()
             {
                 Collection = collection,
                 Objects =
@@ -50,12 +50,12 @@ namespace AnnoDesigner.Tests.Undo
         public void Undo_AddMultipleObjects_ShouldRemoveObjectsFromCollection()
         {
             // Arrange
-            var collection = Collection;
-            var obj1 = CreateLayoutObject(5, 5, 2, 2);
-            var obj2 = CreateLayoutObject(0, 0, 2, 2);
+            QuadTree<LayoutObject> collection = Collection;
+            LayoutObject obj1 = CreateLayoutObject(5, 5, 2, 2);
+            LayoutObject obj2 = CreateLayoutObject(0, 0, 2, 2);
             collection.Add(obj1);
             collection.Add(obj2);
-            var operation = new AddObjectsOperation<LayoutObject>()
+            AddObjectsOperation<LayoutObject> operation = new()
             {
                 Collection = collection,
                 Objects =
@@ -80,10 +80,10 @@ namespace AnnoDesigner.Tests.Undo
         public void Redo_AddSingleObject_ShouldAddObjectToCollection()
         {
             // Arrange
-            var collection = Collection;
+            QuadTree<LayoutObject> collection = Collection;
             Assert.Empty(collection);
-            var obj = CreateLayoutObject(5, 5, 2, 2);
-            var operation = new AddObjectsOperation<LayoutObject>()
+            LayoutObject obj = CreateLayoutObject(5, 5, 2, 2);
+            AddObjectsOperation<LayoutObject> operation = new()
             {
                 Collection = collection,
                 Objects =
@@ -96,18 +96,18 @@ namespace AnnoDesigner.Tests.Undo
             operation.Redo();
 
             // Assert
-            Assert.Single(collection);
+            _ = Assert.Single(collection);
         }
 
         [Fact]
         public void Redo_AddMultipleObjects_ShouldAddObjectsToCollection()
         {
             // Arrange
-            var collection = Collection;
+            QuadTree<LayoutObject> collection = Collection;
             Assert.Empty(collection);
-            var obj1 = CreateLayoutObject(5, 5, 2, 2);
-            var obj2 = CreateLayoutObject(0, 0, 2, 2);
-            var operation = new AddObjectsOperation<LayoutObject>()
+            LayoutObject obj1 = CreateLayoutObject(5, 5, 2, 2);
+            LayoutObject obj2 = CreateLayoutObject(0, 0, 2, 2);
+            AddObjectsOperation<LayoutObject> operation = new()
             {
                 Collection = collection,
                 Objects =

@@ -22,10 +22,6 @@ public class ManageKeybindingsViewModel : Notify
     private readonly ICommons commons;
     private readonly IMessageBoxService _messageBoxService;
     private readonly ILocalizationHelper _localizationHelper;
-    private HotkeyCommandManager _manager;
-    private ICommand _editCommand;
-    private ICommand _resetHotkeysCommand;
-    private string _editButtonText;
 
     public ManageKeybindingsViewModel(HotkeyCommandManager hotkeyCommandManager,
         ICommons commons,
@@ -51,26 +47,26 @@ public class ManageKeybindingsViewModel : Notify
 
     public HotkeyCommandManager HotkeyCommandManager
     {
-        get => _manager;
-        set => UpdateProperty(ref _manager, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public ICommand EditCommand
     {
-        get => _editCommand;
-        set => UpdateProperty(ref _editCommand, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public ICommand ResetHotkeysCommand
     {
-        get => _resetHotkeysCommand;
-        set => UpdateProperty(ref _resetHotkeysCommand, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string EditButtonText
     {
-        get => _editButtonText;
-        set => UpdateProperty(ref _editButtonText, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string EditButtonCurrentTextKey { get; set; } = EDIT;

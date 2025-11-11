@@ -1,7 +1,7 @@
-﻿using System;
+﻿using AnnoDesigner.Core.Converters;
+using System;
 using System.Globalization;
 using System.Windows.Input;
-using AnnoDesigner.Core.Converters;
 using Xunit;
 
 namespace AnnoDesigner.Core.Tests
@@ -18,10 +18,10 @@ namespace AnnoDesigner.Core.Tests
         public void Convert_PassedKnownValue_ShouldReturnCorrectValue(Key input, string expected)
         {
             // Arrange
-            var converter = new KeyToDisplayStringConverter();
+            KeyToDisplayStringConverter converter = new();
 
             // Act
-            var result = converter.Convert(input, typeof(string), null, CultureInfo.CurrentCulture);
+            object result = converter.Convert(input, typeof(string), null, CultureInfo.CurrentCulture);
 
             // Assert
             Assert.Equal(expected, result);
@@ -32,10 +32,10 @@ namespace AnnoDesigner.Core.Tests
         public void Convert_PassedUnknownValue_ShouldThrow()
         {
             // Arrange
-            var converter = new KeyToDisplayStringConverter();
+            KeyToDisplayStringConverter converter = new();
 
             // Act/Assert
-            Assert.Throws<ArgumentException>(() => converter.Convert("dummy", typeof(string), null, CultureInfo.CurrentCulture));
+            _ = Assert.Throws<ArgumentException>(() => converter.Convert("dummy", typeof(string), null, CultureInfo.CurrentCulture));
         }
 #else
         [Fact]
@@ -60,10 +60,10 @@ namespace AnnoDesigner.Core.Tests
         public void ConvertBack_PassedAnyValue_ShouldThrow()
         {
             // Arrange
-            var converter = new KeyToDisplayStringConverter();
+            KeyToDisplayStringConverter converter = new();
 
             // Act/Assert
-            Assert.Throws<NotImplementedException>(() => converter.ConvertBack(Key.A, typeof(string), null, CultureInfo.CurrentCulture));
+            _ = Assert.Throws<NotImplementedException>(() => converter.ConvertBack(Key.A, typeof(string), null, CultureInfo.CurrentCulture));
         }
 
         #endregion

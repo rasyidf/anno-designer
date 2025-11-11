@@ -12,17 +12,17 @@ public static class ConnectivityHelper
 
     public static async Task<bool> IsConnected()
     {
-        var result = false;
+        bool result = false;
 
-        var isInternetAvailable = false;
+        bool isInternetAvailable = false;
 
-        using (var httpClient = new HttpClient())
+        using (HttpClient httpClient = new())
         {
             httpClient.Timeout = TimeSpan.FromSeconds(5);
 
             try
             {
-                var response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, URL)).ConfigureAwait(false);
+                HttpResponseMessage response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, URL)).ConfigureAwait(false);
                 isInternetAvailable = response.IsSuccessStatusCode;
             }
             catch (HttpRequestException)
@@ -35,7 +35,7 @@ public static class ConnectivityHelper
             {
                 try
                 {
-                    var response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, SECOND_URL)).ConfigureAwait(false);
+                    HttpResponseMessage response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, SECOND_URL)).ConfigureAwait(false);
                     isInternetAvailable = response.IsSuccessStatusCode;
                 }
                 catch (HttpRequestException)
@@ -53,8 +53,5 @@ public static class ConnectivityHelper
         return result;
     }
 
-    public static bool IsNetworkAvailable
-    {
-        get { return NetworkInterface.GetIsNetworkAvailable(); }
-    }
+    public static bool IsNetworkAvailable => NetworkInterface.GetIsNetworkAvailable();
 }

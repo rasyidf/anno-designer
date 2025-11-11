@@ -13,30 +13,25 @@ public class HotkeyRecorderViewModel : Notify
         CancelCommand = new RelayCommand<Window>(ExecuteCancel);
     }
 
-    private ActionRecorder.ActionType _result;
-    private Key _key;
-    private ExtendedMouseAction _mouseAction;
-    private ModifierKeys _modifiers;
-
     public ActionRecorder.ActionType Result
     {
-        get => _result;
-        set => UpdateProperty(ref _result, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
     public Key Key
     {
-        get => _key;
-        set => UpdateProperty(ref _key, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
     public ExtendedMouseAction MouseAction
     {
-        get => _mouseAction;
-        set => UpdateProperty(ref _mouseAction, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
     public ModifierKeys Modifiers
     {
-        get => _modifiers;
-        set => UpdateProperty(ref _modifiers, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public ICommand CancelCommand { get; private set; }

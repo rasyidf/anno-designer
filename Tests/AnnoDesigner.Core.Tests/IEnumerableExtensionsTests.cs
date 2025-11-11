@@ -1,8 +1,8 @@
-﻿using System;
+﻿using AnnoDesigner.Core.Extensions;
+using AnnoDesigner.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using AnnoDesigner.Core.Extensions;
-using AnnoDesigner.Core.Models;
 using Xunit;
 
 namespace AnnoDesigner.Core.Tests
@@ -13,7 +13,7 @@ namespace AnnoDesigner.Core.Tests
         public void WithoutIgnoredObjects_ListIsNull_ShouldReturnNull()
         {
             // Arrange/Act
-            var result = IEnumerableExtensions.WithoutIgnoredObjects(null);
+            IEnumerable<AnnoObject> result = IEnumerableExtensions.WithoutIgnoredObjects(null);
 
             // Assert
             Assert.Null(result);
@@ -23,7 +23,7 @@ namespace AnnoDesigner.Core.Tests
         public void WithoutIgnoredObjects_ListIsEmpty_ShouldReturnEmptyList()
         {
             // Arrange/Act
-            var result = IEnumerableExtensions.WithoutIgnoredObjects([]);
+            IEnumerable<AnnoObject> result = IEnumerableExtensions.WithoutIgnoredObjects([]);
 
             // Assert
             Assert.Empty(result);
@@ -33,20 +33,18 @@ namespace AnnoDesigner.Core.Tests
         public void WithoutIgnoredObjects_ListHasNoIgnorableObjects_ShouldReturnSameList()
         {
             // Arrange
-            var list = new List<AnnoObject>
-            {
-                new AnnoObject
-                {
+            List<AnnoObject> list =
+            [
+                new() {
                     Template = "Dummy"
                 },
-                new AnnoObject
-                {
+                new() {
                     Template = "AnotherDummy"
                 }
-            };
+            ];
 
             // Act
-            var result = IEnumerableExtensions.WithoutIgnoredObjects(list);
+            IEnumerable<AnnoObject> result = IEnumerableExtensions.WithoutIgnoredObjects(list);
 
             // Assert
             Assert.Equal(list.Count(), result.Count());
@@ -60,24 +58,21 @@ namespace AnnoDesigner.Core.Tests
         public void WithoutIgnoredObjects_ListHasIgnorableObjects_ShouldReturnFilteredList()
         {
             // Arrange
-            var list = new List<AnnoObject>
-            {
-                new AnnoObject
-                {
+            List<AnnoObject> list =
+            [
+                new() {
                     Template = "Blocker"
                 },
-                new AnnoObject
-                {
+                new() {
                     Template = "Dummy"
                 },
-                new AnnoObject
-                {
+                new() {
                     Template = "AnotherDummy"
                 }
-            };
+            ];
 
             // Act
-            var result = IEnumerableExtensions.WithoutIgnoredObjects(list);
+            IEnumerable<AnnoObject> result = IEnumerableExtensions.WithoutIgnoredObjects(list);
 
             // Assert
             Assert.NotEqual(list.Count(), result.Count());

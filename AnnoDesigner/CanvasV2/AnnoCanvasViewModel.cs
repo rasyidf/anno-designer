@@ -1,34 +1,32 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
+using AnnoDesigner.CanvasV2.FeatureFlags;
+using AnnoDesigner.CanvasV2.Input;
+using AnnoDesigner.CanvasV2.Rendering;
 using AnnoDesigner.Core.DataStructures;
-using AnnoDesigner.Core.Helper;
+using AnnoDesigner.Core.Extensions;
+using AnnoDesigner.Core.Layout.Helper;
 using AnnoDesigner.Core.Layout.Models;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Models;
 using AnnoDesigner.Core.Services;
 using AnnoDesigner.CustomEventArgs;
+using AnnoDesigner.Extensions;
 using AnnoDesigner.Helper;
 using AnnoDesigner.Models;
+using AnnoDesigner.Services;
 using AnnoDesigner.Undo;
 using AnnoDesigner.Undo.Operations;
 using AnnoDesigner.ViewModels;
-using AnnoDesigner.CanvasV2.FeatureFlags;
-using AnnoDesigner.CanvasV2.Input;
-using AnnoDesigner.CanvasV2.Rendering;
-using AnnoDesigner.Services;
-using System.Windows.Controls.Primitives;
-using AnnoDesigner.Core.Layout.Helper;
-using AnnoDesigner.Core.Extensions;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using AnnoDesigner.Extensions;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace AnnoDesigner.CanvasV2;
 
@@ -45,26 +43,33 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
     public LayoutObject GetObjectAt(Point position)
     {
         // Convert screen position to grid position with viewport offset
-        if (PlacedObjects.Count == 0) return null;
-        var gridPos = _coordinateHelper.ScreenToFractionalGrid(position, GridSize);
-        gridPos = _viewport.OriginToViewport(gridPos);
-        var probeRect = new Rect(gridPos, new Size(1, 1));
-        foreach (var lo in PlacedObjects.GetItemsIntersecting(probeRect))
+        if (PlacedObjects.Count == 0)
         {
-            if (lo.GridRect.Contains(gridPos)) return lo;
+            return null;
+        }
+
+        Point gridPos = CoordinateHelper.ScreenToFractionalGrid(position, GridSize);
+        gridPos = _viewport.OriginToViewport(gridPos);
+        Rect probeRect = new(gridPos, new Size(1, 1));
+        foreach (LayoutObject lo in PlacedObjects.GetItemsIntersecting(probeRect))
+        {
+            if (lo.GridRect.Contains(gridPos))
+            {
+                return lo;
+            }
         }
         return null;
     }
 
     public void AddSelectedObject(LayoutObject obj, bool includeSameObjects = false)
     {
-        SelectedObjects.Add(obj);
+        _ = SelectedObjects.Add(obj);
         if (includeSameObjects)
         {
-            var sameObjects = PlacedObjects.Where(o => o.Identifier == obj.Identifier);
-            foreach (var sameObj in sameObjects)
+            IEnumerable<LayoutObject> sameObjects = PlacedObjects.Where(o => o.Identifier == obj.Identifier);
+            foreach (LayoutObject sameObj in sameObjects)
             {
-                SelectedObjects.Add(sameObj);
+                _ = SelectedObjects.Add(sameObj);
             }
         }
         CommandManager.InvalidateRequerySuggested();
@@ -72,7 +77,7 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
 
     public void AddSelectedObjects(IEnumerable<LayoutObject> objects, bool includeSameObjects = false)
     {
-        foreach (var obj in objects)
+        foreach (LayoutObject obj in objects)
         {
             AddSelectedObject(obj, includeSameObjects);
         }
@@ -81,13 +86,13 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
 
     public void RemoveSelectedObject(LayoutObject obj, bool includeSameObjects = false)
     {
-        SelectedObjects.Remove(obj);
+        _ = SelectedObjects.Remove(obj);
         if (includeSameObjects)
         {
-            var sameObjects = SelectedObjects.Where(o => o.Identifier == obj.Identifier).ToList();
-            foreach (var sameObj in sameObjects)
+            List<LayoutObject> sameObjects = SelectedObjects.Where(o => o.Identifier == obj.Identifier).ToList();
+            foreach (LayoutObject sameObj in sameObjects)
             {
-                SelectedObjects.Remove(sameObj);
+                _ = SelectedObjects.Remove(sameObj);
             }
         }
         CommandManager.InvalidateRequerySuggested();
@@ -95,7 +100,7 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
 
     public void RemoveSelectedObjects(IEnumerable<LayoutObject> objects, bool includeSameObjects = false)
     {
-        foreach (var obj in objects)
+        foreach (LayoutObject obj in objects)
         {
             RemoveSelectedObject(obj, includeSameObjects);
         }
@@ -104,25 +109,28 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
 
     public void RemoveSelectedObjects(Predicate<LayoutObject> predicate)
     {
-        var objectsToRemove = SelectedObjects.Where(obj => predicate(obj)).ToList();
-        foreach (var obj in objectsToRemove)
+        List<LayoutObject> objectsToRemove = SelectedObjects.Where(obj => predicate(obj)).ToList();
+        foreach (LayoutObject obj in objectsToRemove)
         {
-            SelectedObjects.Remove(obj);
+            _ = SelectedObjects.Remove(obj);
         }
         CommandManager.InvalidateRequerySuggested();
     }
 
     public bool TryPlaceCurrentObjects(bool isContinuousDrawing)
     {
-        if (CurrentObjects.Count == 0) return false;
+        if (CurrentObjects.Count == 0)
+        {
+            return false;
+        }
 
         List<LayoutObject> objectsToPlace;
-        
+
         if (isContinuousDrawing)
         {
             // Create copies of current objects for continuous placement
-            objectsToPlace = CurrentObjects.Select(obj => 
-                new LayoutObject(new AnnoObject(obj.WrappedAnnoObject), _coordinateHelper, _brushCache, _penCache)).ToList();
+            objectsToPlace = CurrentObjects.Select(obj =>
+                new LayoutObject(new AnnoObject(obj.WrappedAnnoObject), CoordinateHelper, _brushCache, _penCache)).ToList();
         }
         else
         {
@@ -137,7 +145,7 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
         });
         CommandManager.InvalidateRequerySuggested();
 
-        foreach (var obj in objectsToPlace)
+        foreach (LayoutObject obj in objectsToPlace)
         {
             PlacedObjects.Add(obj);
         }
@@ -167,11 +175,11 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
                 r.Union(obj.GridRect);
             }
 
-            Point center = _coordinateHelper.GetCenterPoint(r);
-            Point mouseGridPosition = _coordinateHelper.ScreenToFractionalGrid(mousePosition, GridSize);
+            Point center = CoordinateHelper.GetCenterPoint(r);
+            Point mouseGridPosition = CoordinateHelper.ScreenToFractionalGrid(mousePosition, GridSize);
             double dx = mouseGridPosition.X - center.X;
             double dy = mouseGridPosition.Y - center.Y;
-            
+
             foreach (LayoutObject obj in CurrentObjects)
             {
                 Point pos = obj.Position;
@@ -183,7 +191,7 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
         else
         {
             // Single object: center it on the mouse cursor
-            Point pos = _coordinateHelper.ScreenToFractionalGrid(mousePosition, GridSize);
+            Point pos = CoordinateHelper.ScreenToFractionalGrid(mousePosition, GridSize);
             Size size = CurrentObjects[0].Size;
             pos.X -= size.Width / 2;
             pos.Y -= size.Height / 2;
@@ -209,9 +217,9 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
         // The input handler stores old positions in _oldObjectPositions
         // For now, just trigger a full rebuild of the QuadTree
         // This is less efficient than selective reindexing but ensures correctness
-        var allObjects = PlacedObjects.ToList();
+        List<LayoutObject> allObjects = PlacedObjects.ToList();
         PlacedObjects.Clear();
-        foreach (var obj in allObjects)
+        foreach (LayoutObject obj in allObjects)
         {
             PlacedObjects.Add(obj);
         }
@@ -221,13 +229,13 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
     {
         // Get the maximum Z-index currently in use
         int maxZIndex = PlacedObjects.Any() ? PlacedObjects.Max(o => o.ZIndex) : 0;
-        
+
         // Increment and assign to moved objects
-        foreach (var obj in objects)
+        foreach (LayoutObject obj in objects)
         {
             obj.ZIndex = ++maxZIndex;
         }
-        
+
         InvalidateRender();
     }
 
@@ -242,7 +250,7 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
     {
         // Migrated from v1: compute layout bounds
         _layoutBounds = ComputeBoundingRect(PlacedObjects);
-        
+
         // Update scrollable area
         Rect r = _viewport.Absolute;
         r.Union(_layoutBounds);
@@ -281,17 +289,19 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
     /// </summary>
     public event Action ScrollInvalidated; // Phase 1 requirement
 
-    private void RaisePropertyChanged([CallerMemberName] string name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    private void RaisePropertyChanged([CallerMemberName] string name = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
 
     // migrated from AnnoCanvas.xaml.cs � services
     public IUndoManager UndoManager { get; }
     public IClipboardService ClipboardService { get; }
-    public ICoordinateHelper CoordinateHelper => _coordinateHelper;
-    public IAppSettings AppSettings => _appSettings;
-    private readonly IAppSettings _appSettings;
+    public ICoordinateHelper CoordinateHelper { get; }
+    public IAppSettings AppSettings { get; }
+
     private readonly IBrushCache _brushCache;
     private readonly IPenCache _penCache;
-    private readonly ICoordinateHelper _coordinateHelper;
     private readonly ILayoutLoader _layoutLoader;
     private readonly ILocalizationHelper _localizationHelper;
     private readonly IMessageBoxService _messageBoxService;
@@ -303,15 +313,13 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
     public List<LayoutObject> CurrentObjects { get; set; }
 
     // UI state helpers
-    private bool _selectionContainsNotIgnoredObject;
     public bool SelectionContainsNotIgnoredObject
     {
-        get => _selectionContainsNotIgnoredObject;
-        private set
+        get; private set
         {
-            if (_selectionContainsNotIgnoredObject != value)
+            if (field != value)
             {
-                _selectionContainsNotIgnoredObject = value;
+                field = value;
                 RaisePropertyChanged();
             }
         }
@@ -322,23 +330,28 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
     public Dictionary<string, IconImage> Icons { get; init; } = new(StringComparer.OrdinalIgnoreCase); // migrated from Icons
 
     // view state migrated properties
-    private int _gridSize = Constants.GridStepDefault; // migrated from GridSize backing field
     public int GridSize
     {
-        get => _gridSize;
-        set
+        get; set
         {
             int tmp = value;
-            if (tmp < Constants.GridStepMin) tmp = Constants.GridStepMin;
-            else if (tmp > Constants.GridStepMax) tmp = Constants.GridStepMax;
-            if (_gridSize != tmp)
+            if (tmp < Constants.GridStepMin)
             {
-                _gridSize = tmp;
+                tmp = Constants.GridStepMin;
+            }
+            else if (tmp > Constants.GridStepMax)
+            {
+                tmp = Constants.GridStepMax;
+            }
+
+            if (field != tmp)
+            {
+                field = tmp;
                 RaisePropertyChanged();
                 InvalidateRender();
             }
         }
-    }
+    } = Constants.GridStepDefault;
 
     // Feature toggles now sourced from feature flags snapshot
     public CanvasFeatureFlags FeatureSnapshot => _featureFlags.Snapshot();
@@ -357,42 +370,36 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
     // Fix for CS0738: Ensure the return type of CurrentMode matches the interface definition.
     public Input.MouseMode CurrentMode
     {
-        get => _currentMode;
-        set
+        get; set
         {
-            if (_currentMode != value)
+            if (field != value)
             {
-                _currentMode = value;
+                field = value;
                 RaisePropertyChanged();
             }
         }
-    }
-    private Input.MouseMode _currentMode = Input.MouseMode.Standard; // Backing field for CurrentMode
+    } = Input.MouseMode.Standard;
 
     public string StatusMessage
     {
-        get => _statusMessage;
-        set
+        get; set
         {
-            if (_statusMessage != value)
+            if (field != value)
             {
-                _statusMessage = value;
+                field = value;
                 RaisePropertyChanged();
-                OnStatusMessageChanged?.Invoke(_statusMessage ?? string.Empty);
+                OnStatusMessageChanged?.Invoke(field ?? string.Empty);
             }
         }
     }
-    private string _statusMessage; // Backing field for StatusMessage
 
-    private string _loadedFile; // migrated from LoadedFile
     public string LoadedFile
     {
-        get => _loadedFile;
-        set
+        get; set
         {
-            if (_loadedFile != value)
+            if (field != value)
             {
-                _loadedFile = value;
+                field = value;
                 RaisePropertyChanged();
                 OnLoadedFileChanged?.Invoke(this, new FileLoadedEventArgs(value));
             }
@@ -447,8 +454,8 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
         _featureFlags = featureFlags;
         UndoManager = undoManager;
         ClipboardService = clipboardService;
-        _appSettings = appSettings;
-        _coordinateHelper = coordinateHelper;
+        AppSettings = appSettings;
+        CoordinateHelper = coordinateHelper;
         _brushCache = brushCache;
         _penCache = penCache;
         _layoutLoader = layoutLoader;
@@ -457,32 +464,33 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
         HotkeyCommandManager = hotkeyManager;
 
         PlacedObjects = new QuadTree<LayoutObject>(new Rect(-128, -128, 256, 256)); // migrated initialization
-        SelectedObjects = new HashSet<LayoutObject>();
-        CurrentObjects = new List<LayoutObject>();
+        SelectedObjects = [];
+        CurrentObjects = [];
 
         // Subscribe to flag changes -> invalidate render
         _featureFlags.FeatureChanged += (_, __) => InvalidateRender();
 
         // Commands migrated with CanExecute predicates
         RotateCommand = new RelayCommand(
-            _ => ExecuteRotate(), 
+            _ => ExecuteRotate(),
             _ => CurrentObjects.Count > 0 || SelectedObjects.Count > 0);
         CopyCommand = new RelayCommand(
-            _ => ExecuteCopy(), 
+            _ => ExecuteCopy(),
             _ => SelectedObjects.Count > 0);
         PasteCommand = new RelayCommand(_ => ExecutePaste()); // Always enabled - Paste will handle empty clipboard
         DeleteCommand = new RelayCommand(
-            _ => ExecuteDelete(), 
+            _ => ExecuteDelete(),
             _ => SelectedObjects.Count > 0);
         UndoCommand = new RelayCommand(
-            _ => { UndoManager.Undo(); CommandManager.InvalidateRequerySuggested(); InvalidateRender(); }, 
+            _ => { UndoManager.Undo(); CommandManager.InvalidateRequerySuggested(); InvalidateRender(); },
             _ => UndoManager.CanUndo);
         RedoCommand = new RelayCommand(
-            _ => { UndoManager.Redo(); CommandManager.InvalidateRequerySuggested(); InvalidateRender(); }, 
+            _ => { UndoManager.Redo(); CommandManager.InvalidateRequerySuggested(); InvalidateRender(); },
             _ => UndoManager.CanRedo);
         SelectSameIdentifierCommand = new RelayCommand(
             _ => ExecuteSelectSameIdentifier(),
-            _ => {
+            _ =>
+            {
                 // Command should be enabled when there's at least one selected object with a valid identifier
                 return SelectedObjects.Count > 0 && SelectedObjects.Any(o => !string.IsNullOrWhiteSpace(o.Identifier));
             });
@@ -562,24 +570,24 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
         if (CurrentObjects.Count == 1)
         {
             // migrated from ExecuteRotate
-            CurrentObjects[0].Size = _coordinateHelper.Rotate(CurrentObjects[0].Size);
-            CurrentObjects[0].Direction = _coordinateHelper.Rotate(CurrentObjects[0].Direction);
+            CurrentObjects[0].Size = CoordinateHelper.Rotate(CurrentObjects[0].Size);
+            CurrentObjects[0].Direction = CoordinateHelper.Rotate(CurrentObjects[0].Direction);
         }
         else if (CurrentObjects.Count > 1)
         {
-            foreach (var lo in CurrentObjects)
+            foreach (LayoutObject lo in CurrentObjects)
             {
-                lo.Bounds = _coordinateHelper.Rotate(lo.Bounds);
-                lo.Direction = _coordinateHelper.Rotate(lo.Direction);
+                lo.Bounds = CoordinateHelper.Rotate(lo.Bounds);
+                lo.Direction = CoordinateHelper.Rotate(lo.Direction);
             }
         }
         else if (SelectedObjects.Count > 0)
         {
             // Rotate selected objects in place without creating copies
-            foreach (var lo in SelectedObjects)
+            foreach (LayoutObject lo in SelectedObjects)
             {
-                lo.Size = _coordinateHelper.Rotate(lo.Size);
-                lo.Direction = _coordinateHelper.Rotate(lo.Direction);
+                lo.Size = CoordinateHelper.Rotate(lo.Size);
+                lo.Direction = CoordinateHelper.Rotate(lo.Direction);
             }
         }
         InvalidateRender();
@@ -596,24 +604,28 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
 
     private void ExecutePaste()
     {
-        var objects = ClipboardService.Paste();
+        ICollection<AnnoObject> objects = ClipboardService.Paste();
         if (objects.Count > 0)
         {
-            CurrentObjects = objects.Select(x => new LayoutObject(x, _coordinateHelper, _brushCache, _penCache)).ToList();
+            CurrentObjects = objects.Select(x => new LayoutObject(x, CoordinateHelper, _brushCache, _penCache)).ToList();
             InvalidateRender();
         }
     }
 
     private void ExecuteDelete()
     {
-        if (SelectedObjects.Count == 0) return;
+        if (SelectedObjects.Count == 0)
+        {
+            return;
+        }
+
         UndoManager.RegisterOperation(new RemoveObjectsOperation<LayoutObject>
         {
             Objects = SelectedObjects.ToList(),
             Collection = PlacedObjects
         });
         CommandManager.InvalidateRequerySuggested();
-        foreach (var item in SelectedObjects)
+        foreach (LayoutObject item in SelectedObjects)
         {
             _ = PlacedObjects.Remove(item);
         }
@@ -638,19 +650,22 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
     private void ExecuteSelectSameIdentifier()
     {
         // Get the first selected object with a valid identifier
-        var referenceObject = SelectedObjects.FirstOrDefault(o => !string.IsNullOrWhiteSpace(o.Identifier));
-        if (referenceObject is null) return;
-        
+        LayoutObject referenceObject = SelectedObjects.FirstOrDefault(o => !string.IsNullOrWhiteSpace(o.Identifier));
+        if (referenceObject is null)
+        {
+            return;
+        }
+
         string targetIdentifier = referenceObject.Identifier;
-        
+
         // Check if all objects with this identifier are already selected
-        var allObjectsWithIdentifier = PlacedObjects.Where(o => o.Identifier == targetIdentifier).ToList();
-        bool allAlreadySelected = allObjectsWithIdentifier.All(o => SelectedObjects.Contains(o));
-        
+        List<LayoutObject> allObjectsWithIdentifier = PlacedObjects.Where(o => o.Identifier == targetIdentifier).ToList();
+        bool allAlreadySelected = allObjectsWithIdentifier.All(SelectedObjects.Contains);
+
         if (allAlreadySelected)
         {
             // Deselect all objects with this identifier
-            var objectsToRemove = SelectedObjects.Where(o => o.Identifier == targetIdentifier).ToList();
+            List<LayoutObject> objectsToRemove = SelectedObjects.Where(o => o.Identifier == targetIdentifier).ToList();
             RemoveSelectedObjects(objectsToRemove);
         }
         else
@@ -658,7 +673,7 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
             // Select all objects with this identifier
             AddSelectedObjects(allObjectsWithIdentifier);
         }
-        
+
         RecalculateSelectionContainsNotIgnoredObject();
         UpdateStatistics(includeBuildings: true);
         InvalidateRender();
@@ -675,12 +690,18 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
     /// <summary>
     /// Raise statistics event for external callers (compatibility with IAnnoCanvas).
     /// </summary>
-    public void RaiseStatisticsUpdated(UpdateStatisticsEventArgs args) => StatisticsUpdated?.Invoke(this, args);
+    public void RaiseStatisticsUpdated(UpdateStatisticsEventArgs args)
+    {
+        StatisticsUpdated?.Invoke(this, args);
+    }
 
     /// <summary>
     /// Raise colors-in-layout updated event for external callers.
     /// </summary>
-    public void RaiseColorsInLayoutUpdated() => ColorsInLayoutUpdated?.Invoke(this, EventArgs.Empty);
+    public void RaiseColorsInLayoutUpdated()
+    {
+        ColorsInLayoutUpdated?.Invoke(this, EventArgs.Empty);
+    }
 
     /// <summary>
     /// Reset viewport to origin (compatibility helper).
@@ -693,21 +714,32 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
         InvalidateRender();
     }
 
-    public void ResetZoom() => GridSize = Constants.GridStepDefault; // migrated from ResetZoom
+    public void ResetZoom()
+    {
+        GridSize = Constants.GridStepDefault; // migrated from ResetZoom
+    }
 
     public void Normalize(int border) // migrated from Normalize(int)
     {
-        if (PlacedObjects.Count == 0) return;
+        if (PlacedObjects.Count == 0)
+        {
+            return;
+        }
+
         double dx = PlacedObjects.Min(_ => _.Position.X) - border;
         double dy = PlacedObjects.Min(_ => _.Position.Y) - border;
-        var diff = new Vector(dx, dy);
-        if (diff.LengthSquared <= 0) return;
+        Vector diff = new(dx, dy);
+        if (diff.LengthSquared <= 0)
+        {
+            return;
+        }
+
         UndoManager.RegisterOperation(new MoveObjectsOperation<LayoutObject>
         {
             ObjectPropertyValues = PlacedObjects.Select(obj => (obj, obj.Bounds, new Rect(obj.Position - diff, obj.Size))).ToList(),
             QuadTree = PlacedObjects
         });
-        foreach (var item in PlacedObjects.ToList())
+        foreach (LayoutObject item in PlacedObjects.ToList())
         {
             PlacedObjects.Move(item, -diff);
         }
@@ -808,13 +840,13 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
     }
 
     // Selection helpers migrated
-    public void AddSelectedObject(LayoutObject obj) 
+    public void AddSelectedObject(LayoutObject obj)
     {
-        SelectedObjects.Add(obj);
+        _ = SelectedObjects.Add(obj);
         System.Windows.Input.CommandManager.InvalidateRequerySuggested(); // Refresh command states
     }
-    
-    public void RemoveSelectedObject(LayoutObject obj) 
+
+    public void RemoveSelectedObject(LayoutObject obj)
     {
         _ = SelectedObjects.Remove(obj);
         System.Windows.Input.CommandManager.InvalidateRequerySuggested(); // Refresh command states
@@ -822,24 +854,38 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
 
     public Rect ComputeBoundingRect(IEnumerable<LayoutObject> objects) // migrated from ComputeBoundingRect
     {
-        var statsHelper = new StatisticsCalculationHelper();
+        StatisticsCalculationHelper statsHelper = new();
         return (Rect)statsHelper.CalculateStatistics(objects.Select(o => o.WrappedAnnoObject), includeRoads: true, includeIgnoredObjects: true);
     }
 
-    internal void InvalidateRender() => RenderInvalidated?.Invoke();
-    internal void InvalidateScroll() => ScrollInvalidated?.Invoke();
+    internal void InvalidateRender()
+    {
+        RenderInvalidated?.Invoke();
+    }
+
+    internal void InvalidateScroll()
+    {
+        ScrollInvalidated?.Invoke();
+    }
 
     // Expose as interface implementation
-    void IInputHandlerHost.InvalidateRender() => InvalidateRender();
-    void IInputHandlerHost.InvalidateScroll() => InvalidateScroll();
+    void IInputHandlerHost.InvalidateRender()
+    {
+        InvalidateRender();
+    }
+
+    void IInputHandlerHost.InvalidateScroll()
+    {
+        InvalidateScroll();
+    }
 
     // Phase 3: produce immutable snapshot for renderer.
     public RenderState CreateRenderState()
     {
         // Simplified objects to draw: all inside viewport for now.
-        var vp = ViewportRect;
-        var objects = PlacedObjects.GetItemsIntersecting(vp).ToList();
-        var featureFlags = FeatureSnapshot;
+        Rect vp = ViewportRect;
+        List<LayoutObject> objects = PlacedObjects.GetItemsIntersecting(vp).ToList();
+        CanvasFeatureFlags featureFlags = FeatureSnapshot;
 
         return new RenderState(
             Viewport: vp,
@@ -860,7 +906,7 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
             RenderHarborBlockedArea: featureFlags.RenderHarborBlockedArea,
             RenderPanorama: featureFlags.RenderPanorama,
             Icons: Icons,
-            CoordinateHelper: _coordinateHelper,
+            CoordinateHelper: CoordinateHelper,
             FeatureFlags: featureFlags);
     }
 
@@ -912,6 +958,9 @@ public class AnnoCanvasViewModel : INotifyPropertyChanged, IInputHandlerHost, IS
     public void MouseWheelRight() { }
     public void SetHorizontalOffset(double offset) { _viewport.Left = offset; InvalidateScroll(); InvalidateRender(); }
     public void SetVerticalOffset(double offset) { _viewport.Top = offset; InvalidateScroll(); InvalidateRender(); }
-    public Rect MakeVisible(Visual visual, Rect rectangle) => ViewportRect;
+    public Rect MakeVisible(Visual visual, Rect rectangle)
+    {
+        return ViewportRect;
+    }
     #endregion
 }

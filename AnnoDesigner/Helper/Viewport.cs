@@ -8,19 +8,16 @@ namespace AnnoDesigner.Helper;
 /// </summary>
 public class Viewport
 {
-    private double _left;
-    private double _top;
-
     /// <summary>
     /// The top offset of the viewport.
     /// </summary>
     public double Top
     {
-        get => _top;
+        get;
         set
         {
-            _top = value;
-            VerticalAlignmentValue = -MathHelper.FractionalValue(_top);
+            field = value;
+            VerticalAlignmentValue = -MathHelper.FractionalValue(field);
         }
     }
 
@@ -29,11 +26,11 @@ public class Viewport
     /// </summary>
     public double Left
     {
-        get => _left;
+        get;
         set
         {
-            _left = value;
-            HorizontalAlignmentValue = -MathHelper.FractionalValue(_left);
+            field = value;
+            HorizontalAlignmentValue = -MathHelper.FractionalValue(field);
         }
     }
 

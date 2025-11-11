@@ -1,6 +1,6 @@
-﻿using System.Text;
+﻿using AnnoDesigner.Core.Interop;
+using System.Text;
 using System.Windows.Input;
-using AnnoDesigner.Core.Interop;
 
 namespace AnnoDesigner.Core.Helper;
 
@@ -31,17 +31,17 @@ public static class KeyboardInteropHelper
     {
         char? c = null;
 
-        var virtualKey = KeyInterop.VirtualKeyFromKey(key);
-        var keyboardState = new byte[256];
+        int virtualKey = KeyInterop.VirtualKeyFromKey(key);
+        byte[] keyboardState = new byte[256];
         if (useKeyboardState)
         {
-            NativeMethods.GetKeyboardState(keyboardState);
+            _ = NativeMethods.GetKeyboardState(keyboardState);
         }
 
-        var scanCode = NativeMethods.MapVirtualKey((uint)virtualKey, NativeMethods.MapType.MAPVK_VK_TO_VSC);
-        var stringBuilder = new StringBuilder(2);
+        uint scanCode = NativeMethods.MapVirtualKey((uint)virtualKey, NativeMethods.MapType.MAPVK_VK_TO_VSC);
+        StringBuilder stringBuilder = new(2);
 
-        var result = (NativeMethods.ToUnicodeReturnValues)NativeMethods.ToUnicode((uint)virtualKey, scanCode, keyboardState, stringBuilder, stringBuilder.Capacity, 0);
+        NativeMethods.ToUnicodeReturnValues result = (NativeMethods.ToUnicodeReturnValues)NativeMethods.ToUnicode((uint)virtualKey, scanCode, keyboardState, stringBuilder, stringBuilder.Capacity, 0);
         switch (result)
         {
             case NativeMethods.ToUnicodeReturnValues.DEAD_KEY:
@@ -74,12 +74,12 @@ public static class KeyboardInteropHelper
         {
             return GetFriendlyDisplayString(key);
         }
-        var c = GetCharacter(key, false);
+        char? c = GetCharacter(key, false);
         if (c.HasValue)
         {
             if (IsVisibleCharacter(c.Value))
             {
-                var str = char.ToUpper(c.Value).ToString();
+                string str = char.ToUpper(c.Value).ToString();
                 if (!string.IsNullOrWhiteSpace(str))
                 {
                     return str;

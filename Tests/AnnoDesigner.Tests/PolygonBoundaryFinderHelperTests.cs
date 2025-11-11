@@ -1,5 +1,6 @@
-﻿using System.Linq;
-using AnnoDesigner.Helper;
+﻿using AnnoDesigner.Helper;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace AnnoDesigner.Tests
@@ -19,12 +20,16 @@ namespace AnnoDesigner.Tests
         /// </example>
         public static bool[][] ParseGrid(params string[] gridLines)
         {
-            var preTranspose = gridLines.Select(line => line.Select(c => c == 'X').ToArray()).ToArray();
-            var postTranspose = Enumerable.Range(0, gridLines.Max(i => i.Length)).Select(i => new bool[gridLines.Length]).ToArray();
+            bool[][] preTranspose = gridLines.Select(line => line.Select(c => c == 'X').ToArray()).ToArray();
+            bool[][] postTranspose = Enumerable.Range(0, gridLines.Max(i => i.Length)).Select(i => new bool[gridLines.Length]).ToArray();
 
-            for (var i = 0; i < gridLines.Length; i++)
-                for (var j = 0; j < gridLines[i].Length; j++)
+            for (int i = 0; i < gridLines.Length; i++)
+            {
+                for (int j = 0; j < gridLines[i].Length; j++)
+                {
                     postTranspose[j][i] = preTranspose[i][j];
+                }
+            }
 
             return postTranspose;
         }
@@ -33,12 +38,12 @@ namespace AnnoDesigner.Tests
         public void GetBoundaryPoints_SimpleShape()
         {
             // Arrange
-            var insidePoints = ParseGrid(
+            bool[][] insidePoints = ParseGrid(
                 "  ",
                 " X");
 
             // Act
-            var boundary = PolygonBoundaryFinderHelper.GetBoundaryPoints(insidePoints);
+            IReadOnlyList<(int x, int y)> boundary = PolygonBoundaryFinderHelper.GetBoundaryPoints(insidePoints);
 
             // Assert
             Assert.Equal(boundary, new (int, int)[]
@@ -54,14 +59,14 @@ namespace AnnoDesigner.Tests
         public void GetBoundaryPoints_ComplexShape()
         {
             // Arrange
-            var insidePoints = ParseGrid(
+            bool[][] insidePoints = ParseGrid(
                 "    ",
                 "  X ",
                 " XXX",
                 "  X ");
 
             // Act
-            var boundary = PolygonBoundaryFinderHelper.GetBoundaryPoints(insidePoints);
+            IReadOnlyList<(int x, int y)> boundary = PolygonBoundaryFinderHelper.GetBoundaryPoints(insidePoints);
 
             // Assert
             Assert.Equal(boundary, new (int, int)[]
@@ -85,13 +90,13 @@ namespace AnnoDesigner.Tests
         public void GetBoundaryPoints_ContinuousSidesAreMerged()
         {
             // Arrange
-            var insidePoints = ParseGrid(
+            bool[][] insidePoints = ParseGrid(
                 "   ",
                 " XX",
                 " XX");
 
             // Act
-            var boundary = PolygonBoundaryFinderHelper.GetBoundaryPoints(insidePoints);
+            IReadOnlyList<(int x, int y)> boundary = PolygonBoundaryFinderHelper.GetBoundaryPoints(insidePoints);
 
             // Assert
             Assert.Equal(boundary, new (int, int)[]
@@ -107,7 +112,7 @@ namespace AnnoDesigner.Tests
         public void GetBoundaryPointsWithHoles_HolesAreFound()
         {
             // Arrange
-            var insidePoints = ParseGrid(
+            bool[][] insidePoints = ParseGrid(
                 "XXXXXX",
                 "X X  X",
                 "X XXXX",
@@ -116,7 +121,7 @@ namespace AnnoDesigner.Tests
                 "XXXXXX");
 
             // Act
-            var boundaries = PolygonBoundaryFinderHelper.GetBoundaryPointsWithHoles(insidePoints);
+            IEnumerable<IReadOnlyList<(int x, int y)>> boundaries = PolygonBoundaryFinderHelper.GetBoundaryPointsWithHoles(insidePoints);
 
             // Assert
             Assert.Equal(boundaries, new (int, int)[][]
@@ -156,7 +161,7 @@ namespace AnnoDesigner.Tests
         public void GetBoundaryPointsWithHoles_ComplexHoleIsFound()
         {
             // Arrange
-            var insidePoints = ParseGrid(
+            bool[][] insidePoints = ParseGrid(
                 "XXXXXX",
                 "X    X",
                 "X XX X",
@@ -165,7 +170,7 @@ namespace AnnoDesigner.Tests
                 "XXXXXX");
 
             // Act
-            var boundaries = PolygonBoundaryFinderHelper.GetBoundaryPointsWithHoles(insidePoints);
+            IEnumerable<IReadOnlyList<(int x, int y)>> boundaries = PolygonBoundaryFinderHelper.GetBoundaryPointsWithHoles(insidePoints);
 
             // Assert
             Assert.Equal(boundaries, new (int, int)[][]

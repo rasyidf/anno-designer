@@ -9,8 +9,8 @@ public class RelayCommand<T> : ICommand
 {
     #region Fields
 
-    readonly Action<T> _execute = null;
-    readonly Func<T, bool> _canExecute = null;
+    private readonly Action<T> _execute = null;
+    private readonly Func<T, bool> _canExecute = null;
 
     #endregion
 
@@ -52,12 +52,7 @@ public class RelayCommand<T> : ICommand
     ///</returns>
     public bool CanExecute(object parameter)
     {
-        if (_canExecute == null)
-        {
-            return true;
-        }
-
-        return _canExecute((T)parameter);
+        return _canExecute == null || _canExecute((T)parameter);
     }
 
     ///<summary>
@@ -65,8 +60,7 @@ public class RelayCommand<T> : ICommand
     ///</summary>
     public event EventHandler CanExecuteChanged
     {
-        add { CommandManager.RequerySuggested += value; }
-        remove { CommandManager.RequerySuggested -= value; }
+        add => CommandManager.RequerySuggested += value; remove => CommandManager.RequerySuggested -= value;
     }
 
     ///<summary>
@@ -134,8 +128,7 @@ public class AsyncDelegateCommand<TArgType> : IAsyncCommand
 
     public event EventHandler CanExecuteChanged
     {
-        add { CommandManager.RequerySuggested += value; }
-        remove { CommandManager.RequerySuggested -= value; }
+        add => CommandManager.RequerySuggested += value; remove => CommandManager.RequerySuggested -= value;
     }
 
     public AsyncDelegateCommand(Func<TArgType, Task> asyncExecute, Predicate<TArgType> canExecute = null)
@@ -146,12 +139,7 @@ public class AsyncDelegateCommand<TArgType> : IAsyncCommand
 
     public bool CanExecute(object parameter)
     {
-        if (canExecute == null)
-        {
-            return true;
-        }
-
-        return canExecute((TArgType)parameter);
+        return canExecute == null || canExecute((TArgType)parameter);
     }
 
     public async void Execute(object parameter)

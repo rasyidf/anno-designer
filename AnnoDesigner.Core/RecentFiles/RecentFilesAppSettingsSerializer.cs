@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AnnoDesigner.Core.Models;
+﻿using AnnoDesigner.Core.Models;
 using Newtonsoft.Json;
 using NLog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AnnoDesigner.Core.RecentFiles;
 
@@ -25,11 +25,11 @@ public class RecentFilesAppSettingsSerializer : IRecentFilesSerializer
             return [];
         }
 
-        var savedList = new List<RecentFile>();
+        List<RecentFile> savedList = [];
 
         try
         {
-            var deserializedList = JsonConvert.DeserializeObject<List<RecentFile>>(_appSettings.RecentFiles);
+            List<RecentFile> deserializedList = JsonConvert.DeserializeObject<List<RecentFile>>(_appSettings.RecentFiles);
             if (deserializedList is null)
             {
                 return savedList;
@@ -52,7 +52,7 @@ public class RecentFilesAppSettingsSerializer : IRecentFilesSerializer
             return;
         }
 
-        var json = JsonConvert.SerializeObject(recentFiles);
+        string json = JsonConvert.SerializeObject(recentFiles);
         _appSettings.RecentFiles = json;
         _appSettings.Save();
     }

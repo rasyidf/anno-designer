@@ -1,17 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Windows;
-using AnnoDesigner.Core.DataStructures;
+﻿using AnnoDesigner.Core.DataStructures;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
 using AnnoDesigner.Undo.Operations;
 using Moq;
+using System.Collections.Generic;
+using System.Windows;
 using Xunit;
 
 namespace AnnoDesigner.Tests.Undo
 {
     public class MoveObjectsOperationTests
     {
-        private QuadTree<LayoutObject> Collection => new QuadTree<LayoutObject>(new Rect(-16, -16, 32, 32));
+        private QuadTree<LayoutObject> Collection => new(new Rect(-16, -16, 32, 32));
 
         private LayoutObject CreateLayoutObject(double x, double y, double width, double height)
         {
@@ -28,13 +28,13 @@ namespace AnnoDesigner.Tests.Undo
         public void Undo_SingleObject_ShouldMoveObject()
         {
             // Arrange
-            var expectedRect = new Rect(-1, -2, 4, 3);
+            Rect expectedRect = new(-1, -2, 4, 3);
 
-            var collection = Collection;
-            var obj = CreateLayoutObject(1, 2, 3, 4);
+            QuadTree<LayoutObject> collection = Collection;
+            LayoutObject obj = CreateLayoutObject(1, 2, 3, 4);
             collection.Add(obj);
 
-            var operation = new MoveObjectsOperation<LayoutObject>()
+            MoveObjectsOperation<LayoutObject> operation = new()
             {
                 QuadTree = collection,
                 ObjectPropertyValues = new List<(LayoutObject, Rect, Rect)>()
@@ -54,16 +54,16 @@ namespace AnnoDesigner.Tests.Undo
         public void Undo_MultipleObjects_ShouldMoveObjects()
         {
             // Arrange
-            var expectedRect1 = new Rect(-1, -2, 4, 3);
-            var expectedRect2 = new Rect(-3, -4, 8, 7);
+            Rect expectedRect1 = new(-1, -2, 4, 3);
+            Rect expectedRect2 = new(-3, -4, 8, 7);
 
-            var collection = Collection;
-            var obj1 = CreateLayoutObject(1, 2, 3, 4);
-            var obj2 = CreateLayoutObject(5, 6, 7, 8);
+            QuadTree<LayoutObject> collection = Collection;
+            LayoutObject obj1 = CreateLayoutObject(1, 2, 3, 4);
+            LayoutObject obj2 = CreateLayoutObject(5, 6, 7, 8);
             collection.Add(obj1);
             collection.Add(obj2);
 
-            var operation = new MoveObjectsOperation<LayoutObject>()
+            MoveObjectsOperation<LayoutObject> operation = new()
             {
                 QuadTree = collection,
                 ObjectPropertyValues = new List<(LayoutObject, Rect, Rect)>()
@@ -85,9 +85,9 @@ namespace AnnoDesigner.Tests.Undo
         public void Undo_QuadTreeReindex_ShouldBeCalled()
         {
             // Arrange
-            var collection = new Mock<IQuadTree<LayoutObject>>();
-            var obj = CreateLayoutObject(1, 2, 3, 4);
-            var operation = new MoveObjectsOperation<LayoutObject>()
+            Mock<IQuadTree<LayoutObject>> collection = new();
+            LayoutObject obj = CreateLayoutObject(1, 2, 3, 4);
+            MoveObjectsOperation<LayoutObject> operation = new()
             {
                 QuadTree = collection.Object,
                 ObjectPropertyValues = new List<(LayoutObject, Rect, Rect)>()
@@ -111,13 +111,13 @@ namespace AnnoDesigner.Tests.Undo
         public void Redo_SingleObject_ShouldMoveObject()
         {
             // Arrange
-            var expectedRect = new Rect(-1, -2, 4, 3);
+            Rect expectedRect = new(-1, -2, 4, 3);
 
-            var collection = Collection;
-            var obj = CreateLayoutObject(1, 2, 3, 4);
+            QuadTree<LayoutObject> collection = Collection;
+            LayoutObject obj = CreateLayoutObject(1, 2, 3, 4);
             collection.Add(obj);
 
-            var operation = new MoveObjectsOperation<LayoutObject>()
+            MoveObjectsOperation<LayoutObject> operation = new()
             {
                 QuadTree = collection,
                 ObjectPropertyValues = new List<(LayoutObject, Rect, Rect)>()
@@ -137,16 +137,16 @@ namespace AnnoDesigner.Tests.Undo
         public void Redo_MultipleObjects_ShouldMoveObjects()
         {
             // Arrange
-            var expectedRect1 = new Rect(-1, -2, 4, 3);
-            var expectedRect2 = new Rect(-3, -4, 8, 7);
+            Rect expectedRect1 = new(-1, -2, 4, 3);
+            Rect expectedRect2 = new(-3, -4, 8, 7);
 
-            var collection = Collection;
-            var obj1 = CreateLayoutObject(1, 2, 3, 4);
-            var obj2 = CreateLayoutObject(5, 6, 7, 8);
+            QuadTree<LayoutObject> collection = Collection;
+            LayoutObject obj1 = CreateLayoutObject(1, 2, 3, 4);
+            LayoutObject obj2 = CreateLayoutObject(5, 6, 7, 8);
             collection.Add(obj1);
             collection.Add(obj2);
 
-            var operation = new MoveObjectsOperation<LayoutObject>()
+            MoveObjectsOperation<LayoutObject> operation = new()
             {
                 QuadTree = collection,
                 ObjectPropertyValues = new List<(LayoutObject, Rect, Rect)>()
@@ -168,9 +168,9 @@ namespace AnnoDesigner.Tests.Undo
         public void Redo_QuadTreeReindex_ShouldBeCalled()
         {
             // Arrange
-            var collection = new Mock<IQuadTree<LayoutObject>>();
-            var obj = CreateLayoutObject(1, 2, 3, 4);
-            var operation = new MoveObjectsOperation<LayoutObject>()
+            Mock<IQuadTree<LayoutObject>> collection = new();
+            LayoutObject obj = CreateLayoutObject(1, 2, 3, 4);
+            MoveObjectsOperation<LayoutObject> operation = new()
             {
                 QuadTree = collection.Object,
                 ObjectPropertyValues = new List<(LayoutObject, Rect, Rect)>()

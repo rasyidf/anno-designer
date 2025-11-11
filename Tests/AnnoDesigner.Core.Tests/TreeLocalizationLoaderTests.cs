@@ -1,8 +1,9 @@
-﻿using System;
+﻿using AnnoDesigner.Core.Presets.Loader;
+using AnnoDesigner.Core.Presets.Models;
+using System;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Text;
-using AnnoDesigner.Core.Presets.Loader;
 using Xunit;
 
 namespace AnnoDesigner.Core.Tests
@@ -31,10 +32,10 @@ namespace AnnoDesigner.Core.Tests
         public void Load_CanLoadPresetFile()
         {
             // Arrange
-            var loader = new TreeLocalizationLoader(new FileSystem());
+            TreeLocalizationLoader loader = new(new FileSystem());
 
             // Act
-            var result = loader.LoadFromFile(pathToPresetLocalization);
+            TreeLocalizationContainer result = loader.LoadFromFile(pathToPresetLocalization);
 
             // Assert
             Assert.NotNull(result);
@@ -48,10 +49,10 @@ namespace AnnoDesigner.Core.Tests
         public void Load_FilePathIsNullOrWhiteSpace_ShouldThrow(string filePath)
         {
             // Arrange
-            var loader = new TreeLocalizationLoader(_mockedFileSystem);
+            TreeLocalizationLoader loader = new(_mockedFileSystem);
 
             // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => loader.LoadFromFile(filePath));
+            _ = Assert.Throws<ArgumentNullException>(() => loader.LoadFromFile(filePath));
         }
 
         [Theory]
@@ -61,38 +62,38 @@ namespace AnnoDesigner.Core.Tests
         public void Load_ParameterIsNullOrWhiteSpace_ShouldThrowArgumentException(string jsonString)
         {
             // Arrange
-            var loader = new TreeLocalizationLoader(_mockedFileSystem);
+            TreeLocalizationLoader loader = new(_mockedFileSystem);
 
             // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => loader.Load(jsonString));
+            _ = Assert.Throws<ArgumentNullException>(() => loader.Load(jsonString));
         }
 
         [Fact]
         public void Load_ParameterContainsOnlyWhiteSpaceChararcters_ShouldThrow()
         {
             // Arrange
-            var jsonString = @"\t\t\t    \t";
-            var loader = new TreeLocalizationLoader(_mockedFileSystem);
+            string jsonString = @"\t\t\t    \t";
+            TreeLocalizationLoader loader = new(_mockedFileSystem);
 
             // Act/Assert
-            Assert.ThrowsAny<Exception>(() => loader.Load(jsonString));
+            _ = Assert.ThrowsAny<Exception>(() => loader.Load(jsonString));
         }
 
         [Fact]
         public void Load_FileHas1LanguageAnd2Translations_ShouldReturnCorrectContainer()
         {
             // Arrange
-            var filePath = @"C:\test\dummyFile.json";
-            var fileSystem = new MockFileSystem();
+            string filePath = @"C:\test\dummyFile.json";
+            MockFileSystem fileSystem = new();
             fileSystem.AddFile(filePath, new MockFileData(testData_1language_2translations, Encoding.UTF8));
 
-            var loader = new TreeLocalizationLoader(fileSystem);
+            TreeLocalizationLoader loader = new(fileSystem);
 
             // Act
-            var result = loader.LoadFromFile(filePath);
+            TreeLocalizationContainer result = loader.LoadFromFile(filePath);
 
             // Assert
-            Assert.Single(result.Languages);
+            _ = Assert.Single(result.Languages);
             Assert.Equal(2, result.Languages[0].Translations.Count);
             Assert.Equal("1.0.0.0", result.Version);
         }
@@ -101,13 +102,13 @@ namespace AnnoDesigner.Core.Tests
         public void Load_StringHas1LanguageAnd2Translations_ShouldReturnCorrectContainer()
         {
             // Arrange
-            var loader = new TreeLocalizationLoader(_mockedFileSystem);
+            TreeLocalizationLoader loader = new(_mockedFileSystem);
 
             // Act
-            var result = loader.Load(testData_1language_2translations);
+            TreeLocalizationContainer result = loader.Load(testData_1language_2translations);
 
             // Assert
-            Assert.Single(result.Languages);
+            _ = Assert.Single(result.Languages);
             Assert.Equal(2, result.Languages[0].Translations.Count);
             Assert.Equal("1.0.0.0", result.Version);
         }

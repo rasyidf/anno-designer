@@ -6,11 +6,10 @@ namespace AnnoDesigner.ViewModels;
 
 public class LicensesViewModel : Notify
 {
-    private ObservableCollection<LicenseInfo> _Licenses;
     public ObservableCollection<LicenseInfo> Licenses
     {
-        get => _Licenses;
-        set => UpdateProperty(ref _Licenses, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     private const string APACHE_2 = "Apache-2.0 License";

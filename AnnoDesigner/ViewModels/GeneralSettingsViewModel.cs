@@ -18,23 +18,8 @@ public class GeneralSettingsViewModel : Notify
     private readonly IAppSettings _appSettings;
     private readonly ICommons _commons;
     private readonly IRecentFilesHelper _recentFilesHelper;
-
-    private bool _hideInfluenceOnSelection;
-    private bool _useZoomToPoint;
-    private UserDefinedColor _selectedGridLineColor;
-    private UserDefinedColor _selectedObjectBorderLineColor;
-    private ObservableCollection<UserDefinedColor> _gridLineColors;
-    private ObservableCollection<UserDefinedColor> _objectBorderLineColors;
-    private bool _isGridLineColorPickerVisible;
-    private bool _isObjectBorderLineColorPickerVisible;
     private Color? _selectedCustomGridLineColor;
     private Color? _selectedCustomObjectBorderLineColor;
-    private double _zoomSensitivityPercentage;
-    private bool _invertPanningDirection;
-    private bool _showScrollbars;
-    private bool _invertScrollingDirection;
-    private bool _includeRoadsInStatisticCalculation;
-    private int _maxRecentFiles;
 
     public GeneralSettingsViewModel(IAppSettings appSettingsToUse, ICommons commonsToUse, IRecentFilesHelper recentFilesHelperToUse)
     {
@@ -112,16 +97,16 @@ public class GeneralSettingsViewModel : Notify
 
     public ObservableCollection<UserDefinedColor> GridLineColors
     {
-        get => _gridLineColors;
-        set => UpdateProperty(ref _gridLineColors, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public UserDefinedColor SelectedGridLineColor
     {
-        get => _selectedGridLineColor;
+        get;
         set
         {
-            if (UpdateProperty(ref _selectedGridLineColor, value))
+            if (UpdateProperty(ref field, value))
             {
                 if (value != null)
                 {
@@ -150,8 +135,8 @@ public class GeneralSettingsViewModel : Notify
 
     public bool IsGridLineColorPickerVisible
     {
-        get => _isGridLineColorPickerVisible;
-        set => UpdateProperty(ref _isGridLineColorPickerVisible, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     private void UpdateGridLineColorVisibility()
@@ -208,16 +193,16 @@ public class GeneralSettingsViewModel : Notify
 
     public ObservableCollection<UserDefinedColor> ObjectBorderLineColors
     {
-        get => _objectBorderLineColors;
-        set => UpdateProperty(ref _objectBorderLineColors, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public UserDefinedColor SelectedObjectBorderLineColor
     {
-        get => _selectedObjectBorderLineColor;
+        get;
         set
         {
-            if (UpdateProperty(ref _selectedObjectBorderLineColor, value))
+            if (UpdateProperty(ref field, value))
             {
                 if (value != null)
                 {
@@ -246,8 +231,8 @@ public class GeneralSettingsViewModel : Notify
 
     public bool IsObjectBorderLineColorPickerVisible
     {
-        get => _isObjectBorderLineColorPickerVisible;
-        set => UpdateProperty(ref _isObjectBorderLineColorPickerVisible, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     private void UpdateObjectBorderLineVisibility()
@@ -291,10 +276,10 @@ public class GeneralSettingsViewModel : Notify
 
     public bool HideInfluenceOnSelection
     {
-        get => _hideInfluenceOnSelection;
+        get;
         set
         {
-            if (UpdateProperty(ref _hideInfluenceOnSelection, value))
+            if (UpdateProperty(ref field, value))
             {
                 _appSettings.HideInfluenceOnSelection = value;
                 _appSettings.Save();
@@ -304,12 +289,12 @@ public class GeneralSettingsViewModel : Notify
 
     public double ZoomSensitivityPercentage
     {
-        get => _zoomSensitivityPercentage;
+        get;
         set
         {
             // Clamp value to valid range
             double clampedValue = Math.Max(1, Math.Min(value, Constants.ZoomSensitivitySliderMaximum));
-            if (UpdateProperty(ref _zoomSensitivityPercentage, clampedValue))
+            if (UpdateProperty(ref field, clampedValue))
             {
                 _appSettings.ZoomSensitivityPercentage = clampedValue;
                 _appSettings.Save();
@@ -319,10 +304,10 @@ public class GeneralSettingsViewModel : Notify
 
     public bool UseZoomToPoint
     {
-        get => _useZoomToPoint;
+        get;
         set
         {
-            if (UpdateProperty(ref _useZoomToPoint, value))
+            if (UpdateProperty(ref field, value))
             {
                 _appSettings.UseZoomToPoint = value;
                 _appSettings.Save();
@@ -332,10 +317,10 @@ public class GeneralSettingsViewModel : Notify
 
     public bool InvertScrollingDirection
     {
-        get => _invertScrollingDirection;
+        get;
         set
         {
-            if (UpdateProperty(ref _invertScrollingDirection, value))
+            if (UpdateProperty(ref field, value))
             {
                 _appSettings.InvertScrollingDirection = value;
                 _appSettings.Save();
@@ -345,10 +330,10 @@ public class GeneralSettingsViewModel : Notify
 
     public bool InvertPanningDirection
     {
-        get => _invertPanningDirection;
+        get;
         set
         {
-            if (UpdateProperty(ref _invertPanningDirection, value))
+            if (UpdateProperty(ref field, value))
             {
                 _appSettings.InvertPanningDirection = value;
                 _appSettings.Save();
@@ -358,10 +343,10 @@ public class GeneralSettingsViewModel : Notify
 
     public bool ShowScrollbars
     {
-        get => _showScrollbars;
+        get;
         set
         {
-            if (UpdateProperty(ref _showScrollbars, value))
+            if (UpdateProperty(ref field, value))
             {
                 _appSettings.ShowScrollbars = value;
                 _appSettings.Save();
@@ -371,10 +356,10 @@ public class GeneralSettingsViewModel : Notify
 
     public bool IncludeRoadsInStatisticCalculation
     {
-        get => _includeRoadsInStatisticCalculation;
+        get;
         set
         {
-            if (UpdateProperty(ref _includeRoadsInStatisticCalculation, value))
+            if (UpdateProperty(ref field, value))
             {
                 _appSettings.IncludeRoadsInStatisticCalculation = value;
                 _appSettings.Save();
@@ -384,12 +369,12 @@ public class GeneralSettingsViewModel : Notify
 
     public int MaxRecentFiles
     {
-        get => _maxRecentFiles;
+        get;
         set
         {
             // Clamp value to valid range
             int clampedValue = Math.Max(1, Math.Min(value, 100));
-            if (UpdateProperty(ref _maxRecentFiles, clampedValue))
+            if (UpdateProperty(ref field, clampedValue))
             {
                 _appSettings.MaxRecentFiles = clampedValue;
                 _appSettings.Save();

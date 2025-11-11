@@ -1,26 +1,26 @@
+using AnnoDesigner.CanvasV2.FeatureFlags;
+using AnnoDesigner.CanvasV2.Rendering;
+using AnnoDesigner.Core.DataStructures;
+using AnnoDesigner.Core.Layout.Helper;
+using AnnoDesigner.Core.Layout.Models;
+using AnnoDesigner.Core.Models;
+using AnnoDesigner.Core.Presets.Models;
+using AnnoDesigner.Core.Services;
+using AnnoDesigner.CustomEventArgs;
+using AnnoDesigner.Helper;
+using AnnoDesigner.Models;
+using AnnoDesigner.Undo;
+using AnnoDesigner.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Abstractions;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using AnnoDesigner.CanvasV2;
-using AnnoDesigner.CanvasV2.Rendering;
-using AnnoDesigner.CanvasV2.FeatureFlags;
-using AnnoDesigner.Core.Models;
-using AnnoDesigner.Core.Helper;
-using AnnoDesigner.Core.Services;
-using AnnoDesigner.Core.DataStructures;
-using System.Linq;
-using System.IO;
-using System.IO.Abstractions;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using AnnoDesigner.Core.Layout.Models;
-using AnnoDesigner.Models;
-using AnnoDesigner.ViewModels;
-using AnnoDesigner.CustomEventArgs;
-using AnnoDesigner.Core.Presets.Models;
-using AnnoDesigner.Undo;
 
 namespace AnnoDesigner.CanvasV2.Integration;
 
@@ -33,13 +33,12 @@ namespace AnnoDesigner.CanvasV2.Integration;
 public class CanvasV2Adapter : IAnnoCanvas
 {
     private readonly AnnoCanvasViewModel _vm;
-    private readonly AnnoCanvasV2 _view;
     private readonly IFileSystem _fileSystem;
 
     public CanvasV2Adapter(AnnoCanvasViewModel vm, AnnoCanvasV2 view, IFileSystem fileSystem = null)
     {
         _vm = vm ?? throw new ArgumentNullException(nameof(vm));
-        _view = view ?? throw new ArgumentNullException(nameof(view));
+        Control = view ?? throw new ArgumentNullException(nameof(view));
         _fileSystem = fileSystem ?? new FileSystem();
 
         // Forward VM events to adapter events
@@ -85,21 +84,21 @@ public class CanvasV2Adapter : IAnnoCanvas
                                        localizationHelper,
                                        messageBoxService,
                                        hotkeyManager)
-                  {
-                      BuildingPresets = buildingPresets,
-                      Icons = icons ?? new Dictionary<string, IconImage>(StringComparer.OrdinalIgnoreCase)
-                  },
+        {
+            BuildingPresets = buildingPresets,
+            Icons = icons ?? new Dictionary<string, IconImage>(StringComparer.OrdinalIgnoreCase)
+        },
                new AnnoCanvasV2(),
                fileSystem)
     {
         // Ensure the view's DataContext is set to the VM created above
-        _view.DataContext = _vm;
+        Control.DataContext = _vm;
     }
 
     /// <summary>
     /// The actual WPF control instance for CanvasV2. Host can add this to the visual tree.
     /// </summary>
-    public AnnoCanvasV2 Control => _view;
+    public AnnoCanvasV2 Control { get; }
 
     // Events
     public event EventHandler<EventArgs> ColorsInLayoutUpdated;
@@ -136,29 +135,59 @@ public class CanvasV2Adapter : IAnnoCanvas
     public void ForceRendering()
     {
         // Ask VM to invalidate render; view will pick up via RenderInvalidated subscription.
-        _vm.CreateRenderState();
+        _ = _vm.CreateRenderState();
         _vm.InvalidateRender();
     }
 
-    public void SetCurrentObject(LayoutObject obj) => _vm.SetCurrentObject(obj);
+    public void SetCurrentObject(LayoutObject obj)
+    {
+        _vm.SetCurrentObject(obj);
+    }
 
-    public void ResetZoom() => _vm.ResetZoom();
+    public void ResetZoom()
+    {
+        _vm.ResetZoom();
+    }
 
-    public void Normalize() => _vm.Normalize(1);
+    public void Normalize()
+    {
+        _vm.Normalize(1);
+    }
 
-    public void Normalize(int border) => _vm.Normalize(border);
+    public void Normalize(int border)
+    {
+        _vm.Normalize(border);
+    }
 
-    public void ResetViewport() => _vm.ResetViewport();
+    public void ResetViewport()
+    {
+        _vm.ResetViewport();
+    }
 
-    public void RaiseStatisticsUpdated(UpdateStatisticsEventArgs args) => _vm.RaiseStatisticsUpdated(args);
+    public void RaiseStatisticsUpdated(UpdateStatisticsEventArgs args)
+    {
+        _vm.RaiseStatisticsUpdated(args);
+    }
 
-    public void RaiseColorsInLayoutUpdated() => _vm.RaiseColorsInLayoutUpdated();
+    public void RaiseColorsInLayoutUpdated()
+    {
+        _vm.RaiseColorsInLayoutUpdated();
+    }
 
-    public Rect ComputeBoundingRect(IEnumerable<LayoutObject> objects) => _vm.ComputeBoundingRect(objects);
+    public Rect ComputeBoundingRect(IEnumerable<LayoutObject> objects)
+    {
+        return _vm.ComputeBoundingRect(objects);
+    }
 
-    public Task<bool> CheckUnsavedChanges() => _vm.CheckUnsavedChanges();
+    public Task<bool> CheckUnsavedChanges()
+    {
+        return _vm.CheckUnsavedChanges();
+    }
 
-    public void CheckUnsavedChangesBeforeCrash() => _vm.CheckUnsavedChangesBeforeCrash();
+    public void CheckUnsavedChangesBeforeCrash()
+    {
+        _vm.CheckUnsavedChangesBeforeCrash();
+    }
 
     /// <summary>
     /// Render the provided layout to a file using the v2 renderer.
@@ -169,36 +198,36 @@ public class CanvasV2Adapter : IAnnoCanvas
         renderSettings ??= new AnnoDesigner.Models.CanvasRenderSetting() { RenderGrid = true, RenderIcon = true };
 
         // Calculate bounding rect and statistics
-        var statsHelper = new AnnoDesigner.Core.Layout.Helper.StatisticsCalculationHelper();
-        var statistics = statsHelper.CalculateStatistics(placedObjects, true, true);
-    Rect statsRect = (Rect)statistics;
+        StatisticsCalculationHelper statsHelper = new();
+        StatisticsCalculationResult statistics = statsHelper.CalculateStatistics(placedObjects, true, true);
+        Rect statsRect = (Rect)statistics;
 
         // Build layout objects and quad tree (use fresh caches for export)
         QuadTree<LayoutObject> quadTree = new((Rect)statistics);
-        var layoutObjects = new List<LayoutObject>();
-        var exportBrushCache = new AnnoDesigner.Helper.BrushCache();
-        var exportPenCache = new AnnoDesigner.Helper.PenCache();
-        foreach (var ao in placedObjects)
+        List<LayoutObject> layoutObjects = [];
+        BrushCache exportBrushCache = new();
+        PenCache exportPenCache = new();
+        foreach (AnnoObject ao in placedObjects)
         {
-            var lo = new LayoutObject(ao, _vm.CoordinateHelper, exportBrushCache, exportPenCache);
+            LayoutObject lo = new(ao, _vm.CoordinateHelper, exportBrushCache, exportPenCache);
             layoutObjects.Add(lo);
             quadTree.Add(lo);
         }
 
         // Normalize (move objects so min is at border)
-    double minX = layoutObjects.Min(o => o.Position.X);
-    double minY = layoutObjects.Min(o => o.Position.Y);
+        double minX = layoutObjects.Min(o => o.Position.X);
+        double minY = layoutObjects.Min(o => o.Position.Y);
         double dx = minX - border;
         double dy = minY - border;
         if (dx != 0 || dy != 0)
         {
-            foreach (var lo in layoutObjects)
+            foreach (LayoutObject lo in layoutObjects)
             {
                 lo.Position = new Point(lo.Position.X - dx, lo.Position.Y - dy);
             }
         }
 
-    int grid = renderSettings.GridSize ?? _vm.GridSize;
+        int grid = renderSettings.GridSize ?? _vm.GridSize;
 
         // Compute pixel dimensions
         double maxX = layoutObjects.Max(o => o.Position.X + o.Size.Width);
@@ -207,23 +236,23 @@ public class CanvasV2Adapter : IAnnoCanvas
         double heightPx = _vm.CoordinateHelper.GridToScreen(maxY + border, grid) + 1;
 
         // Prepare render state
-        var renderer = new LayoutRenderer();
-        var selectedLayoutObjects = new List<LayoutObject>();
+        LayoutRenderer renderer = new();
+        List<LayoutObject> selectedLayoutObjects = [];
         if (selectedObjects != null)
         {
-            foreach (var so in selectedObjects)
+            foreach (AnnoObject so in selectedObjects)
             {
                 selectedLayoutObjects.Add(new LayoutObject(so, _vm.CoordinateHelper, exportBrushCache, exportPenCache));
             }
         }
 
-        var state = new RenderState(
-            Viewport: new Rect(minX - border, minY - border, (maxX - minX) + border * 2, (maxY - minY) + border * 2),
-            Translate: new TranslateTransform(- (minX - border) * grid, - (minY - border) * grid),
+        RenderState state = new(
+            Viewport: new Rect(minX - border, minY - border, maxX - minX + (border * 2), maxY - minY + (border * 2)),
+            Translate: new TranslateTransform(-(minX - border) * grid, -(minY - border) * grid),
             GuidelineSet: null,
             ObjectsToDraw: layoutObjects,
             SelectedObjects: selectedLayoutObjects,
-            CurrentObjects: new List<LayoutObject>(),
+            CurrentObjects: [],
             AllPlacedObjects: layoutObjects,
             GridSize: grid,
             SelectionRect: Rect.Empty,
@@ -241,7 +270,7 @@ public class CanvasV2Adapter : IAnnoCanvas
         );
 
         // Render into DrawingVisual
-        DrawingVisual dv = new DrawingVisual();
+        DrawingVisual dv = new();
         using (DrawingContext dc = dv.RenderOpen())
         {
             renderer.Render(dc, state);
@@ -251,7 +280,7 @@ public class CanvasV2Adapter : IAnnoCanvas
         int baseWidth = Math.Max(1, (int)Math.Ceiling(widthPx));
         int baseHeight = Math.Max(1, (int)Math.Ceiling(heightPx));
         const int dpi = 96;
-        RenderTargetBitmap baseBitmap = new RenderTargetBitmap(baseWidth, baseHeight, dpi, dpi, PixelFormats.Pbgra32);
+        RenderTargetBitmap baseBitmap = new(baseWidth, baseHeight, dpi, dpi, PixelFormats.Pbgra32);
         baseBitmap.Render(dv);
 
         // Determine overlay dimensions (approximation of v1 docking layout)
@@ -262,7 +291,7 @@ public class CanvasV2Adapter : IAnnoCanvas
         int finalWidth = baseWidth + statsWidth;
         int finalHeight = baseHeight + versionHeight;
 
-        DrawingVisual composite = new DrawingVisual();
+        DrawingVisual composite = new();
         using (DrawingContext ctx = composite.RenderOpen())
         {
             // Draw base image
@@ -271,7 +300,7 @@ public class CanvasV2Adapter : IAnnoCanvas
             // Statistics overlay (right side)
             if (addStats)
             {
-                Rect statsPanelRect = new Rect(baseWidth, 0, statsWidth, baseHeight);
+                Rect statsPanelRect = new(baseWidth, 0, statsWidth, baseHeight);
                 ctx.DrawRectangle(Brushes.White, new Pen(Brushes.Gray, 1), statsPanelRect);
 
                 // Basic statistics (building count, selected, distinct identifiers)
@@ -279,21 +308,21 @@ public class CanvasV2Adapter : IAnnoCanvas
                 int selectedCount = selectedLayoutObjects.Count;
                 int distinctIds = layoutObjects.Select(o => o.Identifier).Distinct().Count();
                 string statsText = $"Objects: {buildingCount}\nSelected: {selectedCount}\nTypes: {distinctIds}";
-                var ft = new FormattedText(
+                FormattedText ft = new(
                     statsText,
                     System.Globalization.CultureInfo.CurrentUICulture,
                     FlowDirection.LeftToRight,
                     new Typeface("Verdana"),
                     12,
                     Brushes.Black,
-                    VisualTreeHelper.GetDpi(_view).PixelsPerDip);
+                    VisualTreeHelper.GetDpi(Control).PixelsPerDip);
                 ctx.DrawText(ft, new Point(baseWidth + 6, 6));
             }
 
             // Version overlay (bottom)
             if (addVersion)
             {
-                Rect verRect = new Rect(0, baseHeight, finalWidth, versionHeight);
+                Rect verRect = new(0, baseHeight, finalWidth, versionHeight);
                 ctx.DrawRectangle(Brushes.White, new Pen(Brushes.Gray, 1), verRect);
                 string version = "";
                 try
@@ -310,39 +339,40 @@ public class CanvasV2Adapter : IAnnoCanvas
                     version = "AnnoDesigner";
                 }
                 string versionText = $"Version: {version}";
-                var vft = new FormattedText(
+                FormattedText vft = new(
                     versionText,
                     System.Globalization.CultureInfo.CurrentUICulture,
                     FlowDirection.LeftToRight,
                     new Typeface("Verdana"),
                     12,
                     Brushes.Black,
-                    VisualTreeHelper.GetDpi(_view).PixelsPerDip);
+                    VisualTreeHelper.GetDpi(Control).PixelsPerDip);
                 ctx.DrawText(vft, new Point(6, baseHeight + 4));
             }
         }
 
-        RenderTargetBitmap finalBitmap = new RenderTargetBitmap(finalWidth, finalHeight, dpi, dpi, PixelFormats.Pbgra32);
+        RenderTargetBitmap finalBitmap = new(finalWidth, finalHeight, dpi, dpi, PixelFormats.Pbgra32);
         finalBitmap.Render(composite);
 
         // Save final image
         BitmapEncoder encoder = AnnoDesigner.Helper.Constants.GetExportImageEncoder();
         encoder.Frames.Add(BitmapFrame.Create(finalBitmap));
-        using (Stream fs = _fileSystem.FileStream.Create(filename, FileMode.Create))
-        {
-            encoder.Save(fs);
-        }
+        using Stream fs = _fileSystem.FileStream.Create(filename, FileMode.Create);
+        encoder.Save(fs);
     }
 
     // IHotkeySource compatibility
     public void RegisterHotkeys(HotkeyCommandManager manager)
     {
-        if (manager == null) return;
+        if (manager == null)
+        {
+            return;
+        }
 
         try
         {
             // Copy hotkeys known to the VM into the provided manager to keep behaviour parity.
-            foreach (var hot in _vm.HotkeyCommandManager.GetHotkeys())
+            foreach (Hotkey hot in _vm.HotkeyCommandManager.GetHotkeys())
             {
                 try
                 {
@@ -365,11 +395,15 @@ public class CanvasV2Adapter : IAnnoCanvas
         get => _vm.HotkeyCommandManager;
         set
         {
-            if (value == null) return;
+            if (value == null)
+            {
+                return;
+            }
+
             try
             {
                 // Merge provided manager hotkeys into VM's manager where possible
-                foreach (var hot in value.GetHotkeys())
+                foreach (Hotkey hot in value.GetHotkeys())
                 {
                     try
                     {

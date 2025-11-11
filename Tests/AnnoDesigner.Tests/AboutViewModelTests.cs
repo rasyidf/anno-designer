@@ -1,6 +1,7 @@
 ﻿using AnnoDesigner.Core.Models;
 using AnnoDesigner.ViewModels;
 using Moq;
+using System;
 using Xunit;
 
 namespace AnnoDesigner.Tests
@@ -18,9 +19,9 @@ namespace AnnoDesigner.Tests
         public void CloseWindowCommand_IsExecutedWithICloseable_ShouldCallClose()
         {
             // Arrange
-            var viewModel = GetViewModel();
+            AboutViewModel viewModel = GetViewModel();
 
-            var closeable = new Mock<ICloseable>();
+            Mock<ICloseable> closeable = new();
 
             // Act
             viewModel.CloseWindowCommand.Execute(closeable.Object);
@@ -33,10 +34,10 @@ namespace AnnoDesigner.Tests
         public void CloseWindowCommand_IsExecutedWithoutICloseable_ShouldNotThrow()
         {
             // Arrange
-            var viewModel = GetViewModel();
+            AboutViewModel viewModel = GetViewModel();
 
             // Act
-            var ex = Record.Exception(() => viewModel.CloseWindowCommand.Execute(null));
+            Exception ex = Record.Exception(() => viewModel.CloseWindowCommand.Execute(null));
 
             // Assert
             Assert.Null(ex);

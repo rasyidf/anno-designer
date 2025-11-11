@@ -9,8 +9,6 @@ public class WelcomeViewModel : Notify
 {
     private readonly ICommons _commons;
     private readonly IAppSettings _appSettings;
-    private ObservableCollection<SupportedLanguage> _languages;
-    private SupportedLanguage _selectedItem;
 
     public WelcomeViewModel(ICommons commonsToUse, IAppSettings appSettingsToUse)
     {
@@ -50,14 +48,14 @@ public class WelcomeViewModel : Notify
 
     public ObservableCollection<SupportedLanguage> Languages
     {
-        get => _languages;
-        set => UpdateProperty(ref _languages, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public SupportedLanguage SelectedItem
     {
-        get => _selectedItem;
-        set => UpdateProperty(ref _selectedItem, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public ICommand ContinueCommand { get; private set; }

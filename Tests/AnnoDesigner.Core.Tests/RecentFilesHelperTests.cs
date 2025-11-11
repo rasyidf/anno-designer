@@ -1,13 +1,13 @@
-﻿using System;
+﻿using AnnoDesigner.Core.Helper;
+using AnnoDesigner.Core.Models;
+using AnnoDesigner.Core.RecentFiles;
+using Moq;
+using System;
 using System.Collections.Generic;
+using System.IO.Abstractions;
+using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using Xunit;
-using Moq;
-using AnnoDesigner.Core.Helper;
-using System.IO.Abstractions.TestingHelpers;
-using AnnoDesigner.Core.RecentFiles;
-using AnnoDesigner.Core.Models;
-using System.IO.Abstractions;
 
 namespace AnnoDesigner.Core.Tests
 {
@@ -17,7 +17,7 @@ namespace AnnoDesigner.Core.Tests
 
         static RecentFilesHelperTests()
         {
-            var mockedFileSystem = new MockFileSystem();
+            MockFileSystem mockedFileSystem = new();
             mockedFileSystem.AddFile(@"C:\test\sub\file_01.ad", MockFileData.NullObject);
             mockedFileSystem.AddFile(@"C:\test\sub\file_02.ad", MockFileData.NullObject);
             mockedFileSystem.AddFile(@"C:\test\sub\file_03.ad", MockFileData.NullObject);
@@ -40,9 +40,9 @@ namespace AnnoDesigner.Core.Tests
             IFileSystem fileSystemToUse = null,
             int? maxItemCountToUse = null)
         {
-            var serializer = serializerToUse ?? new RecentFilesInMemorySerializer();
-            var fileSystem = fileSystemToUse ?? new MockFileSystem();
-            var maxItemCount = maxItemCountToUse ?? 10;
+            IRecentFilesSerializer serializer = serializerToUse ?? new RecentFilesInMemorySerializer();
+            IFileSystem fileSystem = fileSystemToUse ?? new MockFileSystem();
+            int maxItemCount = maxItemCountToUse ?? 10;
 
             if (serializerToUse is null)
             {
@@ -60,7 +60,7 @@ namespace AnnoDesigner.Core.Tests
         public void Ctor_SerializerIsNull_ShouldThrow()
         {
             // Arrange/Act
-            var ex = Assert.Throws<ArgumentNullException>(() => new RecentFilesHelper(null, new MockFileSystem()));
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => new RecentFilesHelper(null, new MockFileSystem()));
 
             // Assert
             Assert.NotNull(ex);
@@ -70,7 +70,7 @@ namespace AnnoDesigner.Core.Tests
         public void Ctor_FileSystemIsNull_ShouldThrow()
         {
             // Arrange/Act
-            var ex = Assert.Throws<ArgumentNullException>(() => new RecentFilesHelper(new RecentFilesInMemorySerializer(), null));
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() => new RecentFilesHelper(new RecentFilesInMemorySerializer(), null));
 
             // Assert
             Assert.NotNull(ex);
@@ -80,7 +80,7 @@ namespace AnnoDesigner.Core.Tests
         public void Ctor_Defaults_Set()
         {
             // Arrange/Act
-            var helper = new RecentFilesHelper(new RecentFilesInMemorySerializer(), new MockFileSystem());
+            RecentFilesHelper helper = new(new RecentFilesInMemorySerializer(), new MockFileSystem());
 
             // Assert
             Assert.Empty(helper.RecentFiles);
@@ -91,11 +91,11 @@ namespace AnnoDesigner.Core.Tests
         public void Ctor_Defaults_ShouldCallDeserialize()
         {
             // Arrange
-            var mockedSerializer = new Mock<IRecentFilesSerializer>();
-            mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => []);
+            Mock<IRecentFilesSerializer> mockedSerializer = new();
+            _ = mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => []);
 
             // Arrange/Act
-            var helper = new RecentFilesHelper(mockedSerializer.Object, new MockFileSystem());
+            RecentFilesHelper helper = new(mockedSerializer.Object, new MockFileSystem());
 
             // Assert
             mockedSerializer.Verify(_ => _.Deserialize(), Times.Once);
@@ -109,10 +109,10 @@ namespace AnnoDesigner.Core.Tests
         public void AddFile_ParameterIsNull_ShouldNotThrow()
         {
             // Arrange
-            var helper = GetHelper();
+            IRecentFilesHelper helper = GetHelper();
 
             // Act            
-            var ex = Record.Exception(() => helper.AddFile(null));
+            Exception ex = Record.Exception(() => helper.AddFile(null));
 
             // Assert
             Assert.Null(ex);
@@ -122,8 +122,8 @@ namespace AnnoDesigner.Core.Tests
         public void AddFile_FileExists_ShouldPlaceItOnTop()
         {
             // Arrange
-            var helper = GetHelper(fileSystemToUse: fileSystemWithTestData);
-            var fileToAdd = helper.RecentFiles.Last();
+            IRecentFilesHelper helper = GetHelper(fileSystemToUse: fileSystemWithTestData);
+            RecentFile fileToAdd = helper.RecentFiles.Last();
 
             // Act
             helper.AddFile(fileToAdd);
@@ -136,14 +136,14 @@ namespace AnnoDesigner.Core.Tests
         public void AddFile_MaximumItemCountExceeded_ShouldEnsureMaximumItemCount()
         {
             // Arrange
-            var maximumItemCountToSet = 5;
+            int maximumItemCountToSet = 5;
             IRecentFilesSerializer serializer = new RecentFilesInMemorySerializer();
             serializer.Serialize([.. fileSystemWithTestData.AllFiles.Select(path => new RecentFile(path, DateTime.UtcNow))]);
 
-            var helper = GetHelper(fileSystemToUse: fileSystemWithTestData, serializerToUse: serializer);
+            IRecentFilesHelper helper = GetHelper(fileSystemToUse: fileSystemWithTestData, serializerToUse: serializer);
             helper.MaximumItemCount = maximumItemCountToSet;
 
-            var fileToAdd = new RecentFile(@"C:\test\dummyFile.ad", DateTime.UtcNow);
+            RecentFile fileToAdd = new(@"C:\test\dummyFile.ad", DateTime.UtcNow);
 
             // Act
             helper.AddFile(fileToAdd);
@@ -156,11 +156,11 @@ namespace AnnoDesigner.Core.Tests
         public void AddFile_FileNotNull_ShouldCallSerialize()
         {
             // Arrange
-            var mockedSerializer = new Mock<IRecentFilesSerializer>();
-            mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => []);
+            Mock<IRecentFilesSerializer> mockedSerializer = new();
+            _ = mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => []);
 
-            var helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
-            var fileToAdd = new RecentFile(fileSystemWithTestData.AllFiles.Last(), DateTime.UtcNow);
+            IRecentFilesHelper helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
+            RecentFile fileToAdd = new(fileSystemWithTestData.AllFiles.Last(), DateTime.UtcNow);
 
             // Act
             helper.AddFile(fileToAdd);
@@ -173,13 +173,13 @@ namespace AnnoDesigner.Core.Tests
         public void AddFile_FileNotNull_ShouldRaiseUpdatedEvent()
         {
             // Arrange
-            var mockedSerializer = new Mock<IRecentFilesSerializer>();
-            mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => []);
+            Mock<IRecentFilesSerializer> mockedSerializer = new();
+            _ = mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => []);
 
-            var helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
-            var updatedCalled = false;
+            IRecentFilesHelper helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
+            bool updatedCalled = false;
             helper.Updated += (s, e) => updatedCalled = true;
-            var fileToAdd = new RecentFile(fileSystemWithTestData.AllFiles.Last(), DateTime.UtcNow);
+            RecentFile fileToAdd = new(fileSystemWithTestData.AllFiles.Last(), DateTime.UtcNow);
 
             // Act
             helper.AddFile(fileToAdd);
@@ -196,10 +196,10 @@ namespace AnnoDesigner.Core.Tests
         public void RemoveFile_ParameterIsNull_ShouldNotThrow()
         {
             // Arrange
-            var helper = GetHelper();
+            IRecentFilesHelper helper = GetHelper();
 
             // Act
-            var ex = Record.Exception(() => helper.RemoveFile(null));
+            Exception ex = Record.Exception(() => helper.RemoveFile(null));
 
             // Assert
             Assert.Null(ex);
@@ -209,8 +209,8 @@ namespace AnnoDesigner.Core.Tests
         public void RemoveFile_FileExists_ShouldRemoveItemFromList()
         {
             // Arrange
-            var helper = GetHelper(fileSystemToUse: fileSystemWithTestData);
-            var fileToRemove = helper.RecentFiles.Last();
+            IRecentFilesHelper helper = GetHelper(fileSystemToUse: fileSystemWithTestData);
+            RecentFile fileToRemove = helper.RecentFiles.Last();
 
             // Act
             helper.RemoveFile(fileToRemove);
@@ -223,11 +223,11 @@ namespace AnnoDesigner.Core.Tests
         public void RemoveFile_FileNotNull_ShouldCallSerialize()
         {
             // Arrange
-            var mockedSerializer = new Mock<IRecentFilesSerializer>();
-            mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => []);
+            Mock<IRecentFilesSerializer> mockedSerializer = new();
+            _ = mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => []);
 
-            var helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
-            var fileToRemove = new RecentFile(fileSystemWithTestData.AllFiles.Last(), DateTime.UtcNow);
+            IRecentFilesHelper helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
+            RecentFile fileToRemove = new(fileSystemWithTestData.AllFiles.Last(), DateTime.UtcNow);
 
             // Act
             helper.RemoveFile(fileToRemove);
@@ -240,13 +240,13 @@ namespace AnnoDesigner.Core.Tests
         public void RemoveFile_FileNotNull_ShouldRaiseUpdatedEvent()
         {
             // Arrange
-            var mockedSerializer = new Mock<IRecentFilesSerializer>();
-            mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => []);
+            Mock<IRecentFilesSerializer> mockedSerializer = new();
+            _ = mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => []);
 
-            var helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
-            var updatedCalled = false;
+            IRecentFilesHelper helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
+            bool updatedCalled = false;
             helper.Updated += (s, e) => updatedCalled = true;
-            var fileToRemove = new RecentFile(fileSystemWithTestData.AllFiles.Last(), DateTime.UtcNow);
+            RecentFile fileToRemove = new(fileSystemWithTestData.AllFiles.Last(), DateTime.UtcNow);
 
             // Act
             helper.RemoveFile(fileToRemove);
@@ -263,7 +263,7 @@ namespace AnnoDesigner.Core.Tests
         public void ClearRecentFiles_HasRecentFiles_ShouldClearListOfRecentFiles()
         {
             // Arrange
-            var helper = GetHelper(fileSystemToUse: fileSystemWithTestData);
+            IRecentFilesHelper helper = GetHelper(fileSystemToUse: fileSystemWithTestData);
 
             Assert.NotEmpty(helper.RecentFiles);
 
@@ -278,10 +278,10 @@ namespace AnnoDesigner.Core.Tests
         public void ClearRecentFiles_HasRecentFiles_ShouldCallSerialize()
         {
             // Arrange
-            var mockedSerializer = new Mock<IRecentFilesSerializer>();
-            mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => []);
+            Mock<IRecentFilesSerializer> mockedSerializer = new();
+            _ = mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => []);
 
-            var helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
+            IRecentFilesHelper helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
 
             // Act
             helper.ClearRecentFiles();
@@ -294,11 +294,11 @@ namespace AnnoDesigner.Core.Tests
         public void ClearRecentFiles_HasRecentFiles_ShouldRaiseUpdatedEvent()
         {
             // Arrange
-            var mockedSerializer = new Mock<IRecentFilesSerializer>();
-            mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => []);
+            Mock<IRecentFilesSerializer> mockedSerializer = new();
+            _ = mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => []);
 
-            var helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
-            var updatedCalled = false;
+            IRecentFilesHelper helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
+            bool updatedCalled = false;
             helper.Updated += (s, e) => updatedCalled = true;
 
             // Act
@@ -316,8 +316,8 @@ namespace AnnoDesigner.Core.Tests
         public void MaximumItemCount_DifferentValue_ShouldSetNewValue()
         {
             // Arrange
-            var maxItemCount = 5;
-            var helper = GetHelper(fileSystemToUse: fileSystemWithTestData);
+            int maxItemCount = 5;
+            IRecentFilesHelper helper = GetHelper(fileSystemToUse: fileSystemWithTestData);
 
             Assert.True(helper.RecentFiles.Count > maxItemCount);
             Assert.True(helper.MaximumItemCount > maxItemCount);
@@ -333,10 +333,10 @@ namespace AnnoDesigner.Core.Tests
         public void MaximumItemCount_DifferentValue_ShouldCallSerialize()
         {
             // Arrange
-            var maxItemCount = 5;
-            var mockedSerializer = new Mock<IRecentFilesSerializer>();
-            mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => [.. fileSystemWithTestData.AllFiles.Select(path => new RecentFile(path, DateTime.UtcNow))]);
-            var helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
+            int maxItemCount = 5;
+            Mock<IRecentFilesSerializer> mockedSerializer = new();
+            _ = mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => [.. fileSystemWithTestData.AllFiles.Select(path => new RecentFile(path, DateTime.UtcNow))]);
+            IRecentFilesHelper helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
 
             Assert.True(helper.RecentFiles.Count > maxItemCount);
             Assert.True(helper.MaximumItemCount > maxItemCount);
@@ -352,15 +352,15 @@ namespace AnnoDesigner.Core.Tests
         public void MaximumItemCount_DifferentValue_ShouldRaiseUpdatedEvent()
         {
             // Arrange
-            var maxItemCount = 5;
-            var mockedSerializer = new Mock<IRecentFilesSerializer>();
-            mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => [.. fileSystemWithTestData.AllFiles.Select(path => new RecentFile(path, DateTime.UtcNow))]);
-            var helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
+            int maxItemCount = 5;
+            Mock<IRecentFilesSerializer> mockedSerializer = new();
+            _ = mockedSerializer.Setup(_ => _.Deserialize()).Returns(() => [.. fileSystemWithTestData.AllFiles.Select(path => new RecentFile(path, DateTime.UtcNow))]);
+            IRecentFilesHelper helper = GetHelper(serializerToUse: mockedSerializer.Object, fileSystemToUse: fileSystemWithTestData);
 
             Assert.True(helper.RecentFiles.Count > maxItemCount);
             Assert.True(helper.MaximumItemCount > maxItemCount);
 
-            var updatedCalled = false;
+            bool updatedCalled = false;
             helper.Updated += (s, e) => updatedCalled = true;
 
             // Act

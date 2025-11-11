@@ -1,6 +1,6 @@
-﻿using System;
+﻿using PresetParser.Extensions;
+using System;
 using System.Collections.Generic;
-using PresetParser.Extensions;
 
 namespace PresetParser.Anno1800;
 

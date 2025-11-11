@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using AnnoDesigner.Core.Presets.Comparer;
+﻿using AnnoDesigner.Core.Presets.Comparer;
 using AnnoDesigner.Core.Presets.Models;
 using Moq;
+using System.Collections.Generic;
 using Xunit;
 
 namespace AnnoDesigner.Core.Tests
@@ -23,13 +23,13 @@ namespace AnnoDesigner.Core.Tests
         public void Equals_BothEqual_ShouldReturnTrue()
         {
             // Arrange
-            var mockedElement1 = new Mock<IBuildingInfo>();
-            mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
+            Mock<IBuildingInfo> mockedElement1 = new();
+            _ = mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
 
-            var mockedElement2 = new Mock<IBuildingInfo>();
-            mockedElement2.SetupGet(x => x.Group).Returns(GROUP_FIRST);
+            Mock<IBuildingInfo> mockedElement2 = new();
+            _ = mockedElement2.SetupGet(x => x.Group).Returns(GROUP_FIRST);
 
-            BuildingInfoComparer comparer = new BuildingInfoComparer();
+            BuildingInfoComparer comparer = new();
 
             // Act/Assert
             Assert.True(comparer.Equals(mockedElement1.Object, mockedElement2.Object));
@@ -39,10 +39,10 @@ namespace AnnoDesigner.Core.Tests
         public void Equals_OneIsNull_ShouldReturnFalse()
         {
             // Arrange
-            var mockedElement = new Mock<IBuildingInfo>();
-            mockedElement.SetupGet(x => x.Group).Returns(GROUP_FIRST);
+            Mock<IBuildingInfo> mockedElement = new();
+            _ = mockedElement.SetupGet(x => x.Group).Returns(GROUP_FIRST);
 
-            BuildingInfoComparer comparer = new BuildingInfoComparer();
+            BuildingInfoComparer comparer = new();
 
             // Act/Assert
             Assert.False(comparer.Equals(mockedElement.Object, null));
@@ -53,7 +53,7 @@ namespace AnnoDesigner.Core.Tests
         public void Equals_BothAreNull_ShouldReturnTrue()
         {
             // Arrange
-            BuildingInfoComparer comparer = new BuildingInfoComparer();
+            BuildingInfoComparer comparer = new();
 
             // Act/Assert
             Assert.True(comparer.Equals(null, null));
@@ -63,13 +63,13 @@ namespace AnnoDesigner.Core.Tests
         public void Equals_DifferentGroup_ShouldReturnFalse()
         {
             // Arrange
-            var mockedElement1 = new Mock<IBuildingInfo>();
-            mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
+            Mock<IBuildingInfo> mockedElement1 = new();
+            _ = mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
 
-            var mockedElement2 = new Mock<IBuildingInfo>();
-            mockedElement2.SetupGet(x => x.Group).Returns(GROUP_SECOND);
+            Mock<IBuildingInfo> mockedElement2 = new();
+            _ = mockedElement2.SetupGet(x => x.Group).Returns(GROUP_SECOND);
 
-            BuildingInfoComparer comparer = new BuildingInfoComparer();
+            BuildingInfoComparer comparer = new();
 
             // Act/Assert
             Assert.False(comparer.Equals(mockedElement1.Object, mockedElement2.Object));
@@ -83,17 +83,17 @@ namespace AnnoDesigner.Core.Tests
         public void GetHashCode_BothEqual_ShouldBeEqual()
         {
             // Arrange
-            var mockedElement1 = new Mock<IBuildingInfo>();
-            mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
+            Mock<IBuildingInfo> mockedElement1 = new();
+            _ = mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
 
-            var mockedElement2 = new Mock<IBuildingInfo>();
-            mockedElement2.SetupGet(x => x.Group).Returns(GROUP_FIRST);
+            Mock<IBuildingInfo> mockedElement2 = new();
+            _ = mockedElement2.SetupGet(x => x.Group).Returns(GROUP_FIRST);
 
-            BuildingInfoComparer comparer = new BuildingInfoComparer();
+            BuildingInfoComparer comparer = new();
 
             // Act
-            var hashCode1 = comparer.GetHashCode(mockedElement1.Object);
-            var hashCode2 = comparer.GetHashCode(mockedElement2.Object);
+            int hashCode1 = comparer.GetHashCode(mockedElement1.Object);
+            int hashCode2 = comparer.GetHashCode(mockedElement2.Object);
 
             // Assert
             Assert.Equal(hashCode1, hashCode2);
@@ -103,17 +103,17 @@ namespace AnnoDesigner.Core.Tests
         public void GetHashCode_DifferentGroup_ShouldNotBeEqual()
         {
             // Arrange
-            var mockedElement1 = new Mock<IBuildingInfo>();
-            mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
+            Mock<IBuildingInfo> mockedElement1 = new();
+            _ = mockedElement1.SetupGet(x => x.Group).Returns(GROUP_FIRST);
 
-            var mockedElement2 = new Mock<IBuildingInfo>();
-            mockedElement2.SetupGet(x => x.Group).Returns(GROUP_SECOND);
+            Mock<IBuildingInfo> mockedElement2 = new();
+            _ = mockedElement2.SetupGet(x => x.Group).Returns(GROUP_SECOND);
 
-            BuildingInfoComparer comparer = new BuildingInfoComparer();
+            BuildingInfoComparer comparer = new();
 
             // Act
-            var hashCode1 = comparer.GetHashCode(mockedElement1.Object);
-            var hashCode2 = comparer.GetHashCode(mockedElement2.Object);
+            int hashCode1 = comparer.GetHashCode(mockedElement1.Object);
+            int hashCode2 = comparer.GetHashCode(mockedElement2.Object);
 
             // Assert
             Assert.NotEqual(hashCode1, hashCode2);
@@ -123,10 +123,10 @@ namespace AnnoDesigner.Core.Tests
         public void GetHashCode_ElementIsNull_ShouldNotThrow()
         {
             // Arrange
-            BuildingInfoComparer comparer = new BuildingInfoComparer();
+            BuildingInfoComparer comparer = new();
 
             // Act
-            var hashCode = comparer.GetHashCode(null);
+            int hashCode = comparer.GetHashCode(null);
 
             // Assert
             Assert.Equal(-1, hashCode);

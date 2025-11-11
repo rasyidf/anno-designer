@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 
@@ -34,13 +35,8 @@ public class WindowsClipboard : IClipboard
 
     public IReadOnlyList<string> GetFileDropList()
     {
-        var clipboardData = Clipboard.GetFileDropList();
-        if (clipboardData is null)
-        {
-            return null;
-        }
-
-        return new ReadOnlyCollection<string>([.. clipboardData.Cast<string>()]);
+        StringCollection clipboardData = Clipboard.GetFileDropList();
+        return clipboardData is null ? null : (IReadOnlyList<string>)new ReadOnlyCollection<string>([.. clipboardData.Cast<string>()]);
     }
 
     public string GetText()

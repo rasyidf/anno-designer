@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using AnnoDesigner.Helper;
+using AnnoDesigner.Models;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
-using AnnoDesigner.Helper;
 using Xunit;
 
 namespace AnnoDesigner.Tests
@@ -12,7 +14,7 @@ namespace AnnoDesigner.Tests
             public int Value { get; set; }
         }
 
-        private AdjacentCellGrouper grouper = new AdjacentCellGrouper();
+        private readonly AdjacentCellGrouper grouper = new();
 
         /// <summary>
         /// Returns grid representation of string lines.
@@ -27,12 +29,12 @@ namespace AnnoDesigner.Tests
         /// </example>
         public static bool[][] ParseGrid(params string[] gridLines)
         {
-            var preTranspose = gridLines.Select(line => line.Select(c => c == 'X').ToArray()).ToArray();
-            var postTranspose = Enumerable.Range(0, gridLines.Max(i => i.Length)).Select(i => new bool[gridLines.Length]).ToArray();
+            bool[][] preTranspose = gridLines.Select(line => line.Select(c => c == 'X').ToArray()).ToArray();
+            bool[][] postTranspose = Enumerable.Range(0, gridLines.Max(i => i.Length)).Select(i => new bool[gridLines.Length]).ToArray();
 
-            for (var i = 0; i < gridLines.Length; i++)
+            for (int i = 0; i < gridLines.Length; i++)
             {
-                for (var j = 0; j < gridLines[i].Length; j++)
+                for (int j = 0; j < gridLines[i].Length; j++)
                 {
                     postTranspose[j][i] = preTranspose[i][j];
                 }
@@ -45,7 +47,7 @@ namespace AnnoDesigner.Tests
         public void MergeItems_WholeArray_OneBigObject()
         {
             // Arrange
-            var cells = ParseGrid(
+            bool[][] cells = ParseGrid(
                 "XXXXX",
                 "XXXXX",
                 "XXXXX",
@@ -53,10 +55,10 @@ namespace AnnoDesigner.Tests
                 "XXXXX");
 
             // Act
-            var groups = grouper.GroupAdjacentCells(cells, false).ToList();
+            List<CellGroup<bool>> groups = grouper.GroupAdjacentCells(cells, false).ToList();
 
             // Assert
-            Assert.Single(groups);
+            _ = Assert.Single(groups);
             Assert.Equal(new Rect(0, 0, 5, 5), groups[0].Bounds);
         }
 
@@ -64,14 +66,14 @@ namespace AnnoDesigner.Tests
         public void MergeItems_ChessboardWithoutSingleCellMerge_NothingFound()
         {
             // Arrange
-            var cells = ParseGrid(
+            bool[][] cells = ParseGrid(
                 "X X X ",
                 " X X X",
                 "X X X ",
                 " X X X");
 
             // Act
-            var groups = grouper.GroupAdjacentCells(cells, false).ToList();
+            List<CellGroup<bool>> groups = grouper.GroupAdjacentCells(cells, false).ToList();
 
             // Assert
             Assert.Empty(groups);
@@ -81,14 +83,14 @@ namespace AnnoDesigner.Tests
         public void MergeItems_ChessboardWithSingleCells_LotOfSmallObjects()
         {
             // Arrange
-            var cells = ParseGrid(
+            bool[][] cells = ParseGrid(
                 "X X X ",
                 " X X X",
                 "X X X ",
                 " X X X");
 
             // Act
-            var groups = grouper.GroupAdjacentCells(cells, true).ToList();
+            List<CellGroup<bool>> groups = grouper.GroupAdjacentCells(cells, true).ToList();
 
             // Assert
             Assert.Equal(12, groups.Count);
@@ -99,14 +101,14 @@ namespace AnnoDesigner.Tests
         public void MergeItems_Pyramid()
         {
             // Arrange
-            var cells = ParseGrid(
+            bool[][] cells = ParseGrid(
                 "   X   ",
                 "  XXX  ",
                 " XXXXX ",
                 "XXXXXXX");
 
             // Act
-            var groups = grouper.GroupAdjacentCells(cells, false).ToList();
+            List<CellGroup<bool>> groups = grouper.GroupAdjacentCells(cells, false).ToList();
 
             // Assert
             Assert.Equal(new[]
@@ -120,7 +122,7 @@ namespace AnnoDesigner.Tests
         public void MergeItems_Corners_FirstMatchReturnedFirst()
         {
             // Arrange
-            var cells = ParseGrid(
+            bool[][] cells = ParseGrid(
                 "XXX XXX",
                 "X     X",
                 "X     X",
@@ -130,7 +132,7 @@ namespace AnnoDesigner.Tests
                 "XXX XXX");
 
             // Act
-            var groups = grouper.GroupAdjacentCells(cells, false).ToList();
+            List<CellGroup<bool>> groups = grouper.GroupAdjacentCells(cells, false).ToList();
 
             // Assert
             Assert.Equal(new[]
@@ -150,7 +152,7 @@ namespace AnnoDesigner.Tests
         public void MergeItems_RandomWithSpacesBetween_ReturnsMatchesFromLargestAreaFirst()
         {
             // Arrange
-            var cells = ParseGrid(
+            bool[][] cells = ParseGrid(
                 "XX XXX X",
                 "XX XXX X",
                 "   XXX X",
@@ -158,7 +160,7 @@ namespace AnnoDesigner.Tests
                 "XXXXXX X");
 
             // Act
-            var groups = grouper.GroupAdjacentCells(cells, false).ToList();
+            List<CellGroup<bool>> groups = grouper.GroupAdjacentCells(cells, false).ToList();
 
             // Assert
             Assert.Equal(new[]
@@ -174,7 +176,7 @@ namespace AnnoDesigner.Tests
         public void MergeItems_RandomWithoutSpacesBetween_ItemsAreNotUsedMultipleTimes()
         {
             // Arrange
-            var cells = ParseGrid(
+            bool[][] cells = ParseGrid(
                 "XXXX X",
                 "XXXX X",
                 " XXXXX",
@@ -183,7 +185,7 @@ namespace AnnoDesigner.Tests
                 "XXXXXX");
 
             // Act
-            var groups = grouper.GroupAdjacentCells(cells, false).ToList();
+            List<CellGroup<bool>> groups = grouper.GroupAdjacentCells(cells, false).ToList();
 
             // Assert
             Assert.Equal(new[]
@@ -200,14 +202,14 @@ namespace AnnoDesigner.Tests
         public void MergeItems_MultipleSameReferences_ReferenceIsUsedOnlyOnce()
         {
             // Arrange
-            var item1 = new Item() { Value = 1 }; // X
-            var item2 = new Item() { Value = 1 }; // Y
-            var item3 = new Item() { Value = 1 }; // Z
+            Item item1 = new() { Value = 1 }; // X
+            Item item2 = new() { Value = 1 }; // Y
+            Item item3 = new() { Value = 1 }; // Z
             // XYZZ
             // XY
             // XY
             // X
-            var cells = new Item[][]
+            Item[][] cells = new Item[][]
             {
                 new Item[]
                 {
@@ -228,7 +230,7 @@ namespace AnnoDesigner.Tests
             };
 
             // Act
-            var groups = grouper.GroupAdjacentCells(cells, false).ToList();
+            List<CellGroup<Item>> groups = grouper.GroupAdjacentCells(cells, false).ToList();
 
             // Assert
             Assert.Equal(new[]

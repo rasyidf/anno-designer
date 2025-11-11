@@ -8,7 +8,7 @@ using Xunit.Sdk;
 
 namespace PresetParser.Tests.CultureAware
 {
-    public class CulturedXunitTestCase : XunitTestCase
+    internal class CulturedXunitTestCase : XunitTestCase
     {
         private string culture;
 
@@ -27,7 +27,7 @@ namespace PresetParser.Tests.CultureAware
             Initialize(culture);
         }
 
-        void Initialize(string culture)
+        private void Initialize(string culture)
         {
             this.culture = culture;
 
@@ -36,7 +36,10 @@ namespace PresetParser.Tests.CultureAware
             DisplayName += $"[{culture}]";
         }
 
-        protected override string GetUniqueID() => $"{base.GetUniqueID()}[{culture}]";
+        protected override string GetUniqueID()
+        {
+            return $"{base.GetUniqueID()}[{culture}]";
+        }
 
         public override void Deserialize(IXunitSerializationInfo data)
         {
@@ -58,16 +61,16 @@ namespace PresetParser.Tests.CultureAware
                                                         ExceptionAggregator aggregator,
                                                         CancellationTokenSource cancellationTokenSource)
         {
-            var originalCulture = CurrentCulture;
-            var originalUICulture = CurrentUICulture;
+            CultureInfo originalCulture = CurrentCulture;
+            CultureInfo originalUICulture = CurrentUICulture;
 
             try
             {
-                var cultureInfo = new CultureInfo(culture);
+                CultureInfo cultureInfo = new(culture);
                 CurrentCulture = cultureInfo;
                 CurrentUICulture = cultureInfo;
 
-                return await base.RunAsync(diagnosticMessageSink, messageBus, constructorArguments, aggregator, cancellationTokenSource);
+                return await base.RunAsync(diagnosticMessageSink, messageBus, constructorArguments, aggregator, cancellationTokenSource).ConfigureAwait(false);
             }
             finally
             {
@@ -76,7 +79,7 @@ namespace PresetParser.Tests.CultureAware
             }
         }
 
-        static CultureInfo CurrentCulture
+        private static CultureInfo CurrentCulture
         {
 #if NETFRAMEWORK
             get => Thread.CurrentThread.CurrentCulture;
@@ -87,7 +90,7 @@ namespace PresetParser.Tests.CultureAware
 #endif
         }
 
-        static CultureInfo CurrentUICulture
+        private static CultureInfo CurrentUICulture
         {
 #if NETFRAMEWORK
             get => Thread.CurrentThread.CurrentUICulture;

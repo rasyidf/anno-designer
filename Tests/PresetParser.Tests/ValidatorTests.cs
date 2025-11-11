@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using AnnoDesigner.Core.Presets.Models;
+﻿using AnnoDesigner.Core.Presets.Models;
+using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -36,81 +36,81 @@ namespace PresetParser.Tests
         }
 
         [Fact]
-        public void CheckForUniqueIdentifiers_KnownDuplicatesIsNull_ShouldNotThrow()
+        public void CheckForUniqueIdentifiersKnownDuplicatesIsNullShouldNotThrow()
         {
             // Arrange/Act
-            var result = _validator.CheckForUniqueIdentifiers(_testData_valid_buildingInfo, null);
+            (bool isValid, List<string> duplicateIdentifiers) = _validator.CheckForUniqueIdentifiers(_testData_valid_buildingInfo, null);
 
             // Assert
-            Assert.True(result.isValid);
-            Assert.Empty(result.duplicateIdentifiers);
+            Assert.True(isValid);
+            Assert.Empty(duplicateIdentifiers);
         }
 
         [Fact]
-        public void CheckForUniqueIdentifiers_KnownDuplicatesIsEmpty_ShouldNotThrow()
+        public void CheckForUniqueIdentifiersKnownDuplicatesIsEmptyShouldNotThrow()
         {
             // Arrange/Act
-            var result = _validator.CheckForUniqueIdentifiers(_testData_valid_buildingInfo, []);
+            (bool isValid, List<string> duplicateIdentifiers) = _validator.CheckForUniqueIdentifiers(_testData_valid_buildingInfo, []);
 
             // Assert
-            Assert.True(result.isValid);
-            Assert.Empty(result.duplicateIdentifiers);
+            Assert.True(isValid);
+            Assert.Empty(duplicateIdentifiers);
         }
 
         [Fact]
-        public void CheckForUniqueIdentifiers_NoDuplicateIdentifiers_ShouldReturnIsValid()
+        public void CheckForUniqueIdentifiersNoDuplicateIdentifiersShouldReturnIsValid()
         {
             // Arrange/Act
-            var result = _validator.CheckForUniqueIdentifiers(_testData_valid_buildingInfo, []);
+            (bool isValid, List<string> duplicateIdentifiers) = _validator.CheckForUniqueIdentifiers(_testData_valid_buildingInfo, []);
 
             // Assert
-            Assert.True(result.isValid);
-            Assert.Empty(result.duplicateIdentifiers);
+            Assert.True(isValid);
+            Assert.Empty(duplicateIdentifiers);
         }
 
         [Fact]
-        public void CheckForUniqueIdentifiers_DuplicateIdentifiers_ShouldReturnNotValidAndListOfIdentifiers()
+        public void CheckForUniqueIdentifiersDuplicateIdentifiersShouldReturnNotValidAndListOfIdentifiers()
         {
             // Arrange/Act
-            var result = _validator.CheckForUniqueIdentifiers(_testData_invalid_buildingInfo, []);
+            (bool isValid, List<string> duplicateIdentifiers) = _validator.CheckForUniqueIdentifiers(_testData_invalid_buildingInfo, []);
 
             // Assert
-            Assert.False(result.isValid);
-            Assert.NotEmpty(result.duplicateIdentifiers);
-            _out.WriteLine(string.Join(" ,", result.duplicateIdentifiers));
+            Assert.False(isValid);
+            Assert.NotEmpty(duplicateIdentifiers);
+            _out.WriteLine(string.Join(" ,", duplicateIdentifiers));
         }
 
         [Fact]
-        public void CheckForUniqueIdentifiers_DuplicateIdentifiersAndKnownDuplicates_ShouldReturnNotValidAndListOfIdentifiers()
+        public void CheckForUniqueIdentifiersDuplicateIdentifiersAndKnownDuplicatesShouldReturnNotValidAndListOfIdentifiers()
         {
             // Arrange
-            var knownDuplicate = "A99_known duplicate";
+            string knownDuplicate = "A99_known duplicate";
             _testData_invalid_buildingInfo.Add(new BuildingInfo { Identifier = knownDuplicate });
             _testData_invalid_buildingInfo.Insert(0, new BuildingInfo { Identifier = knownDuplicate });
 
             // Arrange
-            var result = _validator.CheckForUniqueIdentifiers(_testData_invalid_buildingInfo, [knownDuplicate]);
+            (bool isValid, List<string> duplicateIdentifiers) = _validator.CheckForUniqueIdentifiers(_testData_invalid_buildingInfo, [knownDuplicate]);
 
             // Assert
-            Assert.False(result.isValid);
-            Assert.NotEmpty(result.duplicateIdentifiers);
-            _out.WriteLine(string.Join(" ,", result.duplicateIdentifiers));
+            Assert.False(isValid);
+            Assert.NotEmpty(duplicateIdentifiers);
+            _out.WriteLine(string.Join(" ,", duplicateIdentifiers));
         }
 
         [Fact]
-        public void CheckForUniqueIdentifiers_KnownDuplicatesFound_ShouldReturnIsValid()
+        public void CheckForUniqueIdentifiersKnownDuplicatesFoundShouldReturnIsValid()
         {
             // Arrange
-            var knownDuplicate = "A99_known duplicate";
+            string knownDuplicate = "A99_known duplicate";
             _testData_valid_buildingInfo.Add(new BuildingInfo { Identifier = knownDuplicate });
             _testData_valid_buildingInfo.Insert(0, new BuildingInfo { Identifier = knownDuplicate });
 
             // Act
-            var result = _validator.CheckForUniqueIdentifiers(_testData_valid_buildingInfo, [knownDuplicate]);
+            (bool isValid, List<string> duplicateIdentifiers) = _validator.CheckForUniqueIdentifiers(_testData_valid_buildingInfo, [knownDuplicate]);
 
             // Assert
-            Assert.True(result.isValid);
-            Assert.Empty(result.duplicateIdentifiers);
+            Assert.True(isValid);
+            Assert.Empty(duplicateIdentifiers);
         }
     }
 }

@@ -1,11 +1,11 @@
-﻿using System;
+﻿using AnnoDesigner.Core.Models;
+using AnnoDesigner.Core.Presets.Models;
+using PresetParser.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO.Abstractions;
 using System.Xml;
-using AnnoDesigner.Core.Models;
-using AnnoDesigner.Core.Presets.Models;
-using PresetParser.Extensions;
 
 namespace PresetParser;
 
@@ -38,14 +38,9 @@ public class BuildingBlockProvider
     {
         XmlDocument ifoDocument = _ifoFileProvider.GetIfoFileContent(basePath, variationFilename);
 
-        if (annoVersion.Equals(Constants.ANNO_VERSION_1800, StringComparison.OrdinalIgnoreCase))
-        {
-            return ParseBuildingBlockerForAnno1800(ifoDocument, building);
-        }
-        else
-        {
-            return ParseBuildingBlocker(ifoDocument, building, variationFilename);
-        }
+        return annoVersion.Equals(Constants.ANNO_VERSION_1800, StringComparison.OrdinalIgnoreCase)
+            ? ParseBuildingBlockerForAnno1800(ifoDocument, building)
+            : ParseBuildingBlocker(ifoDocument, building, variationFilename);
     }
 
     private bool ParseBuildingBlockerForAnno1800(XmlDocument ifoDocument, IBuildingInfo building)
@@ -69,7 +64,8 @@ public class BuildingBlockProvider
                     Console.ForegroundColor = oldColor;
                     return false;
                 }
-            };
+            }
+            ;
 
             XmlNode node1 = ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild;
             XmlNode node2 = ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild.NextSibling;
@@ -164,7 +160,7 @@ public class BuildingBlockProvider
                 zf = 3;
             }
             // correcting measurements of Industrial Zone Ornamentals (GUID Wise)
-            if (building.Guid == 393 || building.Guid == 677 || building.Guid == 678)
+            if (building.Guid is 393 or 677 or 678)
             {
                 xf = 3;
                 zf = 1;
@@ -176,23 +172,9 @@ public class BuildingBlockProvider
             }
 
             //
-            if (xf > 0)
-            {
-                building.BuildBlocker[X] = Math.Abs(xf);
-            }
-            else
-            {
-                building.BuildBlocker[X] = 1;
-            }
+            building.BuildBlocker[X] = xf > 0 ? Math.Abs(xf) : 1;
 
-            if (zf > 0)
-            {
-                building.BuildBlocker[Z] = Math.Abs(zf);
-            }
-            else
-            {
-                building.BuildBlocker[Z] = 1;
-            }
+            building.BuildBlocker[Z] = zf > 0 ? Math.Abs(zf) : 1;
         }
         catch (NullReferenceException)
         {
@@ -296,42 +278,14 @@ public class BuildingBlockProvider
             if (x > 0)
             {
                 //Console.WriteLine("{0}", Path.GetFileNameWithoutExtension(variationFilename));
-                if (variationFilenameWithoutExtension != ORNAMENTAL_POST_09)
-                {
-                    if (variationFilenameWithoutExtension != WATER_MILL_ECOS)
-                    {
-                        building.BuildBlocker[X] = x;
-                    }
-                    else
-                    {
-                        building.BuildBlocker[X] = 3;
-                    }
-                }
-                else
-                {
-                    building.BuildBlocker[X] = 7;
-                }
+                building.BuildBlocker[X] = variationFilenameWithoutExtension != ORNAMENTAL_POST_09 ? variationFilenameWithoutExtension != WATER_MILL_ECOS ? x : 3 : 7;
             }
             else
             {
                 building.BuildBlocker[X] = 1;
             }
 
-            if (z > 0)
-            {
-                if (variationFilenameWithoutExtension != WATER_MILL_ECOS && variationFilenameWithoutExtension != ORNAMENTAL_POST_09)
-                {
-                    building.BuildBlocker[Z] = z;
-                }
-                else
-                {
-                    building.BuildBlocker[Z] = 7;
-                }
-            }
-            else
-            {
-                building.BuildBlocker[Z] = 1;
-            }
+            building.BuildBlocker[Z] = z > 0 ? variationFilenameWithoutExtension is not WATER_MILL_ECOS and not ORNAMENTAL_POST_09 ? z : 7 : 1;
         }
         catch (NullReferenceException)
         {

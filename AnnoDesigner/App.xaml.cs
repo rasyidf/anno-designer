@@ -1,4 +1,5 @@
-﻿using AnnoDesigner.CommandLine;
+﻿using AnnoDesigner.CanvasV2.FeatureFlags;
+using AnnoDesigner.CommandLine;
 using AnnoDesigner.CommandLine.Arguments;
 using AnnoDesigner.Core.Extensions;
 using AnnoDesigner.Core.Helper;
@@ -10,10 +11,10 @@ using AnnoDesigner.Helper;
 using AnnoDesigner.Models;
 using AnnoDesigner.Services;
 using AnnoDesigner.ViewModels;
-using System.Collections.Generic;
 using NLog;
 using NLog.Targets;
 using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.Configuration;
 using System.Diagnostics;
@@ -103,23 +104,21 @@ public partial class App : Application
         }
     }
 
-    private static string _executablePath;
     public static string ExecutablePath
     {
         get
         {
-            _executablePath ??= Assembly.GetEntryAssembly().Location;
-            return _executablePath;
+            field ??= Assembly.GetEntryAssembly().Location;
+            return field;
         }
     }
 
-    private static string _applicationPath;
     public static string ApplicationPath
     {
         get
         {
-            _applicationPath ??= Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            return _applicationPath;
+            field ??= Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            return field;
         }
     }
 
@@ -209,7 +208,7 @@ public partial class App : Application
         ITreeLocalizationLoader treeLocalizationLoader = new TreeLocalizationLoader(_fileSystem);
 
         // Initialize feature flags based on app settings
-        var featureFlags = new CanvasV2.FeatureFlags.SimpleFeatureFlags();
+        SimpleFeatureFlags featureFlags = new();
         featureFlags.Load(new Dictionary<string, object?>
         {
             [CanvasV2.FeatureFlags.CanvasFeatureFlagNames.UseCanvasV2] = true, // Default to v1, set to true to enable V2

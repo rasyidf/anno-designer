@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Windows;
 using AnnoDesigner.Core.DataStructures;
-using AnnoDesigner.Core.Helper;
-using AnnoDesigner.Core.Layout.Models;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
 using AnnoDesigner.Undo;
+using System;
+using System.Collections.Generic;
+using System.Windows;
 
 namespace AnnoDesigner.CanvasV2.Input;
 

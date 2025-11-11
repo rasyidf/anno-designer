@@ -1,6 +1,6 @@
-﻿using System;
-using AnnoDesigner.Undo.Operations;
+﻿using AnnoDesigner.Undo.Operations;
 using AnnoDesigner.ViewModels;
+using System;
 using Xunit;
 
 namespace AnnoDesigner.Tests.Undo
@@ -13,8 +13,8 @@ namespace AnnoDesigner.Tests.Undo
         public void Undo_LayoutVersion_ShouldBeUpdated()
         {
             // Arrange
-            var viewModel = new LayoutSettingsViewModel();
-            var operation = new ModifyLayoutVersionOperation()
+            LayoutSettingsViewModel viewModel = new();
+            ModifyLayoutVersionOperation operation = new()
             {
                 LayoutSettingsViewModel = viewModel,
                 OldValue = new Version(1, 0, 0, 0),
@@ -36,8 +36,8 @@ namespace AnnoDesigner.Tests.Undo
         public void Rodo_LayoutVersion_ShouldBeUpdated()
         {
             // Arrange
-            var viewModel = new LayoutSettingsViewModel();
-            var operation = new ModifyLayoutVersionOperation()
+            LayoutSettingsViewModel viewModel = new();
+            ModifyLayoutVersionOperation operation = new()
             {
                 LayoutSettingsViewModel = viewModel,
                 OldValue = new Version(1, 0, 0, 0),

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using AnnoDesigner.Core.Presets.Models;
+using System;
 using System.Collections.Generic;
-using AnnoDesigner.Core.Presets.Models;
 
 namespace AnnoDesigner.Core.Presets.Comparer;
 
@@ -41,7 +41,7 @@ public class BuildingInfoComparer : IEqualityComparer<IBuildingInfo>
 
         unchecked
         {
-            var hashCode = obj.Group != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(obj.Group) : 0;
+            int hashCode = obj.Group != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(obj.Group) : 0;
             //hashCode = (hashCode * 397) ^ (obj.Identifier != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(obj.Identifier) : 0);
 
             return hashCode;

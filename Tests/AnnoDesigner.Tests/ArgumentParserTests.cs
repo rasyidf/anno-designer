@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using AnnoDesigner.CommandLine;
+using AnnoDesigner.CommandLine.Arguments;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
-using AnnoDesigner.CommandLine;
-using AnnoDesigner.CommandLine.Arguments;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -39,13 +39,13 @@ namespace AnnoDesigner.Tests
 
         private void InitFileSystem()
         {
-            var filePaths = new List<string>
-            {
+            List<string> filePaths =
+            [
                 _pathToLayoutFile,
                 _pathToExportedFile
-            };
+            ];
 
-            foreach (var curFilePath in filePaths)
+            foreach (string curFilePath in filePaths)
             {
                 _fileSystem.AddFile(curFilePath, new MockFileData(string.Empty));
             }
@@ -59,17 +59,17 @@ namespace AnnoDesigner.Tests
         public void Parse_EmptyArguments_ShouldReturnCorrectType()
         {
             // Arrange/Act
-            var parsedArguments = GetParser().Parse(Enumerable.Empty<string>());
+            IProgramArgs parsedArguments = GetParser().Parse(Enumerable.Empty<string>());
 
             // Assert
-            Assert.IsType<EmptyArgs>(parsedArguments);
+            _ = Assert.IsType<EmptyArgs>(parsedArguments);
         }
 
         [Fact]
         public void Parse_UnknownVerb_ShouldReturnNull()
         {
             // Arrange/Act
-            var parsedArguments = GetParser().Parse(new[] { "unknown" });
+            IProgramArgs parsedArguments = GetParser().Parse(new[] { "unknown" });
 
             // Assert
             Assert.Null(parsedArguments);
@@ -83,10 +83,10 @@ namespace AnnoDesigner.Tests
         public void Parse_AskAdminVerb_ShouldReturnCorrectType()
         {
             // Arrange/Act
-            var parsedArguments = GetParser().Parse(new[] { "askAdmin" });
+            IProgramArgs parsedArguments = GetParser().Parse(new[] { "askAdmin" });
 
             // Assert
-            Assert.IsType<AdminRestartArgs>(parsedArguments);
+            _ = Assert.IsType<AdminRestartArgs>(parsedArguments);
         }
 
         #endregion
@@ -97,7 +97,7 @@ namespace AnnoDesigner.Tests
         public void Parse_OpenVerb_FilenameNotSpecified_ShouldReturnNull()
         {
             // Arrange/Act
-            var parsedArguments = GetParser().Parse(new[] { "open" });
+            IProgramArgs parsedArguments = GetParser().Parse(new[] { "open" });
 
             // Assert
             Assert.Null(parsedArguments);
@@ -110,7 +110,7 @@ namespace AnnoDesigner.Tests
             InitFileSystem();
 
             // Act
-            var parsedArguments = GetParser().Parse(new[] { "open", "notExistingFile" });
+            IProgramArgs parsedArguments = GetParser().Parse(new[] { "open", "notExistingFile" });
 
             // Assert
             Assert.Null(parsedArguments);
@@ -123,10 +123,10 @@ namespace AnnoDesigner.Tests
             InitFileSystem();
 
             // Act
-            var parsedArguments = GetParser().Parse(new[] { "open", _pathToLayoutFile });
+            IProgramArgs parsedArguments = GetParser().Parse(new[] { "open", _pathToLayoutFile });
 
             // Assert
-            var openArgs = Assert.IsType<OpenArgs>(parsedArguments);
+            OpenArgs openArgs = Assert.IsType<OpenArgs>(parsedArguments);
             Assert.Equal(_pathToLayoutFile, openArgs.FilePath);
         }
 
@@ -135,11 +135,11 @@ namespace AnnoDesigner.Tests
         {
             // Arrange
             InitFileSystem();
-            var filePathWithWrongExtension = $@"{_rootDirectory}\layout.wrong";
+            string filePathWithWrongExtension = $@"{_rootDirectory}\layout.wrong";
             _fileSystem.AddFile(filePathWithWrongExtension, new MockFileData(string.Empty));
 
             // Act
-            var parsedArguments = GetParser().Parse(new[] { "open", filePathWithWrongExtension });
+            IProgramArgs parsedArguments = GetParser().Parse(new[] { "open", filePathWithWrongExtension });
 
             // Assert
             Assert.Null(parsedArguments);
@@ -153,7 +153,7 @@ namespace AnnoDesigner.Tests
         public void Parse_ExportVerb_LayoutFileNotSpecified_ShouldReturnNull()
         {
             // Arrange/Act
-            var parsedArguments = GetParser().Parse(new[] { "export" });
+            IProgramArgs parsedArguments = GetParser().Parse(new[] { "export" });
 
             // Assert
             Assert.Null(parsedArguments);
@@ -166,7 +166,7 @@ namespace AnnoDesigner.Tests
             InitFileSystem();
 
             // Act
-            var parsedArguments = GetParser().Parse(new[] { "export", _pathToLayoutFile });
+            IProgramArgs parsedArguments = GetParser().Parse(new[] { "export", _pathToLayoutFile });
 
             // Assert
             Assert.Null(parsedArguments);
@@ -177,13 +177,13 @@ namespace AnnoDesigner.Tests
         {
             // Arrange
             InitFileSystem();
-            var expectedBorder = 5;
+            int expectedBorder = 5;
 
             // Act
-            var parsedArguments = GetParser().Parse(new[] { "export", _pathToLayoutFile, _pathToExportedFile, "--border", expectedBorder.ToString() });
+            IProgramArgs parsedArguments = GetParser().Parse(new[] { "export", _pathToLayoutFile, _pathToExportedFile, "--border", expectedBorder.ToString() });
 
             // Assert
-            var exportArgs = Assert.IsType<ExportArgs>(parsedArguments);
+            ExportArgs exportArgs = Assert.IsType<ExportArgs>(parsedArguments);
             Assert.Equal(_pathToLayoutFile, exportArgs.LayoutFilePath);
             Assert.Equal(_pathToExportedFile, exportArgs.ExportedImageFilePath);
             Assert.Equal(expectedBorder, exportArgs.Border);
@@ -194,11 +194,11 @@ namespace AnnoDesigner.Tests
         {
             // Arrange
             InitFileSystem();
-            var filePathWithWrongExtension = $@"{_rootDirectory}\layout.wrong";
+            string filePathWithWrongExtension = $@"{_rootDirectory}\layout.wrong";
             _fileSystem.AddFile(filePathWithWrongExtension, new MockFileData(string.Empty));
 
             // Act
-            var parsedArguments = GetParser().Parse(new[] { "export", filePathWithWrongExtension, _pathToExportedFile });
+            IProgramArgs parsedArguments = GetParser().Parse(new[] { "export", filePathWithWrongExtension, _pathToExportedFile });
 
             // Assert
             Assert.Null(parsedArguments);
@@ -210,11 +210,11 @@ namespace AnnoDesigner.Tests
         {
             // Arrange
             InitFileSystem();
-            var filePathWithWrongExtension = $@"{_rootDirectory}\layout.wrong";
+            string filePathWithWrongExtension = $@"{_rootDirectory}\layout.wrong";
             _fileSystem.AddFile(filePathWithWrongExtension, new MockFileData(string.Empty));
 
             // Act
-            var parsedArguments = GetParser().Parse(new[] { "export", _pathToLayoutFile, filePathWithWrongExtension });
+            IProgramArgs parsedArguments = GetParser().Parse(new[] { "export", _pathToLayoutFile, filePathWithWrongExtension });
 
             // Assert
             Assert.Null(parsedArguments);
@@ -227,10 +227,10 @@ namespace AnnoDesigner.Tests
             InitFileSystem();
 
             // Act
-            var parsedArguments = GetParser().Parse(new[] { "export", _pathToLayoutFile, _pathToExportedFile });
+            IProgramArgs parsedArguments = GetParser().Parse(new[] { "export", _pathToLayoutFile, _pathToExportedFile });
 
             // Assert
-            var exportArgs = Assert.IsType<ExportArgs>(parsedArguments);
+            ExportArgs exportArgs = Assert.IsType<ExportArgs>(parsedArguments);
             Assert.Equal(_pathToLayoutFile, exportArgs.LayoutFilePath);
             Assert.Equal(_pathToExportedFile, exportArgs.ExportedImageFilePath);
 

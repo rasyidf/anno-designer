@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using AnnoDesigner.Core.Presets.Models;
-using PresetParser.Extensions;
-using Xunit;
+﻿using AnnoDesigner.Core.Presets.Models;
 using Moq;
+using PresetParser.Extensions;
+using System.Collections.Generic;
+using Xunit;
 
 namespace PresetParser.Tests
 {
@@ -12,10 +12,10 @@ namespace PresetParser.Tests
 
         #region helper methods
 
-        private IBuildingInfo GetBuilding(string identifierToUse)
+        private static IBuildingInfo GetBuilding(string identifierToUse)
         {
-            var mockedBuilding = new Mock<IBuildingInfo>();
-            mockedBuilding.Setup(x => x.Identifier).Returns(identifierToUse);
+            Mock<IBuildingInfo> mockedBuilding = new();
+            _ = mockedBuilding.Setup(x => x.Identifier).Returns(identifierToUse);
 
             return mockedBuilding.Object;
         }
@@ -28,42 +28,42 @@ namespace PresetParser.Tests
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void IsMatch_Buildings_IdentifierIsNullOrWhitespace_ShouldReturnFalse(string identifierToCheck)
+        public void IsMatchBuildingsIdentifierIsNullOrWhitespaceShouldReturnFalse(string identifierToCheck)
         {
             // Arrange            
-            var listToCheck = new List<IBuildingInfo>
-            {
+            List<IBuildingInfo> listToCheck =
+            [
                 GetBuilding(DUMMY)
-            };
+            ];
 
             // Act
-            var result = StringExtensions.IsMatch(identifierToCheck, listToCheck);
+            bool result = StringExtensions.IsMatch(identifierToCheck, listToCheck);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IsMatch_Buildings_ListIsEmpty_ShouldReturnFalse()
+        public void IsMatchBuildingsListIsEmptyShouldReturnFalse()
         {
             // Arrange            
-            var listToCheck = new List<IBuildingInfo>();
+            List<IBuildingInfo> listToCheck = [];
 
             // Act
-            var result = StringExtensions.IsMatch(DUMMY, listToCheck);
+            bool result = StringExtensions.IsMatch(DUMMY, listToCheck);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IsMatch_Buildings_ListIsNull_ShouldReturnFalse()
+        public void IsMatchBuildingsListIsNullShouldReturnFalse()
         {
             // Arrange            
             List<IBuildingInfo> listToCheck = null;
 
             // Act
-            var result = StringExtensions.IsMatch(DUMMY, listToCheck);
+            bool result = StringExtensions.IsMatch(DUMMY, listToCheck);
 
             // Assert
             Assert.False(result);
@@ -77,42 +77,42 @@ namespace PresetParser.Tests
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void IsMatch_Strings_IdentifierIsNullOrWhitespace_ShouldReturnFalse(string identifierToCheck)
+        public void IsMatchStringsIdentifierIsNullOrWhitespaceShouldReturnFalse(string identifierToCheck)
         {
             // Arrange            
-            var listToCheck = new List<string>
-            {
+            List<string> listToCheck =
+            [
                 DUMMY
-            };
+            ];
 
             // Act
-            var result = StringExtensions.IsMatch(identifierToCheck, listToCheck);
+            bool result = StringExtensions.IsMatch(identifierToCheck, listToCheck);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IsMatch_Strings_ListIsEmpty_ShouldReturnFalse()
+        public void IsMatchStringsListIsEmptyShouldReturnFalse()
         {
             // Arrange            
-            var listToCheck = new List<string>();
+            List<string> listToCheck = [];
 
             // Act
-            var result = StringExtensions.IsMatch(DUMMY, listToCheck);
+            bool result = StringExtensions.IsMatch(DUMMY, listToCheck);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IsMatch_Strings_ListIsNull_ShouldReturnFalse()
+        public void IsMatchStringsListIsNullShouldReturnFalse()
         {
             // Arrange            
             List<string> listToCheck = null;
 
             // Act
-            var result = StringExtensions.IsMatch(DUMMY, listToCheck);
+            bool result = StringExtensions.IsMatch(DUMMY, listToCheck);
 
             // Assert
             Assert.False(result);

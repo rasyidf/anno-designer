@@ -33,40 +33,34 @@ public class Hotkey : Notify
         }
     }
 
-    private InputBinding _binding;
     public InputBinding Binding
     {
-        get => _binding;
+        get;
         set
         {
-            _ = UpdateProperty(ref _binding, value);
+            _ = UpdateProperty(ref field, value);
             //Check that a PolyGesture is still being used
             _ = GetGestureOrThrow();
         }
     }
 
-    private string _name;
     /// <summary>
     /// An identifier for the <see cref="Hotkey"/>, usually required to be unique.
     /// </summary>
     public string HotkeyId
     {
-        get => _name;
-        set => UpdateProperty(ref _name, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
-
-    private string _description;
     public string Description
     {
-        get => _description;
-        set => UpdateProperty(ref _description, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
-
-    private string _localizationKey;
     public string LocalizationKey
     {
-        get => _localizationKey;
-        set => UpdateProperty(ref _localizationKey, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     /// <summary>

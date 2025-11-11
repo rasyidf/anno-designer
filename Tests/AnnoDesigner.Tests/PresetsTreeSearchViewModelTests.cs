@@ -1,5 +1,6 @@
 ﻿using AnnoDesigner.Models;
 using AnnoDesigner.ViewModels;
+using System.Collections.ObjectModel;
 using Xunit;
 
 namespace AnnoDesigner.Tests
@@ -12,7 +13,7 @@ namespace AnnoDesigner.Tests
         public void Ctor_ShouldSetDefaultValues()
         {
             // Arrange/Act
-            var viewModel = new PresetsTreeSearchViewModel();
+            PresetsTreeSearchViewModel viewModel = new();
 
             // Assert
             Assert.False(viewModel.HasFocus);
@@ -31,10 +32,10 @@ namespace AnnoDesigner.Tests
         public void GotFocusCommand_ShouldCanExecute()
         {
             // Arrange
-            var viewModel = new PresetsTreeSearchViewModel();
+            PresetsTreeSearchViewModel viewModel = new();
 
             // Act
-            var result = viewModel.GotFocusCommand.CanExecute(null);
+            bool result = viewModel.GotFocusCommand.CanExecute(null);
 
             // Assert
             Assert.True(result);
@@ -44,8 +45,10 @@ namespace AnnoDesigner.Tests
         public void GotFocusCommand_IsExecuted_ShouldSetHasFocusTrue()
         {
             // Arrange
-            var viewModel = new PresetsTreeSearchViewModel();
-            viewModel.HasFocus = false;
+            PresetsTreeSearchViewModel viewModel = new()
+            {
+                HasFocus = false
+            };
 
             // Act
             viewModel.GotFocusCommand.Execute(null);
@@ -62,10 +65,10 @@ namespace AnnoDesigner.Tests
         public void LostFocusCommand_ShouldCanExecute()
         {
             // Arrange
-            var viewModel = new PresetsTreeSearchViewModel();
+            PresetsTreeSearchViewModel viewModel = new();
 
             // Act
-            var result = viewModel.LostFocusCommand.CanExecute(null);
+            bool result = viewModel.LostFocusCommand.CanExecute(null);
 
             // Assert
             Assert.True(result);
@@ -75,8 +78,10 @@ namespace AnnoDesigner.Tests
         public void LostFocusCommand_IsExecuted_ShouldSetHasFocusFalse()
         {
             // Arrange
-            var viewModel = new PresetsTreeSearchViewModel();
-            viewModel.HasFocus = true;
+            PresetsTreeSearchViewModel viewModel = new()
+            {
+                HasFocus = true
+            };
 
             // Act
             viewModel.LostFocusCommand.Execute(null);
@@ -93,10 +98,10 @@ namespace AnnoDesigner.Tests
         public void ClearSearchTextCommand_ShouldCanExecute()
         {
             // Arrange
-            var viewModel = new PresetsTreeSearchViewModel();
+            PresetsTreeSearchViewModel viewModel = new();
 
             // Act
-            var result = viewModel.ClearSearchTextCommand.CanExecute(null);
+            bool result = viewModel.ClearSearchTextCommand.CanExecute(null);
 
             // Assert
             Assert.True(result);
@@ -106,8 +111,10 @@ namespace AnnoDesigner.Tests
         public void ClearSearchTextCommand_IsExecuted_ShouldSetSearchTextEmpty()
         {
             // Arrange
-            var viewModel = new PresetsTreeSearchViewModel();
-            viewModel.SearchText = "dummy";
+            PresetsTreeSearchViewModel viewModel = new()
+            {
+                SearchText = "dummy"
+            };
 
             // Act
             viewModel.ClearSearchTextCommand.Execute(null);
@@ -124,9 +131,9 @@ namespace AnnoDesigner.Tests
         public void GameVersionFilterChangedCommand_IsExecutedWithGameVersionFilter_ShouldNegateIsSelected()
         {
             // Arrange
-            var viewModel = new PresetsTreeSearchViewModel();
+            PresetsTreeSearchViewModel viewModel = new();
 
-            var gameVersionFilter = new GameVersionFilter
+            GameVersionFilter gameVersionFilter = new()
             {
                 IsSelected = true
             };
@@ -142,7 +149,7 @@ namespace AnnoDesigner.Tests
         public void GameVersionFilterChangedCommand_IsExecuted_ShouldRaisePropertyChanged()
         {
             // Arrange
-            var viewModel = new PresetsTreeSearchViewModel();
+            PresetsTreeSearchViewModel viewModel = new();
 
             // Act/Assert
             Assert.PropertyChanged(viewModel,
@@ -158,14 +165,14 @@ namespace AnnoDesigner.Tests
         public void SelectedGameVersionFilters_IsCalled_ShouldReturnCorrectCollection()
         {
             // Arrange
-            var viewModel = new PresetsTreeSearchViewModel();
+            PresetsTreeSearchViewModel viewModel = new();
             viewModel.GameVersionFilters[0].IsSelected = true;
 
             // Act
-            var result = viewModel.SelectedGameVersionFilters;
+            ObservableCollection<GameVersionFilter> result = viewModel.SelectedGameVersionFilters;
 
             // Assert
-            Assert.Single(result);
+            _ = Assert.Single(result);
         }
 
         #endregion
@@ -176,7 +183,7 @@ namespace AnnoDesigner.Tests
         public void SelectedGameVersions_IsCalled_ShouldSetIsSelectedForCorrectItems()
         {
             // Arrange
-            var viewModel = new PresetsTreeSearchViewModel();
+            PresetsTreeSearchViewModel viewModel = new();
             viewModel.GameVersionFilters[0].IsSelected = false;
             viewModel.GameVersionFilters[1].IsSelected = false;
 

@@ -10,7 +10,10 @@ public static class MathHelper
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static double FractionalValue(double value) => value - Math.Truncate(value);
+    public static double FractionalValue(double value)
+    {
+        return value - Math.Truncate(value);
+    }
 
     /// <summary>
     /// Computes the <paramref name="N"/>th root of a number.
@@ -21,6 +24,8 @@ public static class MathHelper
     /// <param name="A"></param>
     /// <param name="N"></param>
     /// <returns></returns>
-    public static double NthRoot(double A, double N) => Math.Pow(A, 1.0 / N);
-
+    public static double NthRoot(double A, double N)
+    {
+        return Math.Pow(A, 1.0 / N);
+    }
 }

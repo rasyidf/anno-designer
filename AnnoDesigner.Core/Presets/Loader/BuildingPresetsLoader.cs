@@ -1,7 +1,7 @@
-﻿using System;
-using AnnoDesigner.Core.Helper;
+﻿using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.Presets.Models;
 using NLog;
+using System;
 
 namespace AnnoDesigner.Core.Presets.Loader;
 
@@ -11,8 +11,7 @@ public class BuildingPresetsLoader
 
     public BuildingPresets Load(string pathToBuildingPresetsFile)
     {
-        BuildingPresets result = null;
-
+        BuildingPresets result;
         try
         {
             result = SerializationHelper.LoadFromFile<BuildingPresets>(pathToBuildingPresetsFile);

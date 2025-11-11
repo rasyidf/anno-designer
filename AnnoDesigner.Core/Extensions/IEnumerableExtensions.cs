@@ -1,7 +1,7 @@
-﻿using System;
+﻿using AnnoDesigner.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using AnnoDesigner.Core.Models;
 
 namespace AnnoDesigner.Core.Extensions;
 
@@ -9,24 +9,12 @@ public static class IEnumerableExtensions
 {
     public static Dictionary<TKey, TSource> ToDictionaryWithCapacity<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
     {
-        int capacity;
+        int capacity = source is ICollection<TSource> collection
+            ? collection.Count
+            : source is IReadOnlyCollection<TSource> readonlyCollection ? readonlyCollection.Count : source.Count();
+        Dictionary<TKey, TSource> result = new(capacity);
 
-        if (source is ICollection<TSource> collection)
-        {
-            capacity = collection.Count;
-        }
-        else if (source is IReadOnlyCollection<TSource> readonlyCollection)
-        {
-            capacity = readonlyCollection.Count;
-        }
-        else
-        {
-            capacity = source.Count();
-        }
-
-        var result = new Dictionary<TKey, TSource>(capacity);
-
-        foreach (var current in source)
+        foreach (TSource current in source)
         {
             result.Add(keySelector(current), current);
         }
@@ -41,10 +29,10 @@ public static class IEnumerableExtensions
     /// </summary>
     public static TSource[] ToArrayWithCapacity<TSource>(this IEnumerable<TSource> source, int capacity)
     {
-        var result = new TSource[capacity];
+        TSource[] result = new TSource[capacity];
 
         int i = 0;
-        foreach (var item in source)
+        foreach (TSource item in source)
         {
             result[i++] = item;
         }
@@ -59,7 +47,7 @@ public static class IEnumerableExtensions
     /// </summary>
     public static List<TSource> ToListWithCapacity<TSource>(this IEnumerable<TSource> source, int capacity)
     {
-        var list = new List<TSource>(capacity);
+        List<TSource> list = new(capacity);
 
         list.AddRange(source);
 
@@ -73,9 +61,7 @@ public static class IEnumerableExtensions
     /// </summary>
     public static List<TSource> ToListWithCapacity<TSource>(this ICollection<TSource> source)
     {
-        var list = new List<TSource>(source.Count);
-
-        list.AddRange(source);
+        List<TSource> list = [.. source];
 
         return list;
     }
@@ -86,7 +72,7 @@ public static class IEnumerableExtensions
     /// </summary>
     public static void Consume<T>(this IEnumerable<T> source)
     {
-        foreach (var _ in source) { }
+        foreach (T _ in source) { }
     }
 
     /// <summary>
@@ -97,12 +83,7 @@ public static class IEnumerableExtensions
     /// <remarks>Currently the logic is based only on a single "Template", but can be extended to other criteria in the future.</remarks>
     public static IEnumerable<AnnoObject> WithoutIgnoredObjects(this IEnumerable<AnnoObject> objects)
     {
-        if (objects is null)
-        {
-            return null;
-        }
-
-        return objects.Where(x => !x.IsIgnoredObject());
+        return objects?.Where(x => !x.IsIgnoredObject());
     }
 
     /// <summary>

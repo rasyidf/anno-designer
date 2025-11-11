@@ -19,8 +19,6 @@ public class TreeLocalization : ILocalizationHelper
     //Replace the escaped characters (\t\r\n) with the actual characters from within an editor of your choice
     private readonly TreeLocalizationContainer _treeLocalizationContainer;
 
-    private Dictionary<string, Dictionary<string, string>> _translations;
-
     public TreeLocalization(ICommons commonsToUse, TreeLocalizationContainer treeLocalizationContainerToUse)
     {
         _commons = commonsToUse;
@@ -31,9 +29,9 @@ public class TreeLocalization : ILocalizationHelper
     {
         get
         {
-            _translations ??= GetTranslationsFromContainer();
+            field ??= GetTranslationsFromContainer();
 
-            return _translations;
+            return field;
         }
     }
 

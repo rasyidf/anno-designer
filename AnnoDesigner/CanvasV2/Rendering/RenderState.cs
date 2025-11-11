@@ -1,11 +1,9 @@
+using AnnoDesigner.CanvasV2.FeatureFlags;
+using AnnoDesigner.Core.Models;
+using AnnoDesigner.Models;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
-using AnnoDesigner.Core.Models;
-using AnnoDesigner.Core.Helper;
-using AnnoDesigner.Models;
-using AnnoDesigner.CanvasV2.FeatureFlags;
-using AnnoDesigner.CanvasV2.Input;
 
 namespace AnnoDesigner.CanvasV2.Rendering;
 
@@ -18,20 +16,20 @@ public readonly record struct RenderState(
     Rect Viewport,
     Transform? Translate,
     GuidelineSet? GuidelineSet,
-    
+
     // Objects to render
     IReadOnlyCollection<LayoutObject> ObjectsToDraw,
     IReadOnlyCollection<LayoutObject> SelectedObjects,
     IReadOnlyCollection<LayoutObject> CurrentObjects,
     IReadOnlyCollection<LayoutObject> AllPlacedObjects,
-    
+
     // Grid and sizing
     int GridSize,
-    
+
     // Interaction state
     Rect SelectionRect,
     Input.MouseMode CurrentMode,
-    
+
     // Rendering toggles (from CanvasFeatureFlags)
     bool RenderGrid,
     bool RenderIcon,
@@ -40,13 +38,13 @@ public readonly record struct RenderState(
     bool RenderTrueInfluenceRange,
     bool RenderHarborBlockedArea,
     bool RenderPanorama,
-    
+
     // Icons dictionary
     IReadOnlyDictionary<string, IconImage> Icons,
-    
+
     // Helper services
     ICoordinateHelper CoordinateHelper,
-    
+
     // Feature flags
     CanvasFeatureFlags FeatureFlags
 );

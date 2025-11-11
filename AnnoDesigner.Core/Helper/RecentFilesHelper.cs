@@ -1,7 +1,7 @@
-﻿using System;
+﻿using AnnoDesigner.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
-using AnnoDesigner.Core.Models;
 
 namespace AnnoDesigner.Core.Helper;
 
@@ -35,7 +35,7 @@ public class RecentFilesHelper : IRecentFilesHelper
     /// <value>The maximum item count.</value>
     public int MaximumItemCount
     {
-        get { return _maximumItemCount; }
+        get => _maximumItemCount;
         set
         {
             if (_maximumItemCount != value)
@@ -50,7 +50,7 @@ public class RecentFilesHelper : IRecentFilesHelper
 
     private void Load()
     {
-        var loadedFiles = _serializer.Deserialize();
+        List<RecentFile> loadedFiles = _serializer.Deserialize();
 
         RemoveNonExistingFiles(loadedFiles);
 
@@ -74,7 +74,7 @@ public class RecentFilesHelper : IRecentFilesHelper
         }
 
         //if it already exists, remove it (will be added on top later)
-        for (var i = 0; i < RecentFiles.Count; i++)
+        for (int i = 0; i < RecentFiles.Count; i++)
         {
             if (string.Equals(RecentFiles[i].Path, fileToAdd.Path, StringComparison.OrdinalIgnoreCase))
             {
@@ -100,7 +100,7 @@ public class RecentFilesHelper : IRecentFilesHelper
             return;
         }
 
-        for (var i = 0; i < RecentFiles.Count; i++)
+        for (int i = 0; i < RecentFiles.Count; i++)
         {
             if (string.Equals(RecentFiles[i].Path, fileToRemove.Path, StringComparison.OrdinalIgnoreCase))
             {
@@ -124,9 +124,9 @@ public class RecentFilesHelper : IRecentFilesHelper
 
     private void RemoveNonExistingFiles(List<RecentFile> loadedFiles)
     {
-        for (var i = 0; i < loadedFiles.Count; i++)
+        for (int i = 0; i < loadedFiles.Count; i++)
         {
-            var curLoadedFile = loadedFiles[i];
+            RecentFile curLoadedFile = loadedFiles[i];
             if (!_fileSystem.File.Exists(curLoadedFile.Path))
             {
                 loadedFiles.RemoveAt(i);

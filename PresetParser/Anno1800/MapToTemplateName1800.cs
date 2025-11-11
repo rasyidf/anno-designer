@@ -1,6 +1,6 @@
-﻿using System;
+﻿using AnnoDesigner.Core.Extensions;
+using System;
 using System.Collections.Generic;
-using AnnoDesigner.Core.Extensions;
 
 namespace PresetParser.Anno1800;
 

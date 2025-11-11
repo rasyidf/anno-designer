@@ -1,6 +1,6 @@
-﻿using System;
+﻿using PresetParser.Extensions;
+using System;
 using System.Collections.Generic;
-using PresetParser.Extensions;
 
 namespace PresetParser.Anno1800;
 
@@ -109,7 +109,7 @@ public static class NewFactionAndGroup1800
         if (identifierName.IsMatch(ChangeBuildingsToOW3_Productions_1800)) { factionName = "(03) Artisans"; groupName = "Production Buildings"; }
         if (identifierName.IsMatch(ChangeBuildingsToOW4_Productions_1800)) { factionName = "(04) Engineers"; groupName = "Production Buildings"; }
         if (identifierName.IsMatch(ChangeBuildingsToOW5_Productions_1800)) { factionName = "(05) Investors"; groupName = "Production Buildings"; }
-        if (identifierName.IsMatch(ChangeBuildingsToOW6_Productions_1800)) { factionName = "(13) Scholars"; groupName = "Production Buildings"; } 
+        if (identifierName.IsMatch(ChangeBuildingsToOW6_Productions_1800)) { factionName = "(13) Scholars"; groupName = "Production Buildings"; }
         if (identifierName.IsMatch(ChangeBuildingsToNW1_Productions_1800)) { factionName = "(07) Jornaleros"; groupName = "Production Buildings"; }
         if (identifierName.IsMatch(ChangeBuildingsToNW2_Productions_1800)) { factionName = "(08) Obreros"; groupName = "Production Buildings"; }
         if (identifierName.IsMatch(ChangeBuildingsToAT1_Productions_1800)) { factionName = "(10) Explorers"; groupName = "Production Buildings"; templateName = "FactoryBuilding7"; }
@@ -134,7 +134,7 @@ public static class NewFactionAndGroup1800
         //River Buildings (Only Africa DLC 06)
         //if (identifierName.IsMatch(ChangeBuildingsToAF1_RiverBuilding_1800)) { factionName = "(14) Shepherds"; groupName = "River Buildings"; }
         if (identifierName.IsMatch(ChangeBuildingsToAF2_RiverBuilding_1800)) { factionName = "(15) Elders"; groupName = "River Buildings"; }
-        
+
         //Special Buildings
         if (identifierName.IsMatch(ChangeBuildingsToAW_SpecialBuilding_1800)) { factionName = "All Worlds"; groupName = "Special Buildings"; }
         //Ornamentals 

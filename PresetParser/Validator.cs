@@ -1,7 +1,7 @@
-﻿using System;
+﻿using AnnoDesigner.Core.Presets.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using AnnoDesigner.Core.Presets.Models;
 
 namespace PresetParser;
 

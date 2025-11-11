@@ -1,12 +1,12 @@
-﻿using System;
+﻿using AnnoDesigner.Core.Models;
+using AnnoDesigner.Models;
+using AnnoDesigner.ViewModels;
+using Moq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
-using AnnoDesigner.Core.Models;
-using AnnoDesigner.Models;
-using Moq;
 using Xunit;
-using AnnoDesigner.ViewModels;
 
 namespace AnnoDesigner.Tests
 {
@@ -15,7 +15,7 @@ namespace AnnoDesigner.Tests
         public HotkeyCommandManagerTests() { }
 
         private static readonly Action<object> emptyAction = (o) => { };
-        private static readonly RelayCommand emptyCommand = new RelayCommand(emptyAction);
+        private static readonly RelayCommand emptyCommand = new(emptyAction);
 
         /// <summary>
         /// Returns a <see cref="HotkeyCommandManager"/> instance, a <see cref="string"/> for an id, and a <see cref="PolyBinding{T}"/>.
@@ -25,9 +25,9 @@ namespace AnnoDesigner.Tests
         private static (HotkeyCommandManager, string, InputBinding) GetDefaultSetup(bool addBinding)
         {
 
-            var hotkeyCommandManager = GetMockedHotkeyCommandManager();
-            var id = "hotkey";
-            var binding = GetInputBinding(Key.A);
+            HotkeyCommandManager hotkeyCommandManager = GetMockedHotkeyCommandManager();
+            string id = "hotkey";
+            InputBinding binding = GetInputBinding(Key.A);
             if (addBinding)
             {
                 hotkeyCommandManager.AddHotkey(id, binding);
@@ -71,10 +71,10 @@ namespace AnnoDesigner.Tests
         public void Ctor_ShouldSetDefaultValues()
         {
             //Arrange
-            var hotkeyCommandManager = GetMockedHotkeyCommandManager();
+            HotkeyCommandManager hotkeyCommandManager = GetMockedHotkeyCommandManager();
 
             //Act
-            var hotkeys = hotkeyCommandManager.GetHotkeys();
+            IEnumerable<Hotkey> hotkeys = hotkeyCommandManager.GetHotkeys();
 
             //Assert
             Assert.NotNull(hotkeyCommandManager.ObservableCollection);
@@ -82,52 +82,40 @@ namespace AnnoDesigner.Tests
             Assert.Empty(hotkeys);
         }
 
-        public static IEnumerable<object[]> NewHotkeyData
-        {
-            get
-            {
-                return
-                [
+        public static IEnumerable<object[]> NewHotkeyData => [
                     new object[] { "Keybind1", GetInputBinding(Key.A) },
                     new object[] { "Keybind2", GetInputBinding(Key.B, ModifierKeys.Alt | ModifierKeys.Control) },
                     new object[] { "Keybind3", GetInputBinding(Key.C, ModifierKeys.Shift) },
                     new object[] { "Keybind4", GetInputBinding(ExtendedMouseAction.LeftClick) },
                     new object[] { "Keybind5", GetInputBinding(ExtendedMouseAction.RightDoubleClick, ModifierKeys.Control) }
                 ];
-            }
-        }
         [Theory]
         [MemberData(nameof(NewHotkeyData))]
         //Modifiers
         public void AddHotkey_NewItemAdded_ShouldSyncToObservableCollection(string id, InputBinding expectedBinding)
         {
             //Arrange
-            var hotkeyCommandManager = GetMockedHotkeyCommandManager();
+            HotkeyCommandManager hotkeyCommandManager = GetMockedHotkeyCommandManager();
 
             //Act
             hotkeyCommandManager.AddHotkey(id, expectedBinding);
             hotkeyCommandManager.AddHotkey(id + "a", expectedBinding);
             hotkeyCommandManager.AddHotkey(id + "b", expectedBinding);
 
-            var hotkey = hotkeyCommandManager.ObservableCollection.First();
+            Hotkey hotkey = hotkeyCommandManager.ObservableCollection.First();
 
             //Assert
             Assert.Equal(3, hotkeyCommandManager.ObservableCollection.Count);
             Assert.Same(expectedBinding, hotkey.Binding);
 
-            var actualGesture = hotkey.Binding.Gesture as PolyGesture;
-            var expectedGesture = expectedBinding.Gesture as PolyGesture;
+            PolyGesture actualGesture = hotkey.Binding.Gesture as PolyGesture;
+            PolyGesture expectedGesture = expectedBinding.Gesture as PolyGesture;
 
             AssertPolyGestureMatches(expectedGesture, actualGesture);
 
         }
 
-        public static IEnumerable<object[]> UpdateHotkeyData
-        {
-            get
-            {
-                return
-                [
+        public static IEnumerable<object[]> UpdateHotkeyData => [
                     new object[]
                     {
                         "Keybind1",
@@ -161,32 +149,23 @@ namespace AnnoDesigner.Tests
                         default(MouseAction)
                     },
                 ];
-            }
-        }
 
         [Theory]
         [MemberData(nameof(UpdateHotkeyData))]
         public void UpdateHotkey_KeyOrMouseUpdated_ShouldSyncToObservableCollection(string id, InputBinding expectedBinding, Key expectedKey, ModifierKeys expectedModifierKeys, ExtendedMouseAction expectedMouseAction)
         {
             //Arrange
-            var hotkeyCommandManager = GetMockedHotkeyCommandManager();
+            HotkeyCommandManager hotkeyCommandManager = GetMockedHotkeyCommandManager();
 
             //Act
             hotkeyCommandManager.AddHotkey(id, expectedBinding);
 
-            var gesture = expectedBinding.Gesture as PolyGesture;
+            PolyGesture gesture = expectedBinding.Gesture as PolyGesture;
             gesture.Key = expectedKey;
             gesture.ModifierKeys = expectedModifierKeys;
             gesture.MouseAction = expectedMouseAction;
 
-            if (expectedMouseAction != default)
-            {
-                gesture.Type = GestureType.MouseGesture;
-            }
-            else
-            {
-                gesture.Type = GestureType.KeyGesture;
-            }
+            gesture.Type = expectedMouseAction != default ? GestureType.MouseGesture : GestureType.KeyGesture;
 
             //if (expectedBinding is KeyBinding keyBinding)
             //{
@@ -226,13 +205,13 @@ namespace AnnoDesigner.Tests
             //    }
             //}
 
-            var actualBinding = hotkeyCommandManager.ObservableCollection.First().Binding;
+            InputBinding actualBinding = hotkeyCommandManager.ObservableCollection.First().Binding;
 
             //Assert
 
             Assert.Same(expectedBinding, actualBinding);
-            var actualGesture = actualBinding.Gesture as PolyGesture;
-            var expectedGesture = expectedBinding.Gesture as PolyGesture;
+            PolyGesture actualGesture = actualBinding.Gesture as PolyGesture;
+            PolyGesture expectedGesture = expectedBinding.Gesture as PolyGesture;
             AssertPolyGestureMatches(expectedGesture, actualGesture);
         }
 
@@ -240,7 +219,7 @@ namespace AnnoDesigner.Tests
         public void RemoveHotkey_ShouldSyncToObservableCollection()
         {
             //Arrange
-            var (hotkeyCommandManager, id, _) = GetDefaultSetup(true);
+            (HotkeyCommandManager hotkeyCommandManager, string id, InputBinding _) = GetDefaultSetup(true);
 
             //Act
             hotkeyCommandManager.RemoveHotkey(id);
@@ -253,34 +232,34 @@ namespace AnnoDesigner.Tests
         public void AddHotkey_Duplicate_ShouldThrowArgumentException()
         {
             //Arrange
-            var (hotkeyCommandManager, id, binding) = GetDefaultSetup(true);
+            (HotkeyCommandManager hotkeyCommandManager, string id, InputBinding binding) = GetDefaultSetup(true);
             //Act and assert
-            Assert.Throws<ArgumentException>(() => hotkeyCommandManager.AddHotkey(id, binding));
+            _ = Assert.Throws<ArgumentException>(() => hotkeyCommandManager.AddHotkey(id, binding));
         }
 
         [Fact]
         public void RemoveHotkey_NonExistentHotkeyId_ShouldThrowKeyNotFoundException()
         {
             //Arrange
-            var (hotkeyCommandManager, id, binding) = GetDefaultSetup(true);
+            (HotkeyCommandManager hotkeyCommandManager, string id, InputBinding binding) = GetDefaultSetup(true);
             //Act and assert
-            Assert.Throws<KeyNotFoundException>(() => hotkeyCommandManager.RemoveHotkey(""));
+            _ = Assert.Throws<KeyNotFoundException>(() => hotkeyCommandManager.RemoveHotkey(""));
         }
 
         [Fact]
         public void GetHotkey_NonExistentHotkeyId_ShouldThrowKeyNotFoundException()
         {
             //Arrange
-            var (hotkeyCommandManager, id, binding) = GetDefaultSetup(false);
+            (HotkeyCommandManager hotkeyCommandManager, string id, InputBinding binding) = GetDefaultSetup(false);
             //Act and assert
-            Assert.Throws<KeyNotFoundException>(() => hotkeyCommandManager.GetHotkey(id));
+            _ = Assert.Throws<KeyNotFoundException>(() => hotkeyCommandManager.GetHotkey(id));
         }
 
         [Fact]
         public void LoadHotkeyMappings_NullArgument_DoesNotThrowException()
         {
             //Arrange
-            var hotkeyCommandMananger = GetMockedHotkeyCommandManager();
+            HotkeyCommandManager hotkeyCommandMananger = GetMockedHotkeyCommandManager();
             //Act and Assert
             hotkeyCommandMananger.LoadHotkeyMappings(null);
             Assert.True(true);
@@ -290,8 +269,8 @@ namespace AnnoDesigner.Tests
         public void LoadHotkeyMappings_InvalidType_IgnoresMapping()
         {
             //Arrange
-            var hotkeyCommandMananger = GetMockedHotkeyCommandManager();
-            var newMappings = new Dictionary<string, HotkeyInformation>()
+            HotkeyCommandManager hotkeyCommandMananger = GetMockedHotkeyCommandManager();
+            Dictionary<string, HotkeyInformation> newMappings = new()
             {
                 //use an invalid value for the GestureType enum
                 { "myHotkeyInfo", new HotkeyInformation(Key.A, default, ModifierKeys.None, (GestureType)int.MaxValue) }
@@ -300,17 +279,12 @@ namespace AnnoDesigner.Tests
             hotkeyCommandMananger.LoadHotkeyMappings(newMappings);
             hotkeyCommandMananger.AddHotkey("myHotkeyInfo", new InputBinding(emptyCommand, new PolyGesture(Key.C, ModifierKeys.Control)));
             //Assert
-            var gesture = hotkeyCommandMananger.GetHotkey("myHotkeyInfo").Binding.Gesture as PolyGesture;
+            PolyGesture gesture = hotkeyCommandMananger.GetHotkey("myHotkeyInfo").Binding.Gesture as PolyGesture;
             Assert.Equal(Key.C, gesture.Key);
             Assert.Equal(ModifierKeys.Control, gesture.ModifierKeys);
         }
 
-        public static IEnumerable<object[]> HotkeyMappingLoadData
-        {
-            get
-            {
-                return
-                [
+        public static IEnumerable<object[]> HotkeyMappingLoadData => [
                     new object[]
                     {
                         "Keybind1",
@@ -357,31 +331,29 @@ namespace AnnoDesigner.Tests
                         GestureType.MouseGesture
                     },
                 ];
-            }
-        }
 
         [Theory]
         [MemberData(nameof(HotkeyMappingLoadData))]
         public void LoadHotkeyMappings_CalledAfterHotkeyIsAdded_LoadsNewHotkeyMappings(string hotkeyId, InputBinding binding, Key expectedKey, ModifierKeys expectedModifiers, ExtendedMouseAction expectedMouseAction, GestureType expectedType)
         {
             //Arrange
-            var hotkeyCommandManager = GetMockedHotkeyCommandManager();
+            HotkeyCommandManager hotkeyCommandManager = GetMockedHotkeyCommandManager();
 
-            var newMappings = new Dictionary<string, HotkeyInformation>()
+            Dictionary<string, HotkeyInformation> newMappings = new()
             {
                 { hotkeyId, new HotkeyInformation(expectedKey, expectedMouseAction, expectedModifiers, expectedType) }
             };
 
             //Act
             hotkeyCommandManager.AddHotkey(hotkeyId, binding);
-            var hotkey = hotkeyCommandManager.GetHotkey(hotkeyId);
+            Hotkey hotkey = hotkeyCommandManager.GetHotkey(hotkeyId);
             hotkeyCommandManager.LoadHotkeyMappings(newMappings); //Call LoadHotkeyMappings after hotkey is added
 
             //Assert
-            var actualHotkey = hotkeyCommandManager.GetHotkey(hotkeyId);
+            Hotkey actualHotkey = hotkeyCommandManager.GetHotkey(hotkeyId);
 
             Assert.Same(hotkey, actualHotkey);
-            var actualGesture = actualHotkey.Binding.Gesture as PolyGesture;
+            PolyGesture actualGesture = actualHotkey.Binding.Gesture as PolyGesture;
 
             Assert.Equal(expectedKey, actualGesture.Key);
             Assert.Equal(expectedMouseAction, actualGesture.MouseAction);
@@ -394,9 +366,9 @@ namespace AnnoDesigner.Tests
         public void LoadHotkeyMappings_CalledBeforeHotkeyIsAdded_LoadsNewHotkeyMappings(string hotkeyId, InputBinding binding, Key expectedKey, ModifierKeys expectedModifiers, ExtendedMouseAction expectedMouseAction, GestureType expectedType)
         {
             //Arrange
-            var hotkeyCommandManager = GetMockedHotkeyCommandManager();
+            HotkeyCommandManager hotkeyCommandManager = GetMockedHotkeyCommandManager();
 
-            var newMappings = new Dictionary<string, HotkeyInformation>()
+            Dictionary<string, HotkeyInformation> newMappings = new()
             {
                 { hotkeyId, new HotkeyInformation(expectedKey, expectedMouseAction, expectedModifiers, expectedType) }
             };
@@ -406,8 +378,8 @@ namespace AnnoDesigner.Tests
             hotkeyCommandManager.AddHotkey(hotkeyId, binding);
 
             //Assert
-            var actualHotkey = hotkeyCommandManager.GetHotkey(hotkeyId);
-            var actualGesture = actualHotkey.Binding.Gesture as PolyGesture;
+            Hotkey actualHotkey = hotkeyCommandManager.GetHotkey(hotkeyId);
+            PolyGesture actualGesture = actualHotkey.Binding.Gesture as PolyGesture;
 
             Assert.Equal(expectedKey, actualGesture.Key);
             Assert.Equal(expectedMouseAction, actualGesture.MouseAction);
@@ -416,12 +388,7 @@ namespace AnnoDesigner.Tests
 
         }
 
-        public static IEnumerable<object[]> HotkeyMappingRemappedData
-        {
-            get
-            {
-                return
-                [
+        public static IEnumerable<object[]> HotkeyMappingRemappedData => [
                     new object[]
                     {
                         "Keybind1",
@@ -473,17 +440,15 @@ namespace AnnoDesigner.Tests
                         0
                     },
                 ];
-            }
-        }
 
         [Theory]
         [MemberData(nameof(HotkeyMappingRemappedData))]
         public void GetRemappedHotkeys_RetrievesOnlyRemappedHotkeys(string hotkeyId, InputBinding binding, Key expectedKey, ModifierKeys expectedModifiers, ExtendedMouseAction expectedMouseAction, GestureType expectedType, int expectedCount)
         {
             //Arrange
-            var hotkeyCommandManager = GetMockedHotkeyCommandManager();
+            HotkeyCommandManager hotkeyCommandManager = GetMockedHotkeyCommandManager();
             hotkeyCommandManager.AddHotkey(hotkeyId, binding);
-            var hotkey = hotkeyCommandManager.GetHotkey(hotkeyId);
+            Hotkey hotkey = hotkeyCommandManager.GetHotkey(hotkeyId);
 
             //Act
             //update hotkey with new properties.

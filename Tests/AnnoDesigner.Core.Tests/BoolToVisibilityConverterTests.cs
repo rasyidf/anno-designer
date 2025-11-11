@@ -1,7 +1,6 @@
-﻿using System;
+﻿using AnnoDesigner.Core.Converters;
 using System.Globalization;
 using System.Windows;
-using AnnoDesigner.Core.Converters;
 using Xunit;
 
 namespace AnnoDesigner.Core.Tests
@@ -14,7 +13,7 @@ namespace AnnoDesigner.Core.Tests
         public void ctor_Defaults_Set()
         {
             // Arrange/Act
-            var converter = new BoolToVisibilityConverter();
+            BoolToVisibilityConverter converter = new();
 
             // Assert
             Assert.Equal(Visibility.Visible, converter.TrueValue);
@@ -29,10 +28,10 @@ namespace AnnoDesigner.Core.Tests
         public void Convert_PassedTrue_ShouldReturnVisible()
         {
             // Arrange/Act
-            var converter = new BoolToVisibilityConverter();
+            BoolToVisibilityConverter converter = new();
 
             // Act
-            var result = converter.Convert(true, typeof(Visibility), null, CultureInfo.CurrentCulture);
+            object result = converter.Convert(true, typeof(Visibility), null, CultureInfo.CurrentCulture);
 
             // Assert
             Assert.Equal(Visibility.Visible, result);
@@ -42,10 +41,10 @@ namespace AnnoDesigner.Core.Tests
         public void Convert_PassedFalse_ShouldReturnCollapsed()
         {
             // Arrange/Act
-            var converter = new BoolToVisibilityConverter();
+            BoolToVisibilityConverter converter = new();
 
             // Act
-            var result = converter.Convert(false, typeof(Visibility), null, CultureInfo.CurrentCulture);
+            object result = converter.Convert(false, typeof(Visibility), null, CultureInfo.CurrentCulture);
 
             // Assert
             Assert.Equal(Visibility.Collapsed, result);
@@ -55,11 +54,13 @@ namespace AnnoDesigner.Core.Tests
         public void Convert_ChangedFalsValue_ShouldReturnSetValue()
         {
             // Arrange/Act
-            var converter = new BoolToVisibilityConverter();
-            converter.FalseValue = Visibility.Hidden;
+            BoolToVisibilityConverter converter = new()
+            {
+                FalseValue = Visibility.Hidden
+            };
 
             // Act
-            var result = converter.Convert(false, typeof(Visibility), null, CultureInfo.CurrentCulture);
+            object result = converter.Convert(false, typeof(Visibility), null, CultureInfo.CurrentCulture);
 
             // Assert
             Assert.Equal(Visibility.Hidden, result);
@@ -69,10 +70,10 @@ namespace AnnoDesigner.Core.Tests
         public void Convert_PassedUnknownValue_ShouldReturnNull()
         {
             // Arrange/Act
-            var converter = new BoolToVisibilityConverter();
+            BoolToVisibilityConverter converter = new();
 
             // Act
-            var result = converter.Convert(String.Empty, typeof(Visibility), null, CultureInfo.CurrentCulture);
+            object result = converter.Convert(string.Empty, typeof(Visibility), null, CultureInfo.CurrentCulture);
 
             // Assert
             Assert.Null(result);
@@ -86,10 +87,10 @@ namespace AnnoDesigner.Core.Tests
         public void ConvertBack_PassedTrueValue_ShouldReturnTrue()
         {
             // Arrange/Act
-            var converter = new BoolToVisibilityConverter();
+            BoolToVisibilityConverter converter = new();
 
             // Act
-            var result = (bool)converter.ConvertBack(Visibility.Visible, typeof(bool), null, CultureInfo.CurrentCulture);
+            bool result = (bool)converter.ConvertBack(Visibility.Visible, typeof(bool), null, CultureInfo.CurrentCulture);
 
             // Assert
             Assert.True(result);
@@ -99,10 +100,10 @@ namespace AnnoDesigner.Core.Tests
         public void ConvertBack_PassedFalseValue_ShouldReturnFalse()
         {
             // Arrange/Act
-            var converter = new BoolToVisibilityConverter();
+            BoolToVisibilityConverter converter = new();
 
             // Act
-            var result = (bool)converter.ConvertBack(Visibility.Collapsed, typeof(bool), null, CultureInfo.CurrentCulture);
+            bool result = (bool)converter.ConvertBack(Visibility.Collapsed, typeof(bool), null, CultureInfo.CurrentCulture);
 
             // Assert
             Assert.False(result);
@@ -112,10 +113,10 @@ namespace AnnoDesigner.Core.Tests
         public void ConvertBack_PassedUnknownValue_ShouldReturnNull()
         {
             // Arrange/Act
-            var converter = new BoolToVisibilityConverter();
+            BoolToVisibilityConverter converter = new();
 
             // Act
-            var result = converter.ConvertBack(Visibility.Hidden, typeof(bool), null, CultureInfo.CurrentCulture);
+            object result = converter.ConvertBack(Visibility.Hidden, typeof(bool), null, CultureInfo.CurrentCulture);
 
             // Assert
             Assert.Null(result);
