@@ -320,7 +320,7 @@ public static class PolygonBoundaryFinderHelper
     /// </returns>
     private static Direction[][] GetBoundarySides(bool[][] insidePoints)
     {
-        Direction[][] boundarySides = insidePoints.Select(x => x.Select(y => Direction.None).ToArray()).ToArray();
+        Direction[][] boundarySides = [.. insidePoints.Select(x => x.Select(y => Direction.None).ToArray())];
 
         for (int x = 0; x < insidePoints.Length; x++)
         {

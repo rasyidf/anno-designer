@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AnnoDesigner.Core.Models;
 using Newtonsoft.Json;
 using NLog;
@@ -37,7 +35,7 @@ public class RecentFilesAppSettingsSerializer : IRecentFilesSerializer
                 return savedList;
             }
 
-            savedList = deserializedList.Where(x => !string.IsNullOrWhiteSpace(x.Path)).ToList();
+            savedList = [.. deserializedList.Where(x => !string.IsNullOrWhiteSpace(x.Path))];
         }
         catch (Exception ex)
         {

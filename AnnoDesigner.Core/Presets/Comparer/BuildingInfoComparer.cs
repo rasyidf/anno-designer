@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using AnnoDesigner.Core.Presets.Models;
 
 namespace AnnoDesigner.Core.Presets.Comparer;

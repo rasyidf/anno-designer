@@ -146,7 +146,7 @@ public class StatisticsViewModel : Notify
 
         if (mode != UpdateMode.NoBuildingList && ShowBuildingList)
         {
-            List<IGrouping<string, LayoutObject>> groupedPlacedBuildings = placedObjects.GroupBy(_ => _.Identifier).ToList();
+            List<IGrouping<string, LayoutObject>> groupedPlacedBuildings = [.. placedObjects.GroupBy(_ => _.Identifier)];
 
             IEnumerable<IGrouping<string, LayoutObject>> groupedSelectedBuildings = null;
             if (selectedObjects != null && selectedObjects.Count > 0)

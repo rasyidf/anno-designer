@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using AnnoDesigner.Core.Layout;
 using AnnoDesigner.Core.Layout.Models;
 using AnnoDesigner.Core.Models;
@@ -158,7 +157,7 @@ namespace AnnoDesigner.Tests
             RoadSearchHelper.BreadthFirstSearch(placedObjects, startObjects, o => (int)o.InfluenceRange + 1, inRangeAction: o => objectsInInfluence.Add(o));
 
             // Assert
-            Assert.Equal(placedObjects.Where(o => o.Label == "TargetIn").ToHashSet(), objectsInInfluence.ToHashSet());
+            Assert.Equal(placedObjects.Where(o => o.Label == "TargetIn").ToHashSet(), [.. objectsInInfluence]);
             Assert.True(placedObjects.Where(o => o.Label == "TargetOut").All(o => !objectsInInfluence.Contains(o)));
         }
 

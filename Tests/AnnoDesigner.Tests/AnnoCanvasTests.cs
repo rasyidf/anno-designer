@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Models;
@@ -58,7 +57,7 @@ namespace AnnoDesigner.Tests
         private IAnnoCanvas GetCanvas()
         {
             return new AnnoCanvas(new BuildingPresets(),
-                new Dictionary<string, IconImage>(),
+                [],
                 _appSettings,
                 _coordinateHelper,
                 _brushCache,

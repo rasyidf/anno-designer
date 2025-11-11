@@ -18,21 +18,21 @@ namespace PresetParser.Tests
             _out = outputHelperToUse;
             _validator = new Validator();
 
-            _testData_valid_buildingInfo = new List<IBuildingInfo>
-            {
+            _testData_valid_buildingInfo =
+            [
                 new BuildingInfo { Identifier = "A4_building 1" },
                 new BuildingInfo { Identifier = "A4_building 2" },
                 new BuildingInfo { Identifier = "A4_building 3" },
                 new BuildingInfo { Identifier = "A7_building 3" },
-            };
+            ];
 
-            _testData_invalid_buildingInfo = new List<IBuildingInfo>
-            {
+            _testData_invalid_buildingInfo =
+            [
                 new BuildingInfo { Identifier = "A4_building 1" },
                 new BuildingInfo { Identifier = "A4_building 2" },
                 new BuildingInfo { Identifier = "A4_building 1" },
                 new BuildingInfo { Identifier = "A4_building 3" },
-            };
+            ];
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace PresetParser.Tests
         public void CheckForUniqueIdentifiers_KnownDuplicatesIsEmpty_ShouldNotThrow()
         {
             // Arrange/Act
-            var result = _validator.CheckForUniqueIdentifiers(_testData_valid_buildingInfo, new List<string>());
+            var result = _validator.CheckForUniqueIdentifiers(_testData_valid_buildingInfo, []);
 
             // Assert
             Assert.True(result.isValid);
@@ -61,7 +61,7 @@ namespace PresetParser.Tests
         public void CheckForUniqueIdentifiers_NoDuplicateIdentifiers_ShouldReturnIsValid()
         {
             // Arrange/Act
-            var result = _validator.CheckForUniqueIdentifiers(_testData_valid_buildingInfo, new List<string>());
+            var result = _validator.CheckForUniqueIdentifiers(_testData_valid_buildingInfo, []);
 
             // Assert
             Assert.True(result.isValid);
@@ -72,7 +72,7 @@ namespace PresetParser.Tests
         public void CheckForUniqueIdentifiers_DuplicateIdentifiers_ShouldReturnNotValidAndListOfIdentifiers()
         {
             // Arrange/Act
-            var result = _validator.CheckForUniqueIdentifiers(_testData_invalid_buildingInfo, new List<string>());
+            var result = _validator.CheckForUniqueIdentifiers(_testData_invalid_buildingInfo, []);
 
             // Assert
             Assert.False(result.isValid);
@@ -89,7 +89,7 @@ namespace PresetParser.Tests
             _testData_invalid_buildingInfo.Insert(0, new BuildingInfo { Identifier = knownDuplicate });
 
             // Arrange
-            var result = _validator.CheckForUniqueIdentifiers(_testData_invalid_buildingInfo, new List<string> { knownDuplicate });
+            var result = _validator.CheckForUniqueIdentifiers(_testData_invalid_buildingInfo, [knownDuplicate]);
 
             // Assert
             Assert.False(result.isValid);
@@ -106,7 +106,7 @@ namespace PresetParser.Tests
             _testData_valid_buildingInfo.Insert(0, new BuildingInfo { Identifier = knownDuplicate });
 
             // Act
-            var result = _validator.CheckForUniqueIdentifiers(_testData_valid_buildingInfo, new List<string> { knownDuplicate });
+            var result = _validator.CheckForUniqueIdentifiers(_testData_valid_buildingInfo, [knownDuplicate]);
 
             // Assert
             Assert.True(result.isValid);

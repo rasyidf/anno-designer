@@ -6,8 +6,8 @@ namespace AnnoDesigner.Core.Tests.Mocks
 {
     public class MockedClipboard : IClipboard
     {
-        private List<string> _files = new List<string>();
-        private Dictionary<string, object> _data = new Dictionary<string, object>();
+        private List<string> _files = [];
+        private Dictionary<string, object> _data = [];
         private string _text;
 
         public void AddFilesToClipboard(List<string> filesToAdd)

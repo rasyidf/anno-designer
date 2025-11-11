@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using AnnoDesigner.Core.Layout.Models;
+using AnnoDesigner.Models;
 
 namespace AnnoDesigner.Models;
 
@@ -51,4 +53,10 @@ public interface IAnnoCanvas : IHotkeySource
     Rect ComputeBoundingRect(IEnumerable<LayoutObject> objects);
     Task<bool> CheckUnsavedChanges();
     void CheckUnsavedChangesBeforeCrash();
+    
+    /// <summary>
+    /// Render the provided layout to a file using the canvas rendering pipeline.
+    /// Implementations may use the v1 or v2 renderer as appropriate.
+    /// </summary>
+    void RenderToFile(string filename, IEnumerable<AnnoDesigner.Core.Models.AnnoObject> placedObjects, IEnumerable<AnnoDesigner.Core.Models.AnnoObject> selectedObjects, int border, CanvasRenderSetting renderSettings = null);
 }

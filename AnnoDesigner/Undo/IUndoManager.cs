@@ -11,6 +11,10 @@ public interface IUndoManager
 
     void Redo();
 
+    bool CanUndo { get; }
+
+    bool CanRedo { get; }
+
     void Clear();
 
     void RegisterOperation(IOperation operation);

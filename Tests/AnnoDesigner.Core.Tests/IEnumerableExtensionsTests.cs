@@ -23,7 +23,7 @@ namespace AnnoDesigner.Core.Tests
         public void WithoutIgnoredObjects_ListIsEmpty_ShouldReturnEmptyList()
         {
             // Arrange/Act
-            var result = IEnumerableExtensions.WithoutIgnoredObjects(new List<AnnoObject>());
+            var result = IEnumerableExtensions.WithoutIgnoredObjects([]);
 
             // Assert
             Assert.Empty(result);

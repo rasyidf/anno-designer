@@ -40,13 +40,13 @@ namespace AnnoDesigner.Core.Tests
 
         private List<AnnoObject> GetListOfObjects()
         {
-            return new List<AnnoObject>
-            {
+            return
+            [
                 new AnnoObject
                 {
                     Identifier = "my dummy"
                 }
-            };
+            ];
         }
 
         #region Copy tests
@@ -161,7 +161,7 @@ namespace AnnoDesigner.Core.Tests
         {
             // Arrange
             var service = GetService();
-            _mockedClipboard.AddFilesToClipboard(new List<string> { "first file path", "second file path" });
+            _mockedClipboard.AddFilesToClipboard(["first file path", "second file path"]);
 
             // Act
             var result = service.Paste();
@@ -199,7 +199,7 @@ namespace AnnoDesigner.Core.Tests
                 .Returns(() => new LayoutFile(data));
 
             var service = GetService(layoutLoaderToUse: mockedLayoutLoader.Object);
-            _mockedClipboard.AddFilesToClipboard(new List<string> { "first" });
+            _mockedClipboard.AddFilesToClipboard(["first"]);
 
             // Act
             var result = service.Paste();
@@ -219,7 +219,7 @@ namespace AnnoDesigner.Core.Tests
                 .Throws(new JsonReaderException());
 
             var service = GetService(layoutLoaderToUse: mockedLayoutLoader.Object);
-            _mockedClipboard.AddFilesToClipboard(new List<string> { "first" });
+            _mockedClipboard.AddFilesToClipboard(["first"]);
 
             // Act
             var result = service.Paste();

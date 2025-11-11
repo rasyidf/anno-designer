@@ -182,18 +182,17 @@ public class PresetsTreeViewModel : Notify
             !excludedFactions.Contains(x.Faction));
 
         //For Anno 2205 only
-        List<BuildingInfo> modulesList = buildingPresets.Buildings
+        List<BuildingInfo> modulesList = [.. buildingPresets.Buildings
             .Where(x => string.Equals(x.Header, headerAnno2205, StringComparison.OrdinalIgnoreCase) &&
             string.Equals(x.Faction, "Facility Modules", StringComparison.OrdinalIgnoreCase) &&
-            !string.Equals(x.Faction, "Facilities", StringComparison.OrdinalIgnoreCase))
-            .ToList();
+            !string.Equals(x.Faction, "Facilities", StringComparison.OrdinalIgnoreCase))];
 
         #region some checks
 #if DEBUG
-        List<BuildingInfo> facilityList = filteredBuildingList.Where(x => string.Equals(x.Faction, "Facilities", StringComparison.OrdinalIgnoreCase)).ToList();
+        List<BuildingInfo> facilityList = [.. filteredBuildingList.Where(x => string.Equals(x.Faction, "Facilities", StringComparison.OrdinalIgnoreCase))];
 
         //Get a list of nonMatchedModules;
-        List<IBuildingInfo> nonMatchedModulesList = modulesList.Except(facilityList, new BuildingInfoComparer()).ToList();
+        List<IBuildingInfo> nonMatchedModulesList = [.. modulesList.Except(facilityList, new BuildingInfoComparer())];
         //These appear to all match. The below statement should notify the progammer if we need to add handling for non matching lists
         System.Diagnostics.Debug.Assert(nonMatchedModulesList.Count == 0, "Module lists do not match, implement handling for this");
 #endif

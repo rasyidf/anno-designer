@@ -910,14 +910,14 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
             CurrentMode == MouseMode.PlaceObjects ||
             CurrentMode == MouseMode.DeleteObject)
         {
-            objectsToDraw = PlacedObjects.GetItemsIntersecting(viewPortAbsolute).ToList();
+            objectsToDraw = [.. PlacedObjects.GetItemsIntersecting(viewPortAbsolute)];
             _lastObjectsToDraw = objectsToDraw;
             _lastPlacedObjects = PlacedObjects;
             _lastViewPortAbsolute = viewPortAbsolute;
 
-            borderlessObjects = objectsToDraw.Where(_ => _.WrappedAnnoObject.Borderless).ToList();
+            borderlessObjects = [.. objectsToDraw.Where(_ => _.WrappedAnnoObject.Borderless)];
             _lastBorderlessObjectsToDraw = borderlessObjects;
-            borderedObjects = objectsToDraw.Where(_ => !_.WrappedAnnoObject.Borderless).ToList();
+            borderedObjects = [.. objectsToDraw.Where(_ => !_.WrappedAnnoObject.Borderless)];
             _lastBorderedObjectsToDraw = borderedObjects;
 
             //quick fix deleting objects via keyboard instead of right click
@@ -1018,10 +1018,10 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
                 RenderObjectInfluenceRange(context, objectsToDraw);
                 //Retrieve objects outside the viewport that have an influence range which affects objects
                 //within the viewport.
-                List<LayoutObject> offscreenObjects = PlacedObjects
+                List<LayoutObject> offscreenObjects = [.. PlacedObjects
                 .Where(_ => !viewPortAbsolute.Contains(_.GridRect) &&
                             (viewPortAbsolute.IntersectsWith(_.GridInfluenceRadiusRect) || viewPortAbsolute.IntersectsWith(_.GridInfluenceRangeRect))
-                 ).ToList();
+                 )];
                 RenderObjectInfluenceRadius(context, offscreenObjects);
                 RenderObjectInfluenceRange(context, offscreenObjects);
 
@@ -1604,7 +1604,7 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
         if (RenderTrueInfluenceRange && PlacedObjects.Count > 0)
         {
             HashSet<LayoutObject> placedObjects = [.. PlacedObjects, .. objects];
-            placedAnnoObjects = placedObjects.Select(o => o.WrappedAnnoObject).ToList();
+            placedAnnoObjects = [.. placedObjects.Select(o => o.WrappedAnnoObject)];
             Dictionary<AnnoObject, LayoutObject> placedObjectDictionary = placedObjects.ToDictionaryWithCapacity(o => o.WrappedAnnoObject);
 
             void Highlight(AnnoObject objectInRange)
@@ -2253,7 +2253,7 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
                             offsetCollisionRect.Offset(dx, dy);
 
                             //Its causing slowdowns when dragging large numbers of objects
-                            _unselectedObjects = PlacedObjects.GetItemsIntersecting(offsetCollisionRect).Where(_ => !SelectedObjects.Contains(_)).ToList();
+                            _unselectedObjects = [.. PlacedObjects.GetItemsIntersecting(offsetCollisionRect).Where(_ => !SelectedObjects.Contains(_))];
                             bool collisionsExist = false;
                             // temporarily move each object and check if collisions with unselected objects exist
                             foreach (LayoutObject curLayoutObject in SelectedObjects)
@@ -2991,7 +2991,7 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
         ICollection<AnnoObject> objects = ClipboardService.Paste();
         if (objects.Count > 0)
         {
-            CurrentObjects = objects.Select(x => new LayoutObject(x, _coordinateHelper, _brushCache, _penCache)).ToList();
+            CurrentObjects = [.. objects.Select(x => new LayoutObject(x, _coordinateHelper, _brushCache, _penCache))];
         }
     }
 
@@ -3313,6 +3313,11 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
 
     [GeneratedRegex("A7_residence_SkyScraper_(?<tier>[45])lvl(?<level>[1-5])", RegexOptions.ExplicitCapture | RegexOptions.Compiled | RegexOptions.CultureInvariant)]
     private static partial Regex GenerateSkyScraperRegex();
+
+    public void RenderToFile(string filename, IEnumerable<AnnoObject> placedObjects, IEnumerable<AnnoObject> selectedObjects, int border, CanvasRenderSetting renderSettings = null)
+    {
+        throw new NotImplementedException();
+    }
 
     #endregion
 }

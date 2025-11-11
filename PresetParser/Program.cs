@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -327,7 +326,7 @@ public class Program
                 {
                     BuildingPresets loadedPresets = SerializationHelper.LoadFromFile<BuildingPresets>(filePathToValidate);
 
-                    ValidateBuildings(loadedPresets.Buildings.Cast<IBuildingInfo>().ToList());
+                    ValidateBuildings([.. loadedPresets.Buildings.Cast<IBuildingInfo>()]);
                     Console.ReadLine();
                     Environment.Exit(0);
                 }
@@ -575,7 +574,7 @@ public class Program
         #endregion
 
         #region Write preset.json and icon.json files
-        BuildingPresets presets = new() { Version = BUILDING_PRESETS_VERSION, Buildings = buildings.Cast<BuildingInfo>().ToList() };
+        BuildingPresets presets = new() { Version = BUILDING_PRESETS_VERSION, Buildings = [.. buildings.Cast<BuildingInfo>()] };
 
         Console.WriteLine();
         if (!testVersion)
@@ -1759,7 +1758,7 @@ public class Program
     {
         XmlDocument assetsDocument = new();
         assetsDocument.Load(filename);
-        List<XmlNode> buildingNodes = assetsDocument.SelectNodes(xPathToBuildingsNode).Cast<XmlNode>().ToList();
+        List<XmlNode> buildingNodes = [.. assetsDocument.SelectNodes(xPathToBuildingsNode).Cast<XmlNode>()];
 
         foreach (XmlNode buildingNode in buildingNodes)
         {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using AnnoDesigner.Core.Presets.Models;
 using PresetParser.Extensions;
 using Xunit;
@@ -35,8 +31,10 @@ namespace PresetParser.Tests
         public void IsMatch_Buildings_IdentifierIsNullOrWhitespace_ShouldReturnFalse(string identifierToCheck)
         {
             // Arrange            
-            var listToCheck = new List<IBuildingInfo>();
-            listToCheck.Add(GetBuilding(DUMMY));
+            var listToCheck = new List<IBuildingInfo>
+            {
+                GetBuilding(DUMMY)
+            };
 
             // Act
             var result = StringExtensions.IsMatch(identifierToCheck, listToCheck);
@@ -82,8 +80,10 @@ namespace PresetParser.Tests
         public void IsMatch_Strings_IdentifierIsNullOrWhitespace_ShouldReturnFalse(string identifierToCheck)
         {
             // Arrange            
-            var listToCheck = new List<string>();
-            listToCheck.Add(DUMMY);
+            var listToCheck = new List<string>
+            {
+                DUMMY
+            };
 
             // Act
             var result = StringExtensions.IsMatch(identifierToCheck, listToCheck);

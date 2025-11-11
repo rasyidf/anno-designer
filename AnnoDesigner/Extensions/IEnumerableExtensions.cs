@@ -19,7 +19,7 @@ public static class IEnumerableExtensions
             return null;
         }
 
-        HashSet<Core.Models.AnnoObject> annoObjectsWithoutIgnoredObjects = objects.Select(x => x.WrappedAnnoObject).WithoutIgnoredObjects().ToHashSet();
+        HashSet<Core.Models.AnnoObject> annoObjectsWithoutIgnoredObjects = [.. objects.Select(x => x.WrappedAnnoObject).WithoutIgnoredObjects()];
 
         return objects.Where(x => annoObjectsWithoutIgnoredObjects.Contains(x.WrappedAnnoObject));
     }
@@ -36,9 +36,9 @@ public static class IEnumerableExtensions
             return null;
         }
 
-        HashSet<Core.Models.AnnoObject> annoObjectsWithoutIgnoredObjects = objects.Select(x => x.WrappedAnnoObject).WithoutIgnoredObjects().ToHashSet();
+        HashSet<Core.Models.AnnoObject> annoObjectsWithoutIgnoredObjects = [.. objects.Select(x => x.WrappedAnnoObject).WithoutIgnoredObjects()];
 
-        return objects.Where(x => annoObjectsWithoutIgnoredObjects.Contains(x.WrappedAnnoObject)).ToList();
+        return [.. objects.Where(x => annoObjectsWithoutIgnoredObjects.Contains(x.WrappedAnnoObject))];
     }
 
     /// <summary>

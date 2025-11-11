@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.IO.Abstractions;
-using System.Linq;
 
 namespace AnnoDesigner.CommandLine;
 
@@ -35,7 +34,7 @@ public class ArgumentParser : IArgumentParser
         ];
         root.SetHandler(() => parsedArgs = new EmptyArgs());
 
-        _ = root.Invoke(arguments.ToArray(), _console);
+        _ = root.Invoke([.. arguments], _console);
 
         return parsedArgs;
     }

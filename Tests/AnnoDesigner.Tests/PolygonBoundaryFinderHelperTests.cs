@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
+﻿using System.Linq;
 using AnnoDesigner.Helper;
 using Xunit;
 

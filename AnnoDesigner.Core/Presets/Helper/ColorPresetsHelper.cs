@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media;
@@ -11,6 +12,7 @@ namespace AnnoDesigner.Core.Presets.Helper;
 
 public class ColorPresetsHelper
 {
+    private static IFileSystem _fileSystem = new FileSystem();
     private readonly ColorPresetsLoader _colorPresetsLoader;
     private readonly BuildingPresetsLoader _buildingPresetsLoader;
     private ColorPresets _loadedColorPresets;
@@ -25,28 +27,27 @@ public class ColorPresetsHelper
     {
         get { return lazy.Value; }
     }
-
     private ColorPresetsHelper()
     {
         _colorPresetsLoader = new ColorPresetsLoader();
         _buildingPresetsLoader = new BuildingPresetsLoader();
+        _fileSystem = new FileSystem();
     }
-
     #endregion
 
     private ColorPresets LoadedColorPresets
     {
-        get { return _loadedColorPresets ?? (_loadedColorPresets = _colorPresetsLoader.Load(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), CoreConstants.PresetsFiles.ColorPresetsFile))); }
+        get { return _loadedColorPresets ??= _colorPresetsLoader.Load(_fileSystem.Path.Combine(_fileSystem.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), CoreConstants.PresetsFiles.ColorPresetsFile)); }
     }
 
     private ColorScheme LoadedDefaultColorScheme
     {
-        get { return _loadedDefaultColorScheme ?? (_loadedDefaultColorScheme = _colorPresetsLoader.LoadDefaultScheme(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), CoreConstants.PresetsFiles.ColorPresetsFile))); }
+        get { return _loadedDefaultColorScheme ??= _colorPresetsLoader.LoadDefaultScheme(_fileSystem.Path.Combine(_fileSystem.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), CoreConstants.PresetsFiles.ColorPresetsFile)); }
     }
 
     private BuildingPresets LoadedBuildingPresets
     {
-        get { return _loadedBuildingPresets ?? (_loadedBuildingPresets = _buildingPresetsLoader.Load(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), CoreConstants.PresetsFiles.BuildingPresetsFile))); }
+        get { return _loadedBuildingPresets ??= _buildingPresetsLoader.Load(_fileSystem.Path.Combine(_fileSystem.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), CoreConstants.PresetsFiles.BuildingPresetsFile)); }
     }
 
     public string PresetsVersion
@@ -108,5 +109,13 @@ public class ColorPresetsHelper
         result = LoadedBuildingPresets.Buildings.FirstOrDefault(x => x.Identifier.Equals(identifier, StringComparison.OrdinalIgnoreCase))?.Template;
 
         return result;
+    }
+    /// <summary>
+    /// Allows setting a custom IFileSystem implementation for testing purposes.
+    /// </summary>
+    /// <param name="fileSystem">The IFileSystem implementation to use.</param>
+    public static void SetFileSystem(IFileSystem fileSystem)
+    {
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
     }
 }

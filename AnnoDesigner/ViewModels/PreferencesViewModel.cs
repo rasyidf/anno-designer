@@ -1,7 +1,6 @@
 ﻿using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
@@ -35,17 +34,32 @@ public class PreferencesViewModel : Notify
 
     public void ShowFirstPage()
     {
-        SelectedItem = Pages.First();
+        if (Pages.Count > 0)
+        {
+            SelectedItem = Pages.First();
+        }
     }
 
     private void ShowPage(string name)
     {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return;
+        }
+
         PreferencePage foundPage = Pages.SingleOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         if (foundPage != null)
         {
-            NavigationService?.Navigate(new Uri($@"pack://application:,,,/Views\PreferencesPages\{name}.xaml", UriKind.RelativeOrAbsolute), foundPage.ViewModel);
+            try
+            {
+                NavigationService?.Navigate(new Uri($@"pack://application:,,,/Views\PreferencesPages\{name}.xaml", UriKind.RelativeOrAbsolute), foundPage.ViewModel);
+            }
+            catch (Exception ex)
+            {
+                // Log navigation error but don't crash
+                System.Diagnostics.Debug.WriteLine($"Failed to navigate to page {name}: {ex.Message}");
+            }
         }
-
     }
 
     public ICommand CloseWindowCommand { get; private set; }

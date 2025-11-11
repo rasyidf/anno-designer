@@ -42,7 +42,7 @@ namespace AnnoDesigner.Tests
             var commonsMock = new Mock<ICommons>();
             commonsMock.SetupGet(x => x.CurrentLanguage).Returns(() => "English");
             commonsMock.SetupGet(x => x.CurrentLanguageCode).Returns(() => "eng");
-            commonsMock.SetupGet(x => x.LanguageCodeMap).Returns(() => new Dictionary<string, string>());
+            commonsMock.SetupGet(x => x.LanguageCodeMap).Returns(() => []);
             _mockedCommons = commonsMock.Object;
 
             var mockedLocalizationHelper = new Mock<ILocalizationHelper>();
@@ -524,7 +524,7 @@ namespace AnnoDesigner.Tests
 
             var presets = new BuildingPresets
             {
-                Buildings = new List<BuildingInfo>()
+                Buildings = []
             };
 
             var canvas = new Mock<IAnnoCanvas>();
@@ -978,7 +978,7 @@ namespace AnnoDesigner.Tests
 
             var commons = new Mock<ICommons>();
             commons.SetupAllProperties();
-            commons.SetupGet(x => x.LanguageCodeMap).Returns(() => new Dictionary<string, string>());
+            commons.SetupGet(x => x.LanguageCodeMap).Returns(() => []);
             commons.Object.CurrentLanguage = languageBeforeChange;
 
             var viewModel = GetViewModel(commons.Object, null);
@@ -1002,7 +1002,7 @@ namespace AnnoDesigner.Tests
 
             var commons = new Mock<ICommons>();
             commons.SetupAllProperties();
-            commons.SetupGet(x => x.LanguageCodeMap).Returns(() => new Dictionary<string, string>());
+            commons.SetupGet(x => x.LanguageCodeMap).Returns(() => []);
             commons.Object.CurrentLanguage = languageBeforeChange;
 
             var viewModel = GetViewModel(commons.Object, null);
@@ -1024,7 +1024,7 @@ namespace AnnoDesigner.Tests
 
             var commons = new Mock<ICommons>();
             commons.SetupAllProperties();
-            commons.SetupGet(x => x.LanguageCodeMap).Returns(() => new Dictionary<string, string>());
+            commons.SetupGet(x => x.LanguageCodeMap).Returns(() => []);
             commons.Object.CurrentLanguage = languageBeforeChange;
 
             var viewModel = GetViewModel(commons.Object, null);

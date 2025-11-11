@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Extensions;
 using AnnoDesigner.Models;
@@ -38,7 +36,7 @@ namespace AnnoDesigner.Tests
         public void WithoutIgnoredObjects_ListIsEmpty_ShouldReturnEmptyList()
         {
             // Arrange/Act
-            var result = IEnumerableExtensions.WithoutIgnoredObjects(new List<LayoutObject>());
+            var result = IEnumerableExtensions.WithoutIgnoredObjects([]);
 
             // Assert
             Assert.Empty(result);

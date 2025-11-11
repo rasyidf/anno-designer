@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.IO.Abstractions;
 using System.Xml;
 using AnnoDesigner.Core.Models;

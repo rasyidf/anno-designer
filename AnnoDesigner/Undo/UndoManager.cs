@@ -102,4 +102,8 @@ public class UndoManager : Notify, IUndoManager
             }
         }
     }
+
+    public bool CanUndo => UndoStack.Count > 0;
+
+    public bool CanRedo => RedoStack.Count > 0;
 }

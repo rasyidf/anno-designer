@@ -13,9 +13,9 @@ internal class Validator
 
         knownDuplicates ??= [];
 
-        List<string> duplicates = buildingsToCheck.GroupBy(x => x.Identifier).Where(x => x.Count() > 1).Select(x => x.Key).ToList();
+        List<string> duplicates = [.. buildingsToCheck.GroupBy(x => x.Identifier).Where(x => x.Count() > 1).Select(x => x.Key)];
         //remove known duplicates from result
-        duplicates = duplicates.Except(knownDuplicates, StringComparer.Ordinal).ToList();
+        duplicates = [.. duplicates.Except(knownDuplicates, StringComparer.Ordinal)];
 
         if (duplicates.Count > 0)
         {

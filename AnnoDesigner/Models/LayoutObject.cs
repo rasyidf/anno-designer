@@ -61,6 +61,7 @@ public class LayoutObject : IBounded
     private double _borderlessPenThickness; //hot path optimization (avoid access of DependencyProperty)
     private Brush _borderlessPenBrush; //hot path optimization (avoid access of DependencyProperty)
     private Rect? _bounds;
+    private int _zIndex; // Z-index for rendering order (higher values render on top)
     /// <summary>
     /// Creates a new instance of a wrapper for <see cref = "AnnoObject"/>.
     /// </summary>
@@ -517,6 +518,16 @@ public class LayoutObject : IBounded
             _renderColor = null;
             _renderBrush = null;
         }
+    }
+    /// <summary>
+    /// Gets or sets the Z-index (rendering order) of this object.
+    /// Higher values render on top of lower values.
+    /// Objects are brought to front when moved.
+    /// </summary>
+    public int ZIndex
+    {
+        get => _zIndex;
+        set => _zIndex = value;
     }
 
     public Rect GridRect

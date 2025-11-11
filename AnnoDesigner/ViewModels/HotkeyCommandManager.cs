@@ -1,6 +1,7 @@
 ﻿using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -27,10 +28,11 @@ public class HotkeyCommandManager : Notify, INotifyCollectionChanged
 
     public HotkeyCommandManager(ILocalizationHelper localizationHelperToUse)
     {
-        hotkeys = [];
-        _observableCollection = [];
+        hotkeys = new Dictionary<string, Hotkey>();
+        _observableCollection = new ObservableCollection<Hotkey>();
         ObservableCollection = _observableCollection;
         _localizationHelper = localizationHelperToUse;
+        Debug.WriteLine($"[HotkeyCommandManager] Created instance={GetHashCode()}");
     }
 
     /// <summary>
@@ -80,6 +82,11 @@ public class HotkeyCommandManager : Notify, INotifyCollectionChanged
             //Check for localization
             hotkey.Description = _localizationHelper.GetLocalization(hotkey.LocalizationKey);
             CheckHotkeyUserMappings();
+            try
+            {
+                Debug.WriteLine($"[HotkeyCommandManager] AddHotkey: manager={GetHashCode()}, id={hotkey.HotkeyId}, total={_observableCollection.Count}");
+            }
+            catch { }
         }
         else
         {
@@ -164,7 +171,7 @@ public class HotkeyCommandManager : Notify, INotifyCollectionChanged
     /// <returns></returns>
     public Dictionary<string, HotkeyInformation> GetRemappedHotkeys()
     {
-        Dictionary<string, HotkeyInformation> remapped = [];
+        Dictionary<string, HotkeyInformation> remapped = new Dictionary<string, HotkeyInformation>();
         foreach (Hotkey h in hotkeys.Values)
         {
             if (h.IsRemapped())

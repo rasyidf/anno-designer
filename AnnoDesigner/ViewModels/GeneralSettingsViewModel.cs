@@ -307,9 +307,11 @@ public class GeneralSettingsViewModel : Notify
         get => _zoomSensitivityPercentage;
         set
         {
-            if (UpdateProperty(ref _zoomSensitivityPercentage, value))
+            // Clamp value to valid range
+            double clampedValue = Math.Max(1, Math.Min(value, Constants.ZoomSensitivitySliderMaximum));
+            if (UpdateProperty(ref _zoomSensitivityPercentage, clampedValue))
             {
-                _appSettings.ZoomSensitivityPercentage = value;
+                _appSettings.ZoomSensitivityPercentage = clampedValue;
                 _appSettings.Save();
             }
         }
@@ -385,12 +387,14 @@ public class GeneralSettingsViewModel : Notify
         get => _maxRecentFiles;
         set
         {
-            if (UpdateProperty(ref _maxRecentFiles, value))
+            // Clamp value to valid range
+            int clampedValue = Math.Max(1, Math.Min(value, 100));
+            if (UpdateProperty(ref _maxRecentFiles, clampedValue))
             {
-                _appSettings.MaxRecentFiles = value;
+                _appSettings.MaxRecentFiles = clampedValue;
                 _appSettings.Save();
 
-                _recentFilesHelper.MaximumItemCount = value;
+                _recentFilesHelper.MaximumItemCount = clampedValue;
             }
         }
     }

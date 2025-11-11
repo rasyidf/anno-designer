@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Input;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
-using System.Reflection;
 using Moq;
 using Xunit;
-using AnnoDesigner.Localization;
 using AnnoDesigner.ViewModels;
 
 namespace AnnoDesigner.Tests
@@ -93,14 +86,14 @@ namespace AnnoDesigner.Tests
         {
             get
             {
-                return new List<object[]>()
-                {
+                return
+                [
                     new object[] { "Keybind1", GetInputBinding(Key.A) },
                     new object[] { "Keybind2", GetInputBinding(Key.B, ModifierKeys.Alt | ModifierKeys.Control) },
                     new object[] { "Keybind3", GetInputBinding(Key.C, ModifierKeys.Shift) },
                     new object[] { "Keybind4", GetInputBinding(ExtendedMouseAction.LeftClick) },
                     new object[] { "Keybind5", GetInputBinding(ExtendedMouseAction.RightDoubleClick, ModifierKeys.Control) }
-                };
+                ];
             }
         }
         [Theory]
@@ -133,8 +126,8 @@ namespace AnnoDesigner.Tests
         {
             get
             {
-                return new List<object[]>()
-                {
+                return
+                [
                     new object[]
                     {
                         "Keybind1",
@@ -167,7 +160,7 @@ namespace AnnoDesigner.Tests
                         ModifierKeys.Control | ModifierKeys.Alt,
                         default(MouseAction)
                     },
-                };
+                ];
             }
         }
 
@@ -316,8 +309,8 @@ namespace AnnoDesigner.Tests
         {
             get
             {
-                return new List<object[]>()
-                {
+                return
+                [
                     new object[]
                     {
                         "Keybind1",
@@ -363,7 +356,7 @@ namespace AnnoDesigner.Tests
                         ExtendedMouseAction.RightClick,
                         GestureType.MouseGesture
                     },
-                };
+                ];
             }
         }
 
@@ -427,8 +420,8 @@ namespace AnnoDesigner.Tests
         {
             get
             {
-                return new List<object[]>()
-                {
+                return
+                [
                     new object[]
                     {
                         "Keybind1",
@@ -479,7 +472,7 @@ namespace AnnoDesigner.Tests
                         GestureType.MouseGesture,
                         0
                     },
-                };
+                ];
             }
         }
 

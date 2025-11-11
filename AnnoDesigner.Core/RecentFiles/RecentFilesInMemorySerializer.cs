@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using AnnoDesigner.Core.Models;
 
 namespace AnnoDesigner.Core.RecentFiles;
@@ -23,6 +19,6 @@ public class RecentFilesInMemorySerializer : IRecentFilesSerializer
 
     public void Serialize(List<RecentFile> recentFiles)
     {
-        _recentFiles = new List<RecentFile>(recentFiles);
+        _recentFiles = [.. recentFiles];
     }
 }

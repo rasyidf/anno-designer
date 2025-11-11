@@ -96,7 +96,7 @@ namespace AnnoDesigner.Tests
             {
                 new GenericTreeItem(null) { Id = 1, Header = "item 1", IsExpanded = true },
                 new GenericTreeItem(null) { Id = 2, Header = "item 2", IsExpanded = false },
-                new GenericTreeItem(null) { Id = 3, Header = "item 3", Children = new ObservableCollection<GenericTreeItem>() },
+                new GenericTreeItem(null) { Id = 3, Header = "item 3", Children = [] },
                 item4,
                 item5
             };
@@ -281,7 +281,7 @@ namespace AnnoDesigner.Tests
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
 
             // Act
             viewModel.LoadItems(buildingPresets);
@@ -305,7 +305,7 @@ namespace AnnoDesigner.Tests
             }
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
 
             // Act
             viewModel.LoadItems(buildingPresets);
@@ -326,7 +326,7 @@ namespace AnnoDesigner.Tests
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
             buildingPresets.Version = versionToSet;
 
             // Act
@@ -343,7 +343,7 @@ namespace AnnoDesigner.Tests
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
 
             // Act/Assert            
             Assert.PropertyChanged(viewModel, nameof(viewModel.BuildingPresetsVersion), () => viewModel.LoadItems(buildingPresets));
@@ -953,7 +953,7 @@ namespace AnnoDesigner.Tests
             viewModel.Items = new ObservableCollection<GenericTreeItem>(items);
 
             // Act
-            viewModel.SetCondensedTreeState(new Dictionary<int, bool>(), lastBuildingPresetsVersionToSet);
+            viewModel.SetCondensedTreeState([], lastBuildingPresetsVersionToSet);
 
             // Assert
             Assert.Equal(expectedState, viewModel.GetCondensedTreeState());
@@ -966,7 +966,7 @@ namespace AnnoDesigner.Tests
             var buildingPresetsVersion = "1.0";
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
             buildingPresets.Version = buildingPresetsVersion;
 
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
@@ -976,7 +976,7 @@ namespace AnnoDesigner.Tests
             viewModel.Items = new ObservableCollection<GenericTreeItem>(items);
 
             // Act
-            viewModel.SetCondensedTreeState(new Dictionary<int, bool>(), "2.0");
+            viewModel.SetCondensedTreeState([], "2.0");
 
             // Assert
             Assert.Equal(expectedState, viewModel.GetCondensedTreeState());
@@ -989,7 +989,7 @@ namespace AnnoDesigner.Tests
             var buildingPresetsVersion = "1.0";
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
             buildingPresets.Version = buildingPresetsVersion;
 
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
@@ -1012,7 +1012,7 @@ namespace AnnoDesigner.Tests
             var buildingPresetsVersion = "1.0";
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
             buildingPresets.Version = buildingPresetsVersion;
 
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);
@@ -1022,7 +1022,7 @@ namespace AnnoDesigner.Tests
             viewModel.Items = new ObservableCollection<GenericTreeItem>(items);
 
             // Act
-            viewModel.SetCondensedTreeState(new Dictionary<int, bool>(), buildingPresetsVersion);
+            viewModel.SetCondensedTreeState([], buildingPresetsVersion);
 
             // Assert
             Assert.Equal(expectedState, viewModel.GetCondensedTreeState());
@@ -1035,7 +1035,7 @@ namespace AnnoDesigner.Tests
             var buildingPresetsVersion = "1.0";
 
             var buildingPresets = new BuildingPresets();
-            buildingPresets.Buildings = new List<BuildingInfo>();
+            buildingPresets.Buildings = [];
             buildingPresets.Version = buildingPresetsVersion;
 
             var viewModel = new PresetsTreeViewModel(_mockedTreeLocalization, _mockedCommons);

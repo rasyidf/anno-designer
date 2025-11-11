@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Threading;
@@ -32,7 +31,7 @@ namespace PresetParser.Tests.CultureAware
         {
             this.culture = culture;
 
-            Traits.Add("Culture", new List<string> { culture });
+            Traits.Add("Culture", [culture]);
 
             DisplayName += $"[{culture}]";
         }

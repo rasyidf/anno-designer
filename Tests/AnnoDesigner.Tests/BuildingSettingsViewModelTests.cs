@@ -347,7 +347,7 @@ namespace AnnoDesigner.Tests
         {
             // Arrange
             var viewModel = GetViewModel();
-            viewModel.ColorsInLayout = new ObservableCollection<SerializableColor>();
+            viewModel.ColorsInLayout = [];
 
             // Act/Assert
             Assert.False(viewModel.ShowColorsInLayout);
@@ -358,8 +358,10 @@ namespace AnnoDesigner.Tests
         {
             // Arrange
             var viewModel = GetViewModel();
-            var colorsInLayout = new ObservableCollection<SerializableColor>();
-            colorsInLayout.Add(new SerializableColor());
+            var colorsInLayout = new ObservableCollection<SerializableColor>
+            {
+                new SerializableColor()
+            };
 
             viewModel.ColorsInLayout = colorsInLayout;
 
@@ -380,7 +382,7 @@ namespace AnnoDesigner.Tests
             // Act/Assert
             Assert.PropertyChanged(viewModel,
                 nameof(BuildingSettingsViewModel.ShowColorsInLayout),
-                () => viewModel.ColorsInLayout = new ObservableCollection<SerializableColor>());
+                () => viewModel.ColorsInLayout = []);
         }
 
         #endregion

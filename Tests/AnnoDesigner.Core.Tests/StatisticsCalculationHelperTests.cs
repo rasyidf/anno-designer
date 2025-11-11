@@ -57,7 +57,7 @@ namespace AnnoDesigner.Core.Tests
             var result = StatisticsCalculationResult.Empty;
 
             // Act
-            var ex = Record.Exception(() => result = helper.CalculateStatistics(new List<AnnoObject>()));
+            var ex = Record.Exception(() => result = helper.CalculateStatistics([]));
 
             // Assert
             Assert.Null(ex);

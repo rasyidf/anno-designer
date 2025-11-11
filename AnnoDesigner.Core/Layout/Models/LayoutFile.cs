@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using AnnoDesigner.Core.Models;
 
@@ -19,6 +18,6 @@ public class LayoutFile : LayoutFileVersionContainer
     public LayoutFile(IEnumerable<AnnoObject> objects)
     {
         FileVersion = CoreConstants.LayoutFileVersion;
-        Objects = objects.ToList();
+        Objects = [.. objects];
     }
 }

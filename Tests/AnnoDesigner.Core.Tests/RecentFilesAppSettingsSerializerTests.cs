@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnnoDesigner.Core.Models;
+﻿using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.RecentFiles;
 using Moq;
 using Xunit;
@@ -89,7 +84,7 @@ namespace AnnoDesigner.Core.Tests
             var serializer = GetSerializer(mockedSettings.Object);
 
             // Act
-            serializer.Serialize(new List<RecentFile>());
+            serializer.Serialize([]);
 
             // Assert
             mockedSettings.Verify(x => x.Save(), Times.Once);

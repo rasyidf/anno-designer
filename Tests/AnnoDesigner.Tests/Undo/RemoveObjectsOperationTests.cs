@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using AnnoDesigner.Core.DataStructures;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
@@ -34,10 +33,10 @@ namespace AnnoDesigner.Tests.Undo
             var operation = new RemoveObjectsOperation<LayoutObject>()
             {
                 Collection = collection,
-                Objects = new List<LayoutObject>()
-                {
+                Objects =
+                [
                     obj
-                }
+                ]
             };
 
             // Act
@@ -57,11 +56,11 @@ namespace AnnoDesigner.Tests.Undo
             var operation = new RemoveObjectsOperation<LayoutObject>()
             {
                 Collection = collection,
-                Objects = new List<LayoutObject>()
-                {
+                Objects =
+                [
                     obj1,
                     obj2
-                }
+                ]
             };
 
             // Act
@@ -85,10 +84,10 @@ namespace AnnoDesigner.Tests.Undo
             var operation = new RemoveObjectsOperation<LayoutObject>()
             {
                 Collection = collection,
-                Objects = new List<LayoutObject>()
-                {
+                Objects =
+                [
                     obj
-                }
+                ]
             };
 
             // Act
@@ -110,11 +109,11 @@ namespace AnnoDesigner.Tests.Undo
             var operation = new RemoveObjectsOperation<LayoutObject>()
             {
                 Collection = collection,
-                Objects = new List<LayoutObject>()
-                {
+                Objects =
+                [
                     obj1,
                     obj2
-                }
+                ]
             };
 
             // Act

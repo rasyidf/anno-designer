@@ -40,7 +40,7 @@ public class WindowsClipboard : IClipboard
             return null;
         }
 
-        return new ReadOnlyCollection<string>(clipboardData.Cast<string>().ToList());
+        return new ReadOnlyCollection<string>([.. clipboardData.Cast<string>()]);
     }
 
     public string GetText()
