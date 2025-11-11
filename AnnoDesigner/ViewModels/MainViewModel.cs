@@ -17,6 +17,7 @@ using AnnoDesigner.Helper;
 using AnnoDesigner.Localization;
 using AnnoDesigner.Models;
 using AnnoDesigner.PreferencesPages;
+using AnnoDesigner.Services;
 using AnnoDesigner.Undo.Operations;
 using Microsoft.Win32;
 using NLog;
@@ -46,6 +47,7 @@ public class MainViewModel : Notify
     private readonly ICommons _commons;
     private readonly IAppSettings _appSettings;
     private readonly ILayoutLoader _layoutLoader;
+    private readonly ILayoutFileService _layoutFileService;
     private readonly ICoordinateHelper _coordinateHelper;
     private readonly IBrushCache _brushCache;
     private readonly IPenCache _penCache;
@@ -100,6 +102,7 @@ public class MainViewModel : Notify
         ILocalizationHelper localizationHelperToUse,
         IFileSystem fileSystemToUse,
         ILayoutLoader layoutLoaderToUse = null,
+        ILayoutFileService layoutFileServiceToUse = null,
         ICoordinateHelper coordinateHelperToUse = null,
         IBrushCache brushCacheToUse = null,
         IPenCache penCacheToUse = null,
@@ -122,6 +125,12 @@ public class MainViewModel : Notify
         _brushCache = brushCacheToUse ?? new BrushCache();
         _penCache = penCacheToUse ?? new PenCache();
         _adjacentCellGrouper = adjacentCellGrouper ?? new AdjacentCellGrouper();
+        
+        _layoutFileService = layoutFileServiceToUse ?? new LayoutFileService(
+            _layoutLoader,
+            _fileSystem,
+            _messageBoxService,
+            _localizationHelper);
 
         HotkeyCommandManager = new HotkeyCommandManager(_localizationHelper);
 
@@ -160,6 +169,8 @@ public class MainViewModel : Notify
 
         LayoutSettingsViewModel = new LayoutSettingsViewModel();
         LayoutSettingsViewModel.PropertyChangedWithValues += LayoutSettingsViewModel_PropertyChangedWithValues;
+
+        FloatingToolboxViewModel = new CanvasV2.FloatingToolboxViewModel();
 
         OpenProjectHomepageCommand = new RelayCommand(OpenProjectHomepage);
         CloseWindowCommand = new RelayCommand<ICloseable>(CloseWindow);
@@ -772,62 +783,79 @@ public class MainViewModel : Notify
     {
         try
         {
-            LayoutFile layout = _layoutLoader.LoadLayout(filePath, forceLoad);
+            LayoutFile layout = await _layoutFileService.LoadLayoutFromFileAsync(filePath, forceLoad);
             if (layout != null)
             {
-                OpenLayout(layout);
-            }
-
-            AnnoCanvas.LoadedFile = filePath;
-
-            AnnoCanvas.ForceRendering();
-
-            AnnoCanvas_LoadedFileChanged(this, new FileLoadedEventArgs(filePath, layout));
-        }
-        catch (LayoutFileUnsupportedFormatException layoutEx)
-        {
-            logger.Warn(layoutEx, "Version of layout file is not supported.");
-
-            if (await _messageBoxService.ShowQuestion(
-                    _localizationHelper.GetLocalization("FileVersionUnsupportedMessage"),
-                    _localizationHelper.GetLocalization("FileVersionUnsupportedTitle")))
-            {
-                await OpenFileAsync(filePath, true);
+                ApplyLayoutToCanvas(layout);
+                AnnoCanvas.LoadedFile = filePath;
+                AnnoCanvas.ForceRendering();
+                AnnoCanvas_LoadedFileChanged(this, new FileLoadedEventArgs(filePath, layout));
             }
         }
         catch (Exception ex)
         {
-            logger.Error(ex, "Error loading layout from JSON.");
-
-            IOErrorMessageBox(ex);
+            logger.Error(ex, "Error opening layout file.");
+            _messageBoxService.ShowError(
+                ex.Message,
+                _localizationHelper.GetLocalization("Error"));
         }
     }
 
     /// <summary>
-    /// Opens new layout from memory.
+    /// Applies a layout to the canvas, clearing existing objects.
     /// </summary>
-    public void OpenLayout(LayoutFile layout)
+    private void ApplyLayoutToCanvas(LayoutFile layout)
     {
+        if (layout == null)
+        {
+            return;
+        }
+
+        // Clear existing objects
         AnnoCanvas.SelectedObjects.Clear();
-        AnnoCanvas.PlacedObjects.Clear();
+        
+        // Clear PlacedObjects properly for both V1 and V2
+        if (AnnoCanvas.PlacedObjects is QuadTree<LayoutObject> quadTree)
+        {
+            AnnoCanvas.PlacedObjects = new QuadTree<LayoutObject>(new Rect(0, 0, 1, 1));
+        }
+        else
+        {
+            AnnoCanvas.PlacedObjects.Clear();
+        }
+        
         AnnoCanvas.UndoManager.Clear();
 
-        List<LayoutObject> layoutObjects = new(layout.Objects.Count);
-        foreach (AnnoObject curObj in layout.Objects)
-        {
-            layoutObjects.Add(new LayoutObject(curObj, _coordinateHelper, _brushCache, _penCache));
-        }
+        // Create layout objects from the loaded layout
+        List<LayoutObject> layoutObjects = _layoutFileService.CreateLayoutObjects(
+            layout,
+            _coordinateHelper,
+            _brushCache,
+            _penCache);
+
+        // Set layout version
         LayoutSettingsViewModel.LayoutVersion = layout.LayoutVersion;
 
+        // Add objects to canvas
         _ = AnnoCanvas.ComputeBoundingRect(layoutObjects);
         AnnoCanvas.PlacedObjects.AddRange(layoutObjects);
 
+        // Reset view
         AnnoCanvas.Normalize(1);
         AnnoCanvas.ResetViewport();
 
+        // Update UI
         AnnoCanvas.RaiseStatisticsUpdated(UpdateStatisticsEventArgs.All);
         AnnoCanvas.RaiseColorsInLayoutUpdated();
         AnnoCanvas.UndoManager.Clear();
+    }
+
+    /// <summary>
+    /// Public method for opening a layout from memory (backward compatibility).
+    /// </summary>
+    public void OpenLayout(LayoutFile layout)
+    {
+        ApplyLayoutToCanvas(layout);
     }
 
     /// <summary>
@@ -838,16 +866,18 @@ public class MainViewModel : Notify
         try
         {
             AnnoCanvas.Normalize(1);
-            LayoutFile layoutToSave = new(AnnoCanvas.PlacedObjects.Select(x => x.WrappedAnnoObject))
-            {
-                LayoutVersion = LayoutSettingsViewModel.LayoutVersion
-            };
-            _layoutLoader.SaveLayout(layoutToSave, filePath);
+            
+            LayoutFile layoutToSave = _layoutFileService.CreateLayoutFile(
+                AnnoCanvas.PlacedObjects,
+                LayoutSettingsViewModel.LayoutVersion);
+            
+            _layoutFileService.SaveLayoutToFile(layoutToSave, filePath);
             AnnoCanvas.UndoManager.IsDirty = false;
         }
         catch (Exception e)
         {
-            IOErrorMessageBox(e);
+            logger.Error(e, "Error saving layout file.");
+            // Error already shown by service
         }
     }
 
@@ -879,6 +909,75 @@ public class MainViewModel : Notify
             _annoCanvas.OnLoadedFileChanged += AnnoCanvas_LoadedFileChanged;
             _annoCanvas.OpenFileRequested += AnnoCanvas_OpenFileRequested;
             _annoCanvas.SaveFileRequested += AnnoCanvas_SaveFileRequested;
+
+            // If using the V2 adapter, subscribe to its request events which ask the host to show dialogs
+            if (value is AnnoDesigner.CanvasV2.Integration.CanvasV2Adapter adapter)
+            {
+                adapter.RequestOpenFile += async (s, e) =>
+                {
+                    // Check for unsaved changes before opening
+                    if (!await AnnoCanvas.CheckUnsavedChanges()) return;
+
+                    // Show OpenFileDialog and open selected file
+                    OpenFileDialog dialog = new()
+                    {
+                        DefaultExt = Constants.SavedLayoutExtension,
+                        Filter = Constants.SaveOpenDialogFilter
+                    };
+
+                    if (dialog.ShowDialog() == true)
+                    {
+                        await OpenFileAsync(dialog.FileName);
+                    }
+                };
+
+                adapter.RequestSaveAs += (s, e) =>
+                {
+                    SaveFileDialog dialog = new()
+                    {
+                        DefaultExt = Constants.SavedLayoutExtension,
+                        Filter = Constants.SaveOpenDialogFilter
+                    };
+
+                    if (!string.IsNullOrEmpty(AnnoCanvas.LoadedFile))
+                    {
+                        dialog.FileName = System.IO.Path.GetFileNameWithoutExtension(AnnoCanvas.LoadedFile);
+                    }
+
+                    if (dialog.ShowDialog() == true)
+                    {
+                        AnnoCanvas.LoadedFile = dialog.FileName;
+                        SaveFile(dialog.FileName);
+                    }
+                };
+
+                adapter.RequestNewFile += async (s, e) =>
+                {
+                    // New file request: ensure unsaved changes handled and then clear canvas
+                    if (!await AnnoCanvas.CheckUnsavedChanges()) return;
+                    
+                    // Clear canvas - for QuadTree we need to create a new instance
+                    AnnoCanvas.SelectedObjects.Clear();
+                    
+                    // For Canvas V2, PlacedObjects is a QuadTree - clear it properly
+                    if (AnnoCanvas.PlacedObjects is QuadTree<LayoutObject> quadTree)
+                    {
+                        // Create a new empty QuadTree with default bounds
+                        AnnoCanvas.PlacedObjects = new QuadTree<LayoutObject>(new Rect(0, 0, 1, 1));
+                    }
+                    else
+                    {
+                        AnnoCanvas.PlacedObjects.Clear();
+                    }
+                    
+                    AnnoCanvas.UndoManager.Clear();
+                    AnnoCanvas.LoadedFile = string.Empty;
+                    AnnoCanvas.Normalize(1);
+                    AnnoCanvas.ResetViewport();
+                    AnnoCanvas.RaiseStatisticsUpdated(UpdateStatisticsEventArgs.All);
+                    AnnoCanvas.RaiseColorsInLayoutUpdated();
+                };
+            }
             BuildingSettingsViewModel.AnnoCanvasToUse = _annoCanvas;
 
             _annoCanvas.RenderGrid = CanvasShowGrid;
@@ -1163,7 +1262,7 @@ public class MainViewModel : Notify
 
             Rect bounds = (Rect)new StatisticsCalculationHelper().CalculateStatistics(roadColorGroup.Select(p => p.WrappedAnnoObject));
 
-            LayoutObject[][] cells = Enumerable.Range(0, (int)bounds.Width).Select(i => new LayoutObject[(int)bounds.Height]).ToArray();
+            LayoutObject[][] cells = [.. Enumerable.Range(0, (int)bounds.Width).Select(i => new LayoutObject[(int)bounds.Height])];
             foreach (LayoutObject item in roadColorGroup)
             {
                 for (int i = 0; i < item.Size.Width; i++)
@@ -1175,15 +1274,15 @@ public class MainViewModel : Notify
                 }
             }
 
-            List<CellGroup<LayoutObject>> groups = _adjacentCellGrouper.GroupAdjacentCells(cells).ToList();
+            List<CellGroup<LayoutObject>> groups = [.. _adjacentCellGrouper.GroupAdjacentCells(cells)];
             AnnoCanvas.UndoManager.AsSingleUndoableOperation(() =>
             {
-                List<LayoutObject> oldObjects = groups.SelectMany(g => g.Items).ToList();
+                List<LayoutObject> oldObjects = [.. groups.SelectMany(g => g.Items)];
                 foreach (LayoutObject item in oldObjects)
                 {
                     _ = AnnoCanvas.PlacedObjects.Remove(item);
                 }
-                List<LayoutObject> newObjects = groups
+                List<LayoutObject> newObjects = [.. groups
                     .Select(g => new LayoutObject(
                         new AnnoObject(g.Items.First().WrappedAnnoObject)
                         {
@@ -1193,8 +1292,7 @@ public class MainViewModel : Notify
                         _coordinateHelper,
                         _brushCache,
                         _penCache
-                    ))
-                    .ToList();
+                    ))];
                 AnnoCanvas.PlacedObjects.AddRange(newObjects);
 
                 AnnoCanvas.UndoManager.RegisterOperation(new RemoveObjectsOperation<LayoutObject>()
@@ -1225,50 +1323,28 @@ public class MainViewModel : Notify
         string input = InputWindow.Prompt(this, _localizationHelper.GetLocalization("LoadLayoutMessage"),
             _localizationHelper.GetLocalization("LoadLayoutHeader"));
 
-        await ExecuteLoadLayoutFromJsonSubAsync(input, false);
-    }
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return;
+        }
 
-    private async Task ExecuteLoadLayoutFromJsonSubAsync(string jsonString, bool forceLoad = false)
-    {
         try
         {
-            if (!string.IsNullOrWhiteSpace(jsonString))
+            LayoutFile loadedLayout = await _layoutFileService.LoadLayoutFromJsonAsync(input);
+            if (loadedLayout != null)
             {
-                byte[] jsonArray = Encoding.UTF8.GetBytes(jsonString);
-                using MemoryStream ms = new(jsonArray);
-                LayoutFile loadedLayout = _layoutLoader.LoadLayout(ms, forceLoad);
-                if (loadedLayout != null)
-                {
-                    AnnoCanvas.SelectedObjects.Clear();
-                    AnnoCanvas.PlacedObjects.Clear();
-                    AnnoCanvas.PlacedObjects.AddRange(loadedLayout.Objects.Select(x => new LayoutObject(x, _coordinateHelper, _brushCache, _penCache)));
-
-                    AnnoCanvas.UndoManager.Clear();
-
-                    AnnoCanvas.LoadedFile = string.Empty;
-                    AnnoCanvas.Normalize(1);
-                    AnnoCanvas.ResetViewport();
-
-                    _ = UpdateStatisticsAsync(UpdateMode.All);
-                }
-            }
-        }
-        catch (LayoutFileUnsupportedFormatException layoutEx)
-        {
-            logger.Warn(layoutEx, "Version of layout does not match.");
-
-            if (await _messageBoxService.ShowQuestion(
-                    _localizationHelper.GetLocalization("FileVersionMismatchMessage"),
-                    _localizationHelper.GetLocalization("FileVersionMismatchTitle")))
-            {
-                await ExecuteLoadLayoutFromJsonSubAsync(jsonString, true);
+                ApplyLayoutToCanvas(loadedLayout);
+                AnnoCanvas.LoadedFile = string.Empty;
+                AnnoCanvas.ForceRendering();
+                AnnoCanvas_LoadedFileChanged(this, new FileLoadedEventArgs(string.Empty, loadedLayout));
             }
         }
         catch (Exception ex)
         {
-            logger.Error(ex, "Error loading layout from JSON.");
-            _messageBoxService.ShowError(_localizationHelper.GetLocalization("LayoutLoadingError"),
-                    _localizationHelper.GetLocalization("Error"));
+            logger.Error(ex, "Error loading layout from JSON input.");
+            _messageBoxService.ShowError(
+                _localizationHelper.GetLocalization("LayoutLoadingError"),
+                _localizationHelper.GetLocalization("Error"));
         }
     }
 
@@ -1528,29 +1604,31 @@ public class MainViewModel : Notify
 
     private void ExecuteCopyLayoutToClipboard(object param)
     {
-        ExecuteCopyLayoutToClipboardSub();
-    }
-
-    private void ExecuteCopyLayoutToClipboardSub()
-    {
         try
         {
-            using MemoryStream ms = new();
             AnnoCanvas.Normalize(1);
-            LayoutFile layoutToSave = new(AnnoCanvas.PlacedObjects.Select(x => x.WrappedAnnoObject));
-            _layoutLoader.SaveLayout(layoutToSave, ms);
+            
+            LayoutFile layoutToSave = _layoutFileService.CreateLayoutFile(
+                AnnoCanvas.PlacedObjects,
+                LayoutSettingsViewModel.LayoutVersion);
+            
+            string jsonString = _layoutFileService.SerializeLayoutToJson(layoutToSave);
 
-            string jsonString = Encoding.UTF8.GetString(ms.ToArray());
+            if (!string.IsNullOrEmpty(jsonString))
+            {
+                Clipboard.SetText(jsonString, TextDataFormat.UnicodeText);
 
-            Clipboard.SetText(jsonString, TextDataFormat.UnicodeText);
-
-            _messageBoxService.ShowMessage(_localizationHelper.GetLocalization("ClipboardContainsLayoutAsJson"),
-                _localizationHelper.GetLocalization("Successful"));
+                _messageBoxService.ShowMessage(
+                    _localizationHelper.GetLocalization("ClipboardContainsLayoutAsJson"),
+                    _localizationHelper.GetLocalization("Successful"));
+            }
         }
         catch (Exception ex)
         {
-            logger.Error(ex, "Error saving layout to JSON.");
-            _messageBoxService.ShowError(ex.Message, _localizationHelper.GetLocalization("LayoutSavingError"));
+            logger.Error(ex, "Error copying layout to clipboard.");
+            _messageBoxService.ShowError(
+                ex.Message,
+                _localizationHelper.GetLocalization("LayoutSavingError"));
         }
     }
 
@@ -1652,19 +1730,22 @@ public class MainViewModel : Notify
         {
             Name = nameof(GeneralSettingsPage),
             ViewModel = PreferencesGeneralViewModel,
-            HeaderKeyForTranslation = "GeneralSettings"
+            HeaderKeyForTranslation = "GeneralSettings",
+            Icon = Wpf.Ui.Controls.SymbolRegular.Settings24
         });
         vm.Pages.Add(new PreferencePage
         {
             Name = nameof(ManageKeybindingsPage),
             ViewModel = PreferencesKeyBindingsViewModel,
-            HeaderKeyForTranslation = "ManageKeybindings"
+            HeaderKeyForTranslation = "ManageKeybindings",
+            Icon = Wpf.Ui.Controls.SymbolRegular.Keyboard24
         });
         vm.Pages.Add(new PreferencePage
         {
             Name = nameof(UpdateSettingsPage),
             ViewModel = PreferencesUpdateViewModel,
-            HeaderKeyForTranslation = "UpdateSettings"
+            HeaderKeyForTranslation = "UpdateSettings",
+            Icon = Wpf.Ui.Controls.SymbolRegular.ArrowSync24
         });
 
         preferencesWindow.DataContext = vm;
@@ -1734,8 +1815,15 @@ public class MainViewModel : Notify
     public GeneralSettingsViewModel PreferencesGeneralViewModel { get; set; }
 
     public LayoutSettingsViewModel LayoutSettingsViewModel { get; set; }
+    
+    public CanvasV2.FloatingToolboxViewModel FloatingToolboxViewModel { get; set; }
+    
+    public ILocalizationHelper LocalizationHelper
+    {
+        get { return _localizationHelper; }
+    }
 
-    #endregion    
+    #endregion
 }
 
 

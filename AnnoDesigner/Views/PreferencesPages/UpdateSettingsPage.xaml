@@ -13,172 +13,282 @@
     d:DataContext="{d:DesignInstance Type=viewModels:UpdateSettingsViewModel,
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="687.503"
-    d:DesignWidth="800"
+    d:DesignWidth="600"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-    Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+    Background="Transparent"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-    mc:Ignorable="d" Margin="0,0,0,100">
+    mc:Ignorable="d">
     <Page.Resources>
         <coreConverters:BoolToVisibilityConverter
             x:Key="converterBoolToVisibilityCollapsed"
             FalseValue="Collapsed"
-            TrueValue="Visible" />
+            TrueValue="Visible"/>
     </Page.Resources>
-    <xctk:BusyIndicator BusyContent="{Binding BusyContent}" IsBusy="{Binding IsBusy}">
-        <StackPanel Margin="10,5,0,100" Orientation="Vertical">
+    <xctk:BusyIndicator BusyContent="{Binding BusyContent}"
+                        IsBusy="{Binding IsBusy}">
+        <StackPanel Margin="0"
+                    Orientation="Vertical">
 
-            <!--#region Current Version-->
-
+            <!--  Page Header  -->
             <TextBlock
-                Margin="0,10,0,10"
-                FontSize="14"
-                Text="{l:Localize UpdatePreferencesVersionInformation}" />
+                Margin="0,0,0,20"
+                FontSize="24"
+                FontWeight="SemiBold"
+                Text="{l:Localize UpdateSettings}"/>
 
-            <StackPanel Margin="20,0,0,10" Grid.IsSharedSizeScope="True">
-                <Grid>
+            <!--#region Version Information Card-->
+            <ui:CardExpander
+                Margin="0,0,0,16"
+                Icon="{ui:SymbolIcon Info24}">
+                <ui:CardExpander.Header>
+                    <StackPanel>
+                        <TextBlock
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Text="{l:Localize UpdatePreferencesVersionInformation}"/>
+                        <TextBlock
+                            Margin="0,4,0,0"
+                            FontSize="12"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="Current version information"
+                            TextWrapping="Wrap"/>
+                    </StackPanel>
+                </ui:CardExpander.Header>
+
+                <Grid Margin="0,8,0,0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="200" SharedSizeGroup="LocalizationColumn" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="{l:Localize Version, StringFormat='\{0\}:', Mode=OneWay}" />
-                    <TextBlock Grid.Column="1" Text="{Binding VersionValue}" />
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="{l:Localize Version, StringFormat='\{0\}', Mode=OneWay}"/>
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        FontWeight="SemiBold"
+                        Text="{Binding VersionValue}"/>
+
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="{l:Localize PresetsVersion, StringFormat='\{0\}', Mode=OneWay}"/>
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        FontWeight="SemiBold"
+                        Text="{Binding PresetsVersionValue}"/>
+
+                    <TextBlock
+                        Grid.Row="4"
+                        Grid.Column="0"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="{l:Localize ColorPresetsVersion, StringFormat='\{0\}', Mode=OneWay}"/>
+                    <TextBlock
+                        Grid.Row="4"
+                        Grid.Column="1"
+                        FontWeight="SemiBold"
+                        Text="{Binding ColorPresetsVersionValue}"/>
+
+                    <TextBlock
+                        Grid.Row="6"
+                        Grid.Column="0"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="{l:Localize TreeLocalizationVersion, StringFormat='\{0\}', Mode=OneWay}"/>
+                    <TextBlock
+                        Grid.Row="6"
+                        Grid.Column="1"
+                        FontWeight="SemiBold"
+                        Text="{Binding TreeLocalizationVersionValue}"/>
+
+                    <TextBlock
+                        Grid.Row="8"
+                        Grid.Column="0"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="{l:Localize FileVersion, StringFormat='\{0\}', Mode=OneWay}"/>
+                    <TextBlock
+                        Grid.Row="8"
+                        Grid.Column="1"
+                        FontWeight="SemiBold"
+                        Text="{Binding FileVersionValue}"/>
                 </Grid>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition SharedSizeGroup="LocalizationColumn" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Grid.Column="0" Text="{l:Localize PresetsVersion, StringFormat='\{0\}:', Mode=OneWay}" />
-                    <TextBlock Grid.Column="1" Text="{Binding PresetsVersionValue}" />
-                </Grid>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition SharedSizeGroup="LocalizationColumn" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Grid.Column="0" Text="{l:Localize ColorPresetsVersion, StringFormat='\{0\}:', Mode=OneWay}" />
-                    <TextBlock Grid.Column="1" Text="{Binding ColorPresetsVersionValue}" />
-                </Grid>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition SharedSizeGroup="LocalizationColumn" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Grid.Column="0" Text="{l:Localize TreeLocalizationVersion, StringFormat='\{0\}:', Mode=OneWay}" />
-                    <TextBlock Grid.Column="1" Text="{Binding TreeLocalizationVersionValue}" />
-                </Grid>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition SharedSizeGroup="LocalizationColumn" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Grid.Column="0" Text="{l:Localize FileVersion, StringFormat='\{0\}:', Mode=OneWay}" />
-                    <TextBlock Grid.Column="1" Text="{Binding FileVersionValue}" />
-                </Grid>
-            </StackPanel>
-
+            </ui:CardExpander>
             <!--#endregion-->
 
-            <!--#region Settings-->
+            <!--#region Update Settings Expander-->
+            <ui:CardExpander
+                Margin="0,0,0,12"
+                Icon="{ui:SymbolIcon Settings24}"
+                IsExpanded="True">
+                <ui:CardExpander.Header>
+                    <StackPanel>
+                        <TextBlock
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Text="{l:Localize UpdatePreferencesSettings}"/>
+                        <TextBlock
+                            Margin="0,4,0,0"
+                            FontSize="12"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="Configure automatic update behavior"
+                            TextWrapping="Wrap"/>
+                    </StackPanel>
+                </ui:CardExpander.Header>
 
-            <TextBlock
-                Margin="0,10,0,10"
-                FontSize="14"
-                Text="{l:Localize UpdatePreferencesSettings}" />
+                <StackPanel Margin="16,0,16,16">
+                    <ui:CardControl Header="{l:Localize EnableAutomaticUpdateCheck}"
+                                    Margin="0,0,0,8"
+                                    Padding="12">
+                        <CheckBox IsChecked="{Binding AutomaticUpdateCheck}">
+                            <CheckBox.ToolTip>
+                                <TextBlock Text="Automatically check for updates when the application starts"
+                                           TextWrapping="Wrap"/>
+                            </CheckBox.ToolTip>
+                        </CheckBox>
+                    </ui:CardControl>
 
-            <StackPanel Margin="20,0,0,10">
-                <CheckBox
-                    Margin="0,0,0,10"
-                    Content="{l:Localize EnableAutomaticUpdateCheck}"
-                    IsChecked="{Binding AutomaticUpdateCheck}" />
-                <CheckBox
-                    Margin="0,0,0,10"
-                    Content="{l:Localize UpdatePreferencesCheckPreRelease}"
-                    IsChecked="{Binding UpdateSupportsPrerelease}" />
-                <CheckBox Content="{l:Localize ShowMultipleInstanceWarning}" IsChecked="{Binding ShowMultipleInstanceWarning}" />
-            </StackPanel>
+                    <ui:CardControl Header="{l:Localize UpdatePreferencesCheckPreRelease}"
+                                    Margin="0,0,0,8"
+                                    Padding="12">
+                        <CheckBox IsChecked="{Binding UpdateSupportsPrerelease}">
+                            <CheckBox.ToolTip>
+                                <TextBlock Text="Include pre-release versions when checking for updates"
+                                           TextWrapping="Wrap"/>
+                            </CheckBox.ToolTip>
+                        </CheckBox>
+                    </ui:CardControl>
 
+                    <ui:CardControl Header="{l:Localize ShowMultipleInstanceWarning}"
+                                    Margin="0,0,0,8"
+                                    Padding="12">
+                        <CheckBox IsChecked="{Binding ShowMultipleInstanceWarning}">
+                            <CheckBox.ToolTip>
+                                <TextBlock Text="Show a warning when multiple instances of the application are running"
+                                           TextWrapping="Wrap"/>
+                            </CheckBox.ToolTip>
+                        </CheckBox>
+                    </ui:CardControl>
+                </StackPanel>
+            </ui:CardExpander>
             <!--#endregion-->
 
-            <!--#region Updates-->
+            <!--#region Check for Updates Card-->
+            <ui:CardControl
+                Margin="0,0,0,16"
+                Icon="{ui:SymbolIcon ArrowSync24}"
+                Padding="16">
+                <ui:CardControl.Header>
+                    <StackPanel>
+                        <TextBlock
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Text="{l:Localize UpdatePreferencesUpdates}"/>
+                        <TextBlock
+                            Margin="0"
+                            FontSize="12"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="Check for and install updates"
+                            TextWrapping="Wrap"/>
+                    </StackPanel>
+                </ui:CardControl.Header>
 
-            <TextBlock
-                Margin="0,10,0,10"
-                FontSize="14"
-                Text="{l:Localize UpdatePreferencesUpdates}" />
-
-            <StackPanel Margin="20,0,0,0" Orientation="Horizontal">
-
-                <Button
-                    Margin="0,0,10,0"
-                    Padding="5,2"
-                    Command="{Binding CheckForUpdatesCommand}"
-                    Content="{l:Localize CheckForUpdates}" />
-                <Button
-                    Margin="0,0,10,0"
-                    Padding="5,2"
-                    Command="{Binding DownloadPresetsCommand}"
-                    Content="{l:Localize UpdatePreferencesDownloadPresetsAndRestart}"
-                    Visibility="{Binding IsPresetUpdateAvailable, Converter={StaticResource converterBoolToVisibilityCollapsed}}" />
-            </StackPanel>
-
-            <TextBlock
-                Margin="20,5,0,0"
-                FontWeight="Bold"
-                Text="{l:Localize UpdatePreferencesNewAppUpdateAvailable}"
-                TextWrapping="Wrap"
-                Visibility="{Binding IsUpdateAvailable, Converter={StaticResource converterBoolToVisibilityCollapsed}}" />
-            <TextBlock Margin="20,5,0,0" Visibility="{Binding IsUpdateAvailable, Converter={StaticResource converterBoolToVisibilityCollapsed}}">
-                <Hyperlink Command="{Binding OpenReleasesCommand}">https://github.com/AnnoDesigner/anno-designer/releases</Hyperlink>
-            </TextBlock>
-            <Grid Margin="20,0,0,0" Visibility="{Binding IsUpdateAvailable, Converter={StaticResource converterBoolToVisibilityCollapsed}}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <TextBlock Grid.Column="0" Text="{l:Localize Version, StringFormat='\{0\}:', Mode=OneWay}" />
-                <TextBlock
-                    Grid.Column="1"
-                    Margin="10,0,0,0"
-                    Text="{Binding UpdatedVersionValue}" />
-            </Grid>
-
-            <TextBlock
-                Margin="20,5,0,0"
-                FontWeight="Bold"
-                Foreground="Green"
-                Text="{l:Localize UpdatePreferencesNoUpdates}"
-                TextWrapping="Wrap"
-                Visibility="{Binding IsAppUpToDate, Converter={StaticResource converterBoolToVisibilityCollapsed}}" />
-
-            <TextBlock
-                Margin="20,5,0,0"
-                TextWrapping="Wrap"
-                Visibility="{Binding IsUpdateError, Converter={StaticResource converterBoolToVisibilityCollapsed}}">
-                <Run
-                    FontWeight="Bold"
-                    Foreground="Red"
-                    Text="{l:Localize UpdatePreferencesErrorCheckingUpdates,
-                                      Mode=OneWay}" />
-                <LineBreak />
-                <Run Text="{l:Localize UpdatePreferencesMoreInfoInLog, Mode=OneWay}" />
-            </TextBlock>
-
-            <TextBlock
-                Margin="20,5,0,100"
-                FontWeight="Bold"
-                Text="{l:Localize UpdatePreferencesNewPresetsUpdateAvailable}"
-                TextWrapping="Wrap"
-                Visibility="{Binding IsPresetUpdateAvailable, Converter={StaticResource converterBoolToVisibilityCollapsed}}" />
-
+                <StackPanel>
+                    <!--  Action Buttons  -->
+                    <StackPanel   Orientation="Horizontal">
+                        <ui:Button
+                            Appearance="Primary"
+                            Command="{Binding CheckForUpdatesCommand}"
+                            Content="{l:Localize CheckForUpdates}"
+                            Icon="{ui:SymbolIcon ArrowSync24}"/>
+                        <ui:Button
+                            Margin="12,0,0,0"
+                            Appearance="Success"
+                            Command="{Binding DownloadPresetsCommand}"
+                            Content="{l:Localize UpdatePreferencesDownloadPresetsAndRestart}"
+                            Icon="{ui:SymbolIcon ArrowDownload24}"
+                            Visibility="{Binding IsPresetUpdateAvailable, Converter={StaticResource converterBoolToVisibilityCollapsed}}"/>
+                    </StackPanel>
+                </StackPanel>
+            </ui:CardControl>
             <!--#endregion-->
+
+            <!--  Update Available Info  -->
+            <ui:InfoBar
+                Margin="0,0,0,12"
+                IsClosable="False"
+                IsOpen="{Binding IsUpdateAvailable}"
+                Message="A new version of Anno Designer is available!"
+                Severity="Informational"
+                Title="{l:Localize UpdatePreferencesNewAppUpdateAvailable}">
+                <ui:InfoBar.Content>
+                    <StackPanel Margin="0,8,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                Grid.Column="0"
+                                Margin="0,0,8,0"
+                                Text="{l:Localize Version, StringFormat='\{0\}:', Mode=OneWay}"/>
+                            <TextBlock
+                                Grid.Column="1"
+                                FontWeight="SemiBold"
+                                Text="{Binding UpdatedVersionValue}"/>
+                        </Grid>
+                        <ui:Button
+                            Margin="0,8,0,0"
+                            Appearance="Secondary"
+                            Command="{Binding OpenReleasesCommand}"
+                            Content="View Release Notes"
+                            Icon="{ui:SymbolIcon Open24}"/>
+                    </StackPanel>
+                </ui:InfoBar.Content>
+            </ui:InfoBar>
+
+            <!--  Presets Update Available  -->
+            <ui:InfoBar
+                Margin="0,0,0,12"
+                IsClosable="False"
+                IsOpen="{Binding IsPresetUpdateAvailable}"
+                Message="New building presets are available for download"
+                Severity="Informational"
+                Title="{l:Localize UpdatePreferencesNewPresetsUpdateAvailable}"/>
+
+            <!--  Up to Date Info  -->
+            <ui:InfoBar
+                Margin="0,0,0,12"
+                IsClosable="False"
+                IsOpen="{Binding IsAppUpToDate}"
+                Message="{l:Localize UpdatePreferencesNoUpdates}"
+                Severity="Success"
+                Title="All up to date!"/>
+
+            <!--  Error Info  -->
+            <ui:InfoBar
+                Margin="0,0,0,12"
+                IsClosable="False"
+                IsOpen="{Binding IsUpdateError}"
+                Severity="Error"
+                Title="{l:Localize UpdatePreferencesErrorCheckingUpdates}"
+                Message="{l:Localize UpdatePreferencesMoreInfoInLog}">
+            </ui:InfoBar>
 
         </StackPanel>
     </xctk:BusyIndicator>

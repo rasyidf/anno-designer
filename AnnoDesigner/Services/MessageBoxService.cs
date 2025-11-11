@@ -14,6 +14,7 @@ public class MessageBoxService : IMessageBoxService
             Title = title,
             Content = message,
             IsPrimaryButtonEnabled = true,
+            MinWidth = 400,
             PrimaryButtonText = "OK",
         };
 
@@ -29,6 +30,7 @@ public class MessageBoxService : IMessageBoxService
             Title = title,
             Content = message,
             IsPrimaryButtonEnabled = true,
+            MinWidth = 400,
             PrimaryButtonText = "OK",
             PrimaryButtonAppearance = Wpf.Ui.Controls.ControlAppearance.Caution
         };
@@ -42,6 +44,7 @@ public class MessageBoxService : IMessageBoxService
         {
             Owner = owner as Window,
             Title = title,
+            MinWidth = 400,
             Content = message,
             IsPrimaryButtonEnabled = true,
             PrimaryButtonText = "OK",
@@ -60,6 +63,7 @@ public class MessageBoxService : IMessageBoxService
             Content = message,
             IsPrimaryButtonEnabled = true,
             IsSecondaryButtonEnabled = true,
+            MinWidth = 400,
             SecondaryButtonText = "No",
             PrimaryButtonText = "Yes",
         };
@@ -79,6 +83,7 @@ public class MessageBoxService : IMessageBoxService
             IsPrimaryButtonEnabled = true,
             IsSecondaryButtonEnabled = true,
 
+            MinWidth = 400,
             SecondaryButtonText = "No",
             PrimaryButtonText = "Yes",
         };

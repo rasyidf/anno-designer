@@ -2,7 +2,9 @@
 using AnnoDesigner.Models;
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
+using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Input;
 using static AnnoDesigner.Core.CoreConstants;
@@ -22,11 +24,14 @@ public class PresetsTreeSearchViewModel : Notify
         GotFocusCommand = new RelayCommand(GotFocus);
         LostFocusCommand = new RelayCommand(LostFocus);
         GameVersionFilterChangedCommand = new RelayCommand(GameVersionFilterChanged);
+        SelectAllGameVersionsCommand = new RelayCommand(SelectAllGameVersions);
+        ClearAllGameVersionsCommand = new RelayCommand(ClearAllGameVersions);
 
         HasFocus = false;
         SearchText = string.Empty;
         GameVersionFilters = [];
         InitGameVersionFilters();
+        HookGameVersionFilters();
     }
 
     private void InitGameVersionFilters()
@@ -63,7 +68,13 @@ public class PresetsTreeSearchViewModel : Notify
     public ObservableCollection<GameVersionFilter> GameVersionFilters
     {
         get => _gameVersionFilters;
-        set => UpdateProperty(ref _gameVersionFilters, value);
+        set
+        {
+            if (UpdateProperty(ref _gameVersionFilters, value))
+            {
+                HookGameVersionFilters();
+            }
+        }
     }
 
     public ObservableCollection<GameVersionFilter> SelectedGameVersionFilters => new(GameVersionFilters.Where(x => x.IsSelected));
@@ -133,6 +144,8 @@ public class PresetsTreeSearchViewModel : Notify
     }
 
     public ICommand GameVersionFilterChangedCommand { get; private set; }
+    public ICommand SelectAllGameVersionsCommand { get; private set; }
+    public ICommand ClearAllGameVersionsCommand { get; private set; }
 
     private void GameVersionFilterChanged(object param)
     {
@@ -154,6 +167,85 @@ public class PresetsTreeSearchViewModel : Notify
         {
             _isUpdatingGameVersionFilter = false;
 
+            OnPropertyChanged(nameof(SelectedGameVersionFilters));
+        }
+    }
+
+    private void SelectAllGameVersions(object param)
+    {
+        try
+        {
+            _isUpdatingGameVersionFilter = true;
+            foreach (var filter in GameVersionFilters)
+            {
+                filter.IsSelected = true;
+            }
+        }
+        finally
+        {
+            _isUpdatingGameVersionFilter = false;
+            OnPropertyChanged(nameof(SelectedGameVersionFilters));
+        }
+    }
+
+    private void ClearAllGameVersions(object param)
+    {
+        try
+        {
+            _isUpdatingGameVersionFilter = true;
+            foreach (var filter in GameVersionFilters)
+            {
+                filter.IsSelected = false;
+            }
+        }
+        finally
+        {
+            _isUpdatingGameVersionFilter = false;
+            OnPropertyChanged(nameof(SelectedGameVersionFilters));
+        }
+    }
+
+    private void HookGameVersionFilters()
+    {
+        if (GameVersionFilters == null)
+        {
+            return;
+        }
+
+        GameVersionFilters.CollectionChanged -= GameVersionFilters_CollectionChanged;
+        GameVersionFilters.CollectionChanged += GameVersionFilters_CollectionChanged;
+
+        foreach (var item in GameVersionFilters)
+        {
+            item.PropertyChanged -= GameVersionFilter_PropertyChanged;
+            item.PropertyChanged += GameVersionFilter_PropertyChanged;
+        }
+    }
+
+    private void GameVersionFilters_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.OldItems != null)
+        {
+            foreach (GameVersionFilter oldItem in e.OldItems)
+            {
+                oldItem.PropertyChanged -= GameVersionFilter_PropertyChanged;
+            }
+        }
+        if (e.NewItems != null)
+        {
+            foreach (GameVersionFilter newItem in e.NewItems)
+            {
+                newItem.PropertyChanged -= GameVersionFilter_PropertyChanged;
+                newItem.PropertyChanged += GameVersionFilter_PropertyChanged;
+            }
+        }
+        OnPropertyChanged(nameof(SelectedGameVersionFilters));
+    }
+
+    private void GameVersionFilter_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(GameVersionFilter.IsSelected) && !_isUpdatingGameVersionFilter)
+        {
             OnPropertyChanged(nameof(SelectedGameVersionFilters));
         }
     }

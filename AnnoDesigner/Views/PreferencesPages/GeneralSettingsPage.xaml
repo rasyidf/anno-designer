@@ -15,11 +15,11 @@
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     d:DataContext="{d:DesignInstance Type=viewModels:GeneralSettingsViewModel,
                                      IsDesignTimeCreatable=False}"
-    d:DesignHeight="544.433"
-    d:DesignWidth="800"
+    d:DesignHeight="1548.433"
+    d:DesignWidth="600"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-    Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+    Background="Transparent"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d">
     <Page.Resources>
@@ -29,231 +29,412 @@
             TrueValue="Visible" />
         <converters:UserDefinedColorToDisplayNameConverter x:Key="converterUserDefinedColorToDisplayName" />
     </Page.Resources>
-    <StackPanel Margin="10,5,0,0" Orientation="Vertical">
+    <StackPanel Margin="0" Orientation="Vertical">
 
-        <!--#region UI Settings-->
-
+        <!--  Page Header  -->
         <TextBlock
-            Margin="0,10,0,10"
-            FontSize="14"
-            Text="{l:Localize GeneralPreferencesUISettings}" />
+            Margin="0,0,0,20"
+            FontSize="24"
+            FontWeight="SemiBold"
+            Text="{l:Localize GeneralSettings}" />
 
-        <Grid Margin="20,0,0,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" MinWidth="180" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+        <!--#region UI Settings Expander-->
+        <ui:CardExpander
+            Margin="0,0,0,12"
+            Icon="{ui:SymbolIcon Color24}"
+            IsExpanded="True"
+            >
+            <ui:CardExpander.Header>
+                <StackPanel>
+                    <ui:TextBlock
+                        Margin="0"
+                        FontTypography="BodyStrong"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="{l:Localize GeneralPreferencesUISettings}"
+                        TextWrapping="WrapWithOverflow" />
+                    <ui:TextBlock
+                        Margin="0,4,0,0"
+                        Appearance="Secondary"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="Customize the appearance of the application"
+                        TextWrapping="WrapWithOverflow" />
+                </StackPanel>
+            </ui:CardExpander.Header>
 
-            <TextBlock Grid.Column="0" Text="{l:Localize GeneralPreferencesGridLinesColor, StringFormat='\{0\}:', Mode=OneWay}" />
-            <ComboBox
-                Grid.Column="1"
-                Width="140"
-                Margin="10,0,0,0"
-                VerticalAlignment="Bottom"
-                IsEnabled="True"
-                ItemsSource="{Binding GridLineColors}"
-                SelectedItem="{Binding SelectedGridLineColor}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Converter={StaticResource converterUserDefinedColorToDisplayName}}" />
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+            <StackPanel  >
+                <!--  Grid Line Color Card  -->
+                <ui:CardControl Margin="0,0,0,4" Padding="20,10" Icon="{ui:SymbolIcon Color24}"  >
 
-            <xctk:ColorPicker
-                Grid.Column="2"
-                Width="140"
-                Margin="10,0,0,0"
-                AdvancedTabHeader="{l:Localize Advanced}"
-                AvailableColorsHeader="{l:Localize AvailableColors}"
-                AvailableColorsSortingMode="HueSaturationBrightness"
-                DisplayColorAndName="True"
-                DisplayColorTooltip="True"
-                RecentColorsHeader="{l:Localize RecentColors}"
-                SelectedColor="{Binding SelectedCustomGridLineColor}"
-                ShowAvailableColors="True"
-                ShowDropDownButton="True"
-                ShowRecentColors="True"
-                ShowStandardColors="False"
-                StandardColorsHeader="{l:Localize StandardColors}"
-                StandardTabHeader="{l:Localize Standard}"
-                Visibility="{Binding IsGridLineColorPickerVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}}" />
-        </Grid>
 
-        <Grid Margin="20,0,0,10" Grid.IsSharedSizeScope="True">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition
-                    Width="Auto"
-                    MinWidth="180"
-                    SharedSizeGroup="PreferenceLabel" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+                    <ui:CardControl.Header>
+                        <StackPanel>
+                            <ui:TextBlock
+                        Margin="0"
+                        FontTypography="BodyStrong"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="{l:Localize GeneralPreferencesGridLinesColor}"
+                        TextWrapping="WrapWithOverflow" />
+                            <ui:TextBlock
+                        Margin="0,4,0,0"
+                        Appearance="Secondary"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="Color of the grid lines displayed on the canvas"
+                        TextWrapping="WrapWithOverflow" />
+                        </StackPanel>
+                    </ui:CardControl.Header>
 
-            <TextBlock Grid.Column="0" Text="{l:Localize GeneralPreferencesObjectBorderLinesColor, StringFormat='\{0\}:', Mode=OneWay}" />
-            <ComboBox
-                Grid.Column="1"
-                Width="140"
-                Margin="10,0,0,0"
-                VerticalAlignment="Bottom"
-                IsEnabled="True"
-                ItemsSource="{Binding ObjectBorderLineColors}"
-                SelectedItem="{Binding SelectedObjectBorderLineColor}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Converter={StaticResource converterUserDefinedColorToDisplayName}}" />
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+                    <StackPanel
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Orientation="Horizontal">
+                        <ComboBox
+                                Width="160"
+                                VerticalAlignment="Center"
+                                IsEnabled="True"
+                                ItemsSource="{Binding GridLineColors}"
+                                SelectedItem="{Binding SelectedGridLineColor}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource converterUserDefinedColorToDisplayName}}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <xctk:ColorPicker
+                                Width="160"
+                                Margin="12,0,0,0"
+                                AdvancedTabHeader="{l:Localize Advanced}"
+                                AvailableColorsHeader="{l:Localize AvailableColors}"
+                                AvailableColorsSortingMode="HueSaturationBrightness"
+                                DisplayColorAndName="True"
+                                DisplayColorTooltip="True"
+                                RecentColorsHeader="{l:Localize RecentColors}"
+                                SelectedColor="{Binding SelectedCustomGridLineColor}"
+                                ShowAvailableColors="True"
+                                ShowDropDownButton="True"
+                                ShowRecentColors="True"
+                                ShowStandardColors="False"
+                                StandardColorsHeader="{l:Localize StandardColors}"
+                                StandardTabHeader="{l:Localize Standard}"
+                                Visibility="{Binding IsGridLineColorPickerVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}}" />
+                    </StackPanel>
+                </ui:CardControl>
 
-            <xctk:ColorPicker
-                Grid.Column="2"
-                Width="140"
-                Margin="10,0,0,0"
-                AdvancedTabHeader="{l:Localize Advanced}"
-                AvailableColorsHeader="{l:Localize AvailableColors}"
-                AvailableColorsSortingMode="HueSaturationBrightness"
-                DisplayColorAndName="True"
-                DisplayColorTooltip="True"
-                RecentColorsHeader="{l:Localize RecentColors}"
-                SelectedColor="{Binding SelectedCustomObjectBorderLineColor}"
-                ShowAvailableColors="True"
-                ShowDropDownButton="True"
-                ShowRecentColors="True"
-                ShowStandardColors="False"
-                StandardColorsHeader="{l:Localize StandardColors}"
-                StandardTabHeader="{l:Localize Standard}"
-                Visibility="{Binding IsObjectBorderLineColorPickerVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}}" />
-        </Grid>
+                <!--  Object Border Color Card  -->
+                <ui:CardControl Margin="0,0,0,4" Padding="20,10" Icon="{ui:SymbolIcon Color24}">
+                    <ui:CardControl.Header>
+                        <StackPanel>
+                            <ui:TextBlock
+                                Margin="0"
+                                FontTypography="BodyStrong"
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                
+                            Text="{l:Localize GeneralPreferencesObjectBorderLinesColor}"
+                                TextWrapping="WrapWithOverflow" />
+                            <ui:TextBlock
+                                Appearance="Secondary"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="Color of the border lines around placed objects"
+                                TextWrapping="WrapWithOverflow" />
+                        </StackPanel>
+                    </ui:CardControl.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-        <Grid Margin="20,0,0,10" Grid.IsSharedSizeScope="True">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition
-                    Width="Auto"
-                    MinWidth="180"
-                    SharedSizeGroup="PreferenceLabel" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" Text="{l:Localize GeneralPreferencesZoomSensitivity, StringFormat='{}{0}:'}" />
-            <Slider
-                Name="ZoomSlider"
-                Grid.Column="1"
-                Width="140"
-                Margin="10,0,0,0"
-                IsSnapToTickEnabled="True"
-                Maximum="{x:Static helpers:Constants.ZoomSensitivitySliderMaximum}"
-                Minimum="1"
-                TickFrequency="1"
-                TickPlacement="None"
-                Value="{Binding ZoomSensitivityPercentage}" />
-            <TextBlock
-                Grid.Column="2"
-                Margin="10,0,0,0"
-                Text="{Binding ElementName=ZoomSlider, Path=Value, StringFormat='{}{0}%'}" />
-            <Button
-                Grid.Column="3"
-                Margin="20,0,0,0"
-                Padding="5,2"
-                Command="{Binding ResetZoomSensitivityCommand}"
-                Content="{l:Localize Default}" />
-        </Grid>
-        <Grid Margin="20,0,0,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition
-                    Width="Auto"
-                    MinWidth="180"
-                    SharedSizeGroup="TitleColumn" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="10" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="10" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="10" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="10" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="10" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <CheckBox
-                Grid.Row="0"
-                Content="{l:Localize GeneralPreferencesUseZoomToPoint}"
-                IsChecked="{Binding UseZoomToPoint}" />
-            <CheckBox
-                Grid.Row="2"
-                Content="{l:Localize GeneralPreferencesInvertPanningDirection}"
-                IsChecked="{Binding InvertPanningDirection}" />
-            <CheckBox
-                Grid.Row="4"
-                Content="{l:Localize GeneralPreferencesShowScrollbars}"
-                IsChecked="{Binding ShowScrollbars}" />
-            <CheckBox
-                Grid.Row="6"
-                Content="{l:Localize GeneralPreferencesInvertScrollingDirection}"
-                IsChecked="{Binding InvertScrollingDirection}" />
-            <CheckBox
-                Grid.Row="8"
-                Content="{l:Localize GeneralPreferencesHideInfluenceOnSelection}"
-                IsChecked="{Binding HideInfluenceOnSelection}" />
-            <CheckBox
-                Grid.Row="10"
-                Content="{l:Localize GeneralPreferencesIncludeRoadsInStatisticCalculation}"
-                IsChecked="{Binding IncludeRoadsInStatisticCalculation}" />
-
-        </Grid>
-
+                        <StackPanel
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Orientation="Horizontal">
+                            <ComboBox
+                                Width="160"
+                                VerticalAlignment="Center"
+                                IsEnabled="True"
+                                ItemsSource="{Binding ObjectBorderLineColors}"
+                                SelectedItem="{Binding SelectedObjectBorderLineColor}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Converter={StaticResource converterUserDefinedColorToDisplayName}}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <xctk:ColorPicker
+                                Width="160"
+                                Margin="12,0,0,0"
+                                AdvancedTabHeader="{l:Localize Advanced}"
+                                AvailableColorsHeader="{l:Localize AvailableColors}"
+                                AvailableColorsSortingMode="HueSaturationBrightness"
+                                DisplayColorAndName="True"
+                                DisplayColorTooltip="True"
+                                RecentColorsHeader="{l:Localize RecentColors}"
+                                SelectedColor="{Binding SelectedCustomObjectBorderLineColor}"
+                                ShowAvailableColors="True"
+                                ShowDropDownButton="True"
+                                ShowRecentColors="True"
+                                ShowStandardColors="False"
+                                StandardColorsHeader="{l:Localize StandardColors}"
+                                StandardTabHeader="{l:Localize Standard}"
+                                Visibility="{Binding IsObjectBorderLineColorPickerVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}}" />
+                        </StackPanel>
+                    </Grid>
+                </ui:CardControl>
+            </StackPanel>
+        </ui:CardExpander>
         <!--#endregion-->
 
-        <!--#region Recent files Settings-->
+        <!--#region Canvas Settings Expander-->
+        <ui:CardExpander
+            Margin="0,0,0,12"
+            Icon="{ui:SymbolIcon Settings24}"
+            IsExpanded="True">
+            <ui:CardExpander.Header>
+                <StackPanel>
+                    <ui:TextBlock
+                        Margin="0"
+                        FontTypography="BodyStrong"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Canvas Settings"
+                        TextWrapping="WrapWithOverflow" />
+                    <ui:TextBlock
+                        Margin="0,4,0,0"
+                        Appearance="Secondary"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="Configure zoom, panning, and scrolling behavior"
+                        TextWrapping="WrapWithOverflow" />
+                </StackPanel>
+            </ui:CardExpander.Header>
 
-        <TextBlock
-            Margin="0,10,0,10"
-            FontSize="14"
-            Text="{l:Localize GeneralPreferencesRecentFilesSettings}" />
+            <StackPanel Margin="16,0,16,16">
+                <!--  Zoom Sensitivity Card  -->
+                <ui:CardControl Margin="0,0,0,8" Padding="16">
+                    <ui:CardControl.Header>
+                        <StackPanel>
+                            <ui:TextBlock
+                                Margin="0"
+                                FontTypography="BodyStrong"
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                Text="{l:Localize GeneralPreferencesZoomSensitivity}"
+                                TextWrapping="WrapWithOverflow" />
+                            <ui:TextBlock
+                                Appearance="Secondary"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="Control how fast the canvas zooms in and out"
+                                TextWrapping="WrapWithOverflow" />
+                        </StackPanel>
+                    </ui:CardControl.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-        <Grid Margin="20,0,0,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" MinWidth="180" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" Text="{l:Localize GeneralPreferencesMaxRecentFiles, StringFormat='\{0\}:', Mode=OneWay}" />
+                            <StackPanel
+                                Grid.Column="1"
+                                Orientation="Horizontal">
+                                <Slider
+                                    Name="ZoomSlider"
+                                    Width="160"
+                                    VerticalAlignment="Center"
+                                    IsSnapToTickEnabled="True"
+                                    Maximum="{x:Static helpers:Constants.ZoomSensitivitySliderMaximum}"
+                                    Minimum="1"
+                                    TickFrequency="1"
+                                    TickPlacement="None"
+                                    Value="{Binding ZoomSensitivityPercentage}" />
+                                <TextBlock
+                                    Width="40"
+                                    Margin="8,0,0,0"
+                                    VerticalAlignment="Center"
+                                    FontWeight="SemiBold"
+                                    Text="{Binding ElementName=ZoomSlider, Path=Value, StringFormat='{}{0}%'}" />
+                                <ui:Button
+                                    Margin="8,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Appearance="Secondary"
+                                    Command="{Binding ResetZoomSensitivityCommand}"
+                                    Content="{l:Localize Default}"
+                                    Icon="{ui:SymbolIcon ArrowReset24}" />
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </ui:CardControl>
 
-            <ui:NumberBox
-                Grid.Column="1"
-                Width="70"
-                Margin="10,0,0,0"
-                IsEnabled="True"
-                Maximum="100"
-                Minimum="1"
-                SpinButtonPlacementMode="Compact"
-                TabIndex="0"
-                Value="{Binding MaxRecentFiles}" />
+                <!--  Use Zoom To Point Card  -->
+                <ui:CardControl Margin="0,0,0,4" Padding="12" Header="{l:Localize GeneralPreferencesUseZoomToPoint}">
+                    <CheckBox  IsChecked="{Binding UseZoomToPoint}">
+                        <CheckBox.ToolTip>
+                            <ui:TextBlock Text="Zoom toward the cursor position instead of the center" TextWrapping="WrapWithOverflow" />
+                        </CheckBox.ToolTip>
+                    </CheckBox>
+                </ui:CardControl>
 
-            <Button
-                Grid.Column="2"
-                Margin="20,0,0,0"
-                Padding="5,2"
-                Command="{Binding ResetMaxRecentFilesCommand}"
-                Content="{l:Localize Default}" />
-            <Button
-                Grid.Column="3"
-                Margin="50,0,0,0"
-                Padding="5,2"
-                Command="{Binding ClearRecentFilesCommand}"
-                Content="{l:Localize Clear}" />
+                <!--  Invert Panning Direction Card  -->
+                <ui:CardControl Margin="0,0,0,4" Padding="12" Header="{l:Localize GeneralPreferencesInvertPanningDirection}">
+                    <CheckBox   IsChecked="{Binding InvertPanningDirection}">
+                        <CheckBox.ToolTip>
+                            <ui:TextBlock Text="Reverse the direction when panning with the mouse" TextWrapping="WrapWithOverflow" />
+                        </CheckBox.ToolTip>
+                    </CheckBox>
+                </ui:CardControl>
 
-        </Grid>
+                <!--  Show Scrollbars Card  -->
+                <ui:CardControl Margin="0,0,0,4" Padding="12" Header="{l:Localize GeneralPreferencesShowScrollbars}">
+                    <CheckBox   IsChecked="{Binding ShowScrollbars}">
+                        <CheckBox.ToolTip>
+                            <ui:TextBlock Text="Show or hide scrollbars on the canvas" TextWrapping="WrapWithOverflow" />
+                        </CheckBox.ToolTip>
+                    </CheckBox>
+                </ui:CardControl>
 
+                <!--  Invert Scrolling Direction Card  -->
+                <ui:CardControl Margin="0,0,0,4" Padding="12" Header="{l:Localize GeneralPreferencesInvertScrollingDirection}">
+                    <CheckBox   IsChecked="{Binding InvertScrollingDirection}">
+                        <CheckBox.ToolTip>
+                            <ui:TextBlock Text="Reverse the scrolling direction" TextWrapping="WrapWithOverflow" />
+                        </CheckBox.ToolTip>
+                    </CheckBox>
+                </ui:CardControl>
+
+                <!--  Hide Influence On Selection Card  -->
+                <ui:CardControl Margin="0,0,0,4" Padding="12" Header="{l:Localize GeneralPreferencesHideInfluenceOnSelection}">
+                    <CheckBox   IsChecked="{Binding HideInfluenceOnSelection}">
+                        <CheckBox.ToolTip>
+                            <ui:TextBlock Text="Hide building influence when objects are selected" TextWrapping="WrapWithOverflow" />
+                        </CheckBox.ToolTip>
+                    </CheckBox>
+                </ui:CardControl>
+            </StackPanel>
+        </ui:CardExpander>
+        <!--#endregion-->
+
+        <!--#region Statistics Expander-->
+        <ui:CardExpander
+            Margin="0,0,0,12"
+            Icon="{ui:SymbolIcon DataBarVertical24}"
+            IsExpanded="True">
+            <ui:CardExpander.Header>
+                <StackPanel>
+                    <ui:TextBlock
+                        Margin="0"
+                        FontTypography="BodyStrong"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Statistics"
+                        TextWrapping="WrapWithOverflow" />
+                    <ui:TextBlock
+                        Margin="0,4,0,0"
+                        Appearance="Secondary"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="Configure calculation behavior"
+                        TextWrapping="WrapWithOverflow" />
+                </StackPanel>
+            </ui:CardExpander.Header>
+
+            <StackPanel Margin="16,0,16,16">
+                <!--  Include Roads In Statistic Calculation Card  -->
+                <ui:CardControl Padding="12" Header="{l:Localize GeneralPreferencesIncludeRoadsInStatisticCalculation}">
+                    <CheckBox  IsChecked="{Binding IncludeRoadsInStatisticCalculation}">
+                        <CheckBox.ToolTip>
+                            <ui:TextBlock Text="Include roads when calculating layout statistics" TextWrapping="WrapWithOverflow" />
+                        </CheckBox.ToolTip>
+                    </CheckBox>
+                </ui:CardControl>
+            </StackPanel>
+        </ui:CardExpander>
+        <!--#endregion-->
+
+        <!--#region Recent Files Expander-->
+        <ui:CardExpander
+            Margin="0,0,0,12"
+            Icon="{ui:SymbolIcon History24}"
+            IsExpanded="True">
+            <ui:CardExpander.Header>
+                <StackPanel>
+                    <ui:TextBlock
+                        Margin="0"
+                        FontTypography="BodyStrong"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="{l:Localize GeneralPreferencesRecentFilesSettings}"
+                        TextWrapping="WrapWithOverflow" />
+                    <ui:TextBlock
+                        Margin="0,4,0,0"
+                        Appearance="Secondary"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="Manage recently opened files"
+                        TextWrapping="WrapWithOverflow" />
+                </StackPanel>
+            </ui:CardExpander.Header>
+
+            <StackPanel Margin="16,0,16,16">
+                <!--  Max Recent Files Card  -->
+                <ui:CardControl Padding="16">
+                    <ui:CardControl.Header>
+                        <StackPanel>
+                            <ui:TextBlock
+               Margin="0"
+               FontTypography="BodyStrong"
+               Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                Text="{l:Localize GeneralPreferencesMaxRecentFiles}"
+               TextWrapping="WrapWithOverflow" />
+                            <ui:TextBlock
+               Appearance="Secondary"
+               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="Maximum number of recent files to remember"
+               TextWrapping="WrapWithOverflow" />
+                        </StackPanel>
+                    </ui:CardControl.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel
+                                Grid.Column="1"
+                                Orientation="Horizontal">
+                                <ui:NumberBox
+                                    Width="100"
+                                    IsEnabled="True"
+                                    Maximum="100"
+                                    Minimum="1"
+                                    SpinButtonPlacementMode="Compact"
+                                    TabIndex="0"
+                                    Value="{Binding MaxRecentFiles}" />
+                                <ui:Button
+                                    Margin="8,0,0,0"
+                                    Appearance="Secondary"
+                                    Command="{Binding ResetMaxRecentFilesCommand}"
+                                    Content="{l:Localize Default}"
+                                    Icon="{ui:SymbolIcon ArrowReset24}" />
+                                <ui:Button
+                                    Margin="8,0,0,0"
+                                    Appearance="Caution"
+                                    Command="{Binding ClearRecentFilesCommand}"
+                                    Content="{l:Localize Clear}"
+                                    Icon="{ui:SymbolIcon Delete24}" />
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </ui:CardControl>
+            </StackPanel>
+        </ui:CardExpander>
         <!--#endregion-->
 
     </StackPanel>

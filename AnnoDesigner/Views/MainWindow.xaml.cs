@@ -4,6 +4,9 @@ using AnnoDesigner.Core.Layout;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Extensions;
 using AnnoDesigner.ViewModels;
+using AnnoDesigner.CanvasV2;
+using AnnoDesigner.CanvasV2.FeatureFlags;
+using AnnoDesigner.CanvasV2.Integration;
 using NLog;
 using System;
 using System.ComponentModel;
@@ -12,6 +15,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Windows.Controls;
 using Wpf.Ui.Controls;
 
 namespace AnnoDesigner;
@@ -23,25 +27,104 @@ public partial class MainWindow : FluentWindow, ICloseable
 {
     private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-    private static MainViewModel _mainViewModel;
+    private MainViewModel _mainViewModel;
     private readonly IAppSettings _appSettings;
+    private readonly IFeatureFlags _featureFlags;
+    private bool _useCanvasV2;
 
     public new MainViewModel DataContext { get => base.DataContext as MainViewModel; set => base.DataContext = value; }
 
     #region Initialization
 
-    public MainWindow(IAppSettings appSettingsToUse)
+    public MainWindow(IAppSettings appSettingsToUse, IFeatureFlags featureFlags)
     {
-        InitializeComponent();
-
         _appSettings = appSettingsToUse;
+        _featureFlags = featureFlags;
+        _useCanvasV2 = _featureFlags.IsEnabled(CanvasFeatureFlagNames.UseCanvasV2);
+
+        InitializeComponent();
     }
 
     private void WindowLoaded(object sender, RoutedEventArgs e)
     {
         _mainViewModel = DataContext;
-        _mainViewModel.AnnoCanvas = annoCanvas;
-        _mainViewModel.AnnoCanvas.RegisterHotkeys(_mainViewModel.HotkeyCommandManager);
+
+        // Feature flag: Use CanvasV2 if enabled, otherwise use v1 AnnoCanvas
+        if (_useCanvasV2)
+        {
+            // Replace v1 canvas with v2 canvas programmatically using the self-contained adapter
+            logger.Info("Using AnnoCanvasV2 (feature flag enabled)");
+
+            // Remove v1 canvas from scroll viewer
+            canvasScrollViewer.Content = null;
+
+            // Create a self-contained adapter which constructs the V2 viewmodel and view internally.
+            var canvasAdapter = new CanvasV2Adapter(
+                featureFlags: _featureFlags,
+                undoManager: annoCanvas.UndoManager,
+                clipboardService: annoCanvas.ClipboardService,
+                appSettings: _appSettings,
+                coordinateHelper: new Helper.CoordinateHelper(),
+                brushCache: new Helper.BrushCache(),
+                penCache: new Helper.PenCache(),
+                layoutLoader: new Core.Layout.LayoutLoader(),
+                localizationHelper: _mainViewModel.LocalizationHelper,
+                messageBoxService: new Services.MessageBoxService(),
+                hotkeyManager: _mainViewModel.HotkeyCommandManager,
+                buildingPresets: annoCanvas.BuildingPresets,
+                icons: annoCanvas.Icons
+            );
+
+            // Set the adapter's control as the content of the scroll viewer
+            canvasScrollViewer.Content = canvasAdapter.Control;
+
+            // Expose to MainViewModel
+            _mainViewModel.AnnoCanvas = canvasAdapter;
+
+            // Ensure hotkeys are registered with the main hotkey manager (no-op if already wired)
+            _mainViewModel.AnnoCanvas.RegisterHotkeys(_mainViewModel.HotkeyCommandManager);
+
+            // Wire up feature flag changes when MainViewModel changes canvas settings
+            _mainViewModel.PropertyChanged += (s, args) =>
+            {
+                if (_featureFlags is CanvasV2.FeatureFlags.SimpleFeatureFlags simpleFlags)
+                {
+                    switch (args.PropertyName)
+                    {
+                        case nameof(_mainViewModel.CanvasShowGrid):
+                            simpleFlags.Set(CanvasFeatureFlagNames.RenderGrid, _mainViewModel.CanvasShowGrid);
+                            break;
+                        case nameof(_mainViewModel.CanvasShowLabels):
+                            simpleFlags.Set(CanvasFeatureFlagNames.RenderLabels, _mainViewModel.CanvasShowLabels);
+                            break;
+                        case nameof(_mainViewModel.CanvasShowIcons):
+                            simpleFlags.Set(CanvasFeatureFlagNames.RenderIcons, _mainViewModel.CanvasShowIcons);
+                            break;
+                        case nameof(_mainViewModel.CanvasShowInfluences):
+                            simpleFlags.Set(CanvasFeatureFlagNames.RenderInfluences, _mainViewModel.CanvasShowInfluences);
+                            break;
+                        case nameof(_mainViewModel.CanvasShowTrueInfluenceRange):
+                            simpleFlags.Set(CanvasFeatureFlagNames.RenderTrueInfluenceRange, _mainViewModel.CanvasShowTrueInfluenceRange);
+                            break;
+                        case nameof(_mainViewModel.CanvasShowHarborBlockedArea):
+                            simpleFlags.Set(CanvasFeatureFlagNames.RenderHarborBlockedArea, _mainViewModel.CanvasShowHarborBlockedArea);
+                            break;
+                        case nameof(_mainViewModel.CanvasShowPanorama):
+                            simpleFlags.Set(CanvasFeatureFlagNames.RenderPanorama, _mainViewModel.CanvasShowPanorama);
+                            break;
+                    }
+                }
+            };
+
+            logger.Info("CanvasV2 successfully initialized with AnnoCanvasViewModel");
+        }
+        else
+        {
+            // Wire up V1 canvas (default)
+            logger.Info("Using AnnoCanvas v1 (default)");
+            _mainViewModel.AnnoCanvas = annoCanvas;
+            _mainViewModel.AnnoCanvas.RegisterHotkeys(_mainViewModel.HotkeyCommandManager);
+        }
 
         _mainViewModel.ShowStatisticsChanged += MainViewModel_ShowStatisticsChanged;
 
@@ -93,7 +176,7 @@ public partial class MainWindow : FluentWindow, ICloseable
         else if (App.StartupArguments is ExportArgs exportArgs && !string.IsNullOrEmpty(exportArgs.LayoutFilePath) && !string.IsNullOrEmpty(exportArgs.ExportedImageFilePath))
         {
             Core.Layout.Models.LayoutFile layout = new LayoutLoader().LoadLayout(exportArgs.LayoutFilePath);
-            _mainViewModel.PrepareCanvasForRender(layout.Objects, [], Math.Max(exportArgs.Border, 0), new Models.CanvasRenderSetting()
+            var settings = new Models.CanvasRenderSetting()
             {
                 GridSize = exportArgs.GridSize,
                 RenderGrid = exportArgs.RenderGrid ?? (!exportArgs.UseUserSettings || _appSettings.ShowGrid),
@@ -105,7 +188,19 @@ public partial class MainWindow : FluentWindow, ICloseable
                 RenderInfluences = exportArgs.RenderInfluences ?? (exportArgs.UseUserSettings && _appSettings.ShowInfluences),
                 RenderPanorama = exportArgs.RenderPanorama ?? (exportArgs.UseUserSettings && _appSettings.ShowPanorama),
                 RenderTrueInfluenceRange = exportArgs.RenderTrueInfluenceRange ?? (exportArgs.UseUserSettings && _appSettings.ShowTrueInfluenceRange)
-            }).RenderToFile(exportArgs.ExportedImageFilePath);
+            };
+
+            if (_useCanvasV2 && _mainViewModel.AnnoCanvas is AnnoDesigner.CanvasV2.Integration.CanvasV2Adapter v2)
+            {
+                // Use V2 renderer directly for headless export
+                v2.RenderToFile(exportArgs.ExportedImageFilePath, layout.Objects, Array.Empty<AnnoDesigner.Core.Models.AnnoObject>(), Math.Max(exportArgs.Border, 0), settings);
+            }
+            else
+            {
+                // Fall back to v1 export pipeline
+                _mainViewModel.PrepareCanvasForRender(layout.Objects, [], Math.Max(exportArgs.Border, 0), settings)
+                    .RenderToFile(exportArgs.ExportedImageFilePath);
+            }
 
             ConsoleManager.Show();
             Console.WriteLine($"Export completed: \"{exportArgs.LayoutFilePath}\"");
@@ -155,7 +250,18 @@ public partial class MainWindow : FluentWindow, ICloseable
 
     private async void WindowClosing(object sender, CancelEventArgs e)
     {
-        if (!await annoCanvas.CheckUnsavedChanges())
+        bool canClose = true;
+        // Prefer the canvas exposed on the MainViewModel (adapter-aware). Fall back to the v1 control if necessary.
+        if (_mainViewModel?.AnnoCanvas != null)
+        {
+            canClose = await _mainViewModel.AnnoCanvas.CheckUnsavedChanges();
+        }
+        else
+        {
+            canClose = await annoCanvas.CheckUnsavedChanges();
+        }
+
+        if (!canClose)
         {
             e.Cancel = true;
             return;

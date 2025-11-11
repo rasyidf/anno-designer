@@ -10,6 +10,7 @@ using AnnoDesigner.Helper;
 using AnnoDesigner.Models;
 using AnnoDesigner.Services;
 using AnnoDesigner.ViewModels;
+using System.Collections.Generic;
 using NLog;
 using NLog.Targets;
 using System;
@@ -207,11 +208,26 @@ public partial class App : Application
         IRecentFilesHelper recentFilesHelper = new RecentFilesHelper(recentFilesSerializer, _fileSystem, _appSettings.MaxRecentFiles);
         ITreeLocalizationLoader treeLocalizationLoader = new TreeLocalizationLoader(_fileSystem);
 
+        // Initialize feature flags based on app settings
+        var featureFlags = new CanvasV2.FeatureFlags.SimpleFeatureFlags();
+        featureFlags.Load(new Dictionary<string, object?>
+        {
+            [CanvasV2.FeatureFlags.CanvasFeatureFlagNames.UseCanvasV2] = true, // Default to v1, set to true to enable V2
+            [CanvasV2.FeatureFlags.CanvasFeatureFlagNames.RenderGrid] = _appSettings.ShowGrid,
+            [CanvasV2.FeatureFlags.CanvasFeatureFlagNames.RenderInfluences] = _appSettings.ShowInfluences,
+            [CanvasV2.FeatureFlags.CanvasFeatureFlagNames.RenderIcons] = _appSettings.ShowIcons,
+            [CanvasV2.FeatureFlags.CanvasFeatureFlagNames.RenderLabels] = _appSettings.ShowLabels,
+            [CanvasV2.FeatureFlags.CanvasFeatureFlagNames.RenderTrueInfluenceRange] = _appSettings.ShowTrueInfluenceRange,
+            [CanvasV2.FeatureFlags.CanvasFeatureFlagNames.RenderHarborBlockedArea] = _appSettings.ShowHarborBlockedArea,
+            [CanvasV2.FeatureFlags.CanvasFeatureFlagNames.RenderPanorama] = _appSettings.ShowPanorama,
+            [CanvasV2.FeatureFlags.CanvasFeatureFlagNames.DebugMode] = true
+        });
+
         MainViewModel mainVM = new(_commons, _appSettings, recentFilesHelper, _messageBoxService, _updateHelper, _localizationHelper, _fileSystem, treeLocalizationLoader: treeLocalizationLoader);
         MainViewModel.UpdateRegisteredExtension();
 
         //TODO MainWindow.ctor calls AnnoCanvas.ctor loads presets -> change logic when to load data 
-        MainWindow = new MainWindow(_appSettings)
+        MainWindow = new MainWindow(_appSettings, featureFlags)
         {
             DataContext = mainVM
         };
