@@ -1,69 +1,92 @@
-# Anno Designer (Improved Fork)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/8427d699-d5e0-4d2c-a6fa-0e4f2292a769" alt="Anno Designer Fluent Icon" width="128" height="128" />
+</p>
 
-[![GitHub](https://img.shields.io/github/license/AnnoDesigner/anno-designer)](https://github.com/AnnoDesigner/anno-designer/blob/master/LICENSE) [![version](https://img.shields.io/badge/latest--version-9.4-blue)](https://github.com/AnnoDesigner/anno-designer/releases/tag/AnnoDesignerv9.4) [![presets version](https://img.shields.io/badge/presets--version-5.1-blue)](https://github.com/AnnoDesigner/anno-designer/releases/tag/Presetsv5.1) [![Discord](https://img.shields.io/discord/571011757317947406?label=help%2Fdiscord)](https://discord.gg/JJpHWRB)
+# Anno Designer - Fluent
 
-A building layout designer for Ubisoft's Anno-series with significant improvements.
+A modern, standalone building layout designer for the **Anno-series** games. This application helps players create and export optimized building layouts with an intuitive drag-and-drop interface.
 
-This is a fork of the project originally created by JcBernack - https://github.com/JcBernack/anno-designer
+[![GitHub License](https://img.shields.io/github/license/AnnoDesigner/anno-designer)](https://github.com/AnnoDesigner/anno-designer/blob/master/LICENSE)
+[![Latest Version](https://img.shields.io/badge/latest--version-9.4-blue)](https://github.com/AnnoDesigner/anno-designer/releases/tag/AnnoDesignerv9.4)
+[![Presets Version](https://img.shields.io/badge/presets--version-5.1-blue)](https://github.com/AnnoDesigner/anno-designer/releases/tag/Presetsv5.1)
+[![Discord Community](https://img.shields.io/discord/571011757317947406?label=Join%20our%2FDiscord)](https://discord.gg/JJpHWRB)
 
-## Key Improvements in this Fork
+---
 
-- Updated to .NET 9 for improved performance and new language features
-- Migrated to Fluent UI for a modern and consistent user interface
-- Refactored project structure for better maintainability and extensibility
+## 📸 Interface Preview
 
-## Latest Releases
+| ☀️ **Light Mode** | 🌙 **Dark Mode** |
+| :---: | :---: |
+| <img width="400" alt="Light mode" src="https://github.com/user-attachments/assets/7d5199c6-686b-4f2e-a409-5d822a84e19a"> | <img width="400" alt="Dark mode" src="https://github.com/user-attachments/assets/5e5588c2-33f6-4f1a-926b-4ef024287803"> |
 
-### [Anno Designer 9.4](https://github.com/AnnoDesigner/anno-designer/releases/tag/AnnoDesignerv9.4)
-#### [Latest Presets file release](https://github.com/AnnoDesigner/anno-designer/releases/tag/Presetsv5.1)
-The presets update can also be downloaded automatically by the application.
+---
 
-## Discord
+## 🚀 Key Features & Supported Games
 
-Join our Discord community to keep up with the latest developments, share ideas, ask questions, or get help with any issues:
+This project is a modern fork of the original Anno Designer by JcBernack.
 
-<https://discord.gg/JJpHWRB>
+### Supported Games
+* **Anno 1800**
+* **Anno 2205**
+* **Anno 2070**
+* **Anno 1404**
 
-## Summary
+### 🌟 Fork Improvements
+* **Modern UI:** Migrated to **Fluent UI** for a sleek and consistent look.
+* **Performance:** Updated to **.NET 10** for improved performance.
+* **Structure:** Refactored project structure for better maintainability and extensibility.
+* **User Experience:** Improved UI with **Docking Panels** and a cleaner **Canvas V2**.
 
-The **Anno Designer** is a standalone Windows application for creating and exporting layouts for Anno games. It features an intuitive drag-and-drop interface, making it easy to use for both beginners and experienced players.
+---
 
-**Supported Anno versions: 1404, 2070, 2205, 1800**
+## 💻 Installation & Usage
 
-## How to Use
+### Download
+The latest stable version can be downloaded from the [**Releases Page**](https://github.com/AnnoDesigner/anno-designer/releases/tag/AnnoDesignerv9.4).
+* **Download:** Select the `.exe` file from the latest release (**Anno Designer 9.4**).
+* **Presets:** The latest building presets are version **5.1**. These can also be updated automatically within the application.
 
-1. **Download the latest version [here](https://github.com/AnnoDesigner/anno-designer/releases/tag/AnnoDesignerv9.4)** (select the .exe file).
-2. Run the application to start designing your layouts.
+### Command Line
+For advanced users, the application supports command line parameters for custom launch options. See the [**Command Line Documentation**](doc/CommandLineParameters.md) for details.
 
-For advanced usage, Anno Designer can be started from the command line. See [this documentation](doc/CommandLineParameters.md) for more information and examples.
+### Prerequisites
+* The **.NET 10 Runtime** is required. It can be downloaded from the [official Microsoft website](https://dotnet.microsoft.com/download/dotnet/10.0).
 
-## Technology
+---
 
-- Written in C# (.NET 9)
-- Uses WPF (Windows Presentation Foundation) with Fluent UI
-- Requires the .NET 9 runtime, which can be downloaded from the [official Microsoft website](https://dotnet.microsoft.com/download/dotnet/9.0)
+## 🛠️ Technology Stack
 
-## Game Data and Icons
+* **Language:** C#
+* **Framework:** .NET 10
+* **UI:** WPF (Windows Presentation Foundation) with Fluent UI
 
-Building presets and icons are extracted from game files using:
-- [RDA Explorer](https://github.com/lysannschlegel/RDAExplorer)
-- Custom script by Peter Hozak
-- Additional work by [StingMcRay](https://github.com/StingMcRay) for Anno 2205 and Anno 1800 icons
+Building presets and icons are sourced from game files using custom scripts and tools like [RDA Explorer](https://github.com/lysannschlegel/RDAExplorer).
 
-For more information, visit the development pages at: <http://anno2070.wikia.com/wiki/Development_Pages>
+---
 
-A modified version of the PresetParser, supporting data extraction from all Anno versions, is included in this repository. It is not required to run the app and is not included in releases.
+## 💡 Future Plans (Planned)
 
-## Contributing
+* Add support for **Anno 117 - Pax Romana Buildings**.
+* Implement **Diagonal Building** functionality.
+* Redesign the **Settings Layout**.
 
-We welcome contributions to this project! If you'd like to contribute, please:
+---
 
-1. Fork the repository
-2. Create a new branch for your feature or bug fix
-3. Make your changes and commit them with clear, descriptive messages
-4. Push your changes to your fork
-5. Create a pull request with a description of your changes
+## 👋 Community & Contributing
 
-## License
+### Discord
+Join our community on Discord to discuss development, share layouts, ask questions, or report issues:
+[**Join the Anno Designer Discord**](https://discord.gg/JJpHWRB)
 
-[MIT](https://github.com/AnnoDesigner/anno-designer/blob/master/LICENSE)
+### Contributing
+We welcome contributions! If you'd like to help improve Anno Designer:
+1.  Fork the repository.
+2.  Create a new branch for your feature or bug fix.
+3.  Commit your changes with clear, descriptive messages.
+4.  Create a pull request with a summary of your changes.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/rasyidf/anno-designer/blob/master/LICENSE) file for details.
