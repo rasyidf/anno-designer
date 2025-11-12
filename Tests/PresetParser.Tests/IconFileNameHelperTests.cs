@@ -6,85 +6,85 @@ namespace PresetParser.Tests
     public class IconFileNameHelperTests
     {
         [Fact]
-        public void GetIconFilename_AnnoVersionIs1404_ShouldReturnFileNameWithPrefix()
+        public void GetIconFilenameAnnoVersionIs1404ShouldReturnFileNameWithPrefix()
         {
             // Arrange
-            var helper = new IconFileNameHelper();
+            IconFileNameHelper helper = new();
 
-            var doc = new XmlDocument();
+            XmlDocument doc = new();
             doc.LoadXml("<root><IconFileID>myFileId</IconFileID><IconIndex>42</IconIndex></root>");
-            var rootNode = doc["root"];
+            XmlElement rootNode = doc["root"];
 
             // Act
-            var result = helper.GetIconFilename(rootNode, Constants.ANNO_VERSION_1404);
+            string result = helper.GetIconFilename(rootNode, Constants.ANNO_VERSION_1404);
 
             // Assert
             Assert.StartsWith("A4_", result);
         }
 
         [Fact]
-        public void GetIconFilename_AnnoVersionIs1404AndNoIconIndex_ShouldReturnFileNameWithPrefixAndIconIndexZero()
+        public void GetIconFilenameAnnoVersionIs1404AndNoIconIndexShouldReturnFileNameWithPrefixAndIconIndexZero()
         {
             // Arrange
-            var helper = new IconFileNameHelper();
+            IconFileNameHelper helper = new();
 
-            var doc = new XmlDocument();
+            XmlDocument doc = new();
             doc.LoadXml("<root><IconFileID>myFileId</IconFileID></root>");
-            var rootNode = doc["root"];
+            XmlElement rootNode = doc["root"];
 
             // Act
-            var result = helper.GetIconFilename(rootNode, Constants.ANNO_VERSION_1404);
+            string result = helper.GetIconFilename(rootNode, Constants.ANNO_VERSION_1404);
 
             // Assert
             Assert.Equal("A4_icon_myFileId_0.png", result);
         }
 
         [Fact]
-        public void GetIconFilename_AnnoVersionIs1404AndIconIndex_ShouldReturnFileNameWithPrefixAndIconIndex()
+        public void GetIconFilenameAnnoVersionIs1404AndIconIndexShouldReturnFileNameWithPrefixAndIconIndex()
         {
             // Arrange
-            var helper = new IconFileNameHelper();
+            IconFileNameHelper helper = new();
 
-            var doc = new XmlDocument();
+            XmlDocument doc = new();
             doc.LoadXml("<root><IconFileID>myFileId</IconFileID><IconIndex>42</IconIndex></root>");
-            var rootNode = doc["root"];
+            XmlElement rootNode = doc["root"];
 
             // Act
-            var result = helper.GetIconFilename(rootNode, Constants.ANNO_VERSION_1404);
+            string result = helper.GetIconFilename(rootNode, Constants.ANNO_VERSION_1404);
 
             // Assert
             Assert.Equal("A4_icon_myFileId_42.png", result);
         }
 
         [Fact]
-        public void GetIconFilename_AnnoVersionIsNot1404AndNoIconIndex_ShouldReturnFileNameWithIconIndexZero()
+        public void GetIconFilenameAnnoVersionIsNot1404AndNoIconIndexShouldReturnFileNameWithIconIndexZero()
         {
             // Arrange
-            var helper = new IconFileNameHelper();
+            IconFileNameHelper helper = new();
 
-            var doc = new XmlDocument();
+            XmlDocument doc = new();
             doc.LoadXml("<root><IconFileID>myFileId</IconFileID></root>");
-            var rootNode = doc["root"];
+            XmlElement rootNode = doc["root"];
 
             // Act
-            var result = helper.GetIconFilename(rootNode, Constants.ANNO_VERSION_1800);
+            string result = helper.GetIconFilename(rootNode, Constants.ANNO_VERSION_1800);
 
             // Assert
             Assert.Equal("icon_myFileId_0.png", result);
         }
 
         [Fact]
-        public void GetIconFilename_AnnoVersionIsNot1404AndIconIndex_ShouldReturnFileNameWithIconIndex()
+        public void GetIconFilenameAnnoVersionIsNot1404AndIconIndexShouldReturnFileNameWithIconIndex()
         {
             // Arrange
-            var helper = new IconFileNameHelper();
+            IconFileNameHelper helper = new();
 
-            var doc = new XmlDocument();
+            XmlDocument doc = new();
             doc.LoadXml("<root><IconFileID>myFileId</IconFileID><IconIndex>42</IconIndex></root>");
-            var rootNode = doc["root"];
+            XmlElement rootNode = doc["root"];
 
             // Act
-            var result = helper.GetIconFilename(rootNode, Constants.ANNO_VERSION_2205);
+            string result = helper.GetIconFilename(rootNode, Constants.ANNO_VERSION_2205);
 
             // Assert
             Assert.Equal("icon_myFileId_42.png", result);

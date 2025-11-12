@@ -10,8 +10,6 @@ namespace AnnoDesigner.ViewModels;
 
 public class PreferencesViewModel : Notify
 {
-    private PreferencePage _selectedItem;
-
     public PreferencesViewModel()
     {
         Pages = [];
@@ -22,10 +20,10 @@ public class PreferencesViewModel : Notify
 
     public PreferencePage SelectedItem
     {
-        get => _selectedItem;
+        get;
         set
         {
-            _ = UpdateProperty(ref _selectedItem, value);
+            _ = UpdateProperty(ref field, value);
             ShowPage(value.Name);
         }
     }
@@ -52,7 +50,7 @@ public class PreferencesViewModel : Notify
         {
             try
             {
-                NavigationService?.Navigate(new Uri($@"pack://application:,,,/Views\PreferencesPages\{name}.xaml", UriKind.RelativeOrAbsolute), foundPage.ViewModel);
+                _ = (NavigationService?.Navigate(new Uri($@"pack://application:,,,/Views\PreferencesPages\{name}.xaml", UriKind.RelativeOrAbsolute), foundPage.ViewModel));
             }
             catch (Exception ex)
             {

@@ -13,17 +13,12 @@ public static class StringExtensions
             return false;//or throw error?
         }
 
-        if (s.IndexOf(token, stringComparison) != -1)
-        {
-            return true;
-        }
-
-        return false;
+        return s.IndexOf(token, stringComparison) != -1;
     }
 
     public static bool Contains(this string s, IEnumerable<string> tokens)
     {
-        foreach (var token in tokens)
+        foreach (string token in tokens)
         {
             if (s.Contains(token, StringComparison.OrdinalIgnoreCase))
             {
@@ -36,7 +31,7 @@ public static class StringExtensions
 
     public static bool IsPartOf(this string s, IEnumerable<string> tokens)
     {
-        foreach (var token in tokens)
+        foreach (string token in tokens)
         {
             if (token.Contains(s, StringComparison.OrdinalIgnoreCase))
             {
@@ -54,7 +49,7 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        var tempCharArray = input.ToCharArray();
+        char[] tempCharArray = input.ToCharArray();
         tempCharArray[0] = char.ToUpper(tempCharArray[0]);
 
         return new string(tempCharArray);

@@ -1,5 +1,5 @@
-﻿using System;
-using AnnoDesigner.Core.Layout.Models;
+﻿using AnnoDesigner.Core.Layout.Models;
+using System;
 using Xunit;
 
 namespace AnnoDesigner.Core.Tests
@@ -17,8 +17,8 @@ namespace AnnoDesigner.Core.Tests
         [Fact]
         public void Equals_IsEqual()
         {
-            var result1 = new StatisticsCalculationResult(42, 42, 45, 45, 3, 3, 9, 9, 100);
-            var result2 = new StatisticsCalculationResult(42, 42, 45, 45, 3, 3, 9, 9, 100);
+            StatisticsCalculationResult result1 = new(42, 42, 45, 45, 3, 3, 9, 9, 100);
+            StatisticsCalculationResult result2 = new(42, 42, 45, 45, 3, 3, 9, 9, 100);
 
             Assert.True(result1.Equals(result2));
             Assert.True(result1.Equals((object)result2));
@@ -28,8 +28,8 @@ namespace AnnoDesigner.Core.Tests
         [Fact]
         public void Equals_IsNotEqual()
         {
-            var result1 = new StatisticsCalculationResult(42, 42, 45, 45, 3, 3, 9, 9, 100);
-            var result2 = new StatisticsCalculationResult(21, 21, 45, 45, 3, 3, 9, 9, 100);
+            StatisticsCalculationResult result1 = new(42, 42, 45, 45, 3, 3, 9, 9, 100);
+            StatisticsCalculationResult result2 = new(21, 21, 45, 45, 3, 3, 9, 9, 100);
 
             Assert.False(result1.Equals(result2));
             Assert.False(result1.Equals((object)result2));
@@ -39,8 +39,8 @@ namespace AnnoDesigner.Core.Tests
         [Fact]
         public void GetHashCode_IsEqual()
         {
-            var result1 = new StatisticsCalculationResult(42, 42, 45, 45, 3, 3, 9, 9, 100);
-            var result2 = new StatisticsCalculationResult(42, 42, 45, 45, 3, 3, 9, 9, 100);
+            StatisticsCalculationResult result1 = new(42, 42, 45, 45, 3, 3, 9, 9, 100);
+            StatisticsCalculationResult result2 = new(42, 42, 45, 45, 3, 3, 9, 9, 100);
 
             Assert.Equal(result1.GetHashCode(), result2.GetHashCode());
         }
@@ -48,8 +48,8 @@ namespace AnnoDesigner.Core.Tests
         [Fact]
         public void GetHashCode_IsNotEqual()
         {
-            var result1 = new StatisticsCalculationResult(42, 42, 45, 45, 3, 3, 9, 9, 100);
-            var result2 = new StatisticsCalculationResult(21, 21, 45, 45, 3, 3, 9, 9, 100);
+            StatisticsCalculationResult result1 = new(42, 42, 45, 45, 3, 3, 9, 9, 100);
+            StatisticsCalculationResult result2 = new(21, 21, 45, 45, 3, 3, 9, 9, 100);
 
             Assert.NotEqual(result1.GetHashCode(), result2.GetHashCode());
         }

@@ -112,7 +112,7 @@ public class StatisticsCalculationResult : IEquatable<StatisticsCalculationResul
 
     public override int GetHashCode()
     {
-        var hash = new HashCode();
+        HashCode hash = new();
 
         hash.Add(MinX);
         hash.Add(MinY);

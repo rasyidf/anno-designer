@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-using System.Windows.Input;
 using AnnoDesigner.Models;
 using AnnoDesigner.ViewModels;
+using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace AnnoDesigner.Services;
 
@@ -20,25 +20,58 @@ public class HotkeyService : IHotkeyService
         _manager = manager;
     }
 
-    public void HandleCommand(InputEventArgs e) => _manager.HandleCommand(e);
+    public void HandleCommand(InputEventArgs e)
+    {
+        _manager.HandleCommand(e);
+    }
 
-    public void AddHotkey(string hotkeyId, InputBinding binding) => _manager.AddHotkey(hotkeyId, binding);
+    public void AddHotkey(string hotkeyId, InputBinding binding)
+    {
+        _manager.AddHotkey(hotkeyId, binding);
+    }
 
-    public void AddHotkey(Hotkey hotkey) => _manager.AddHotkey(hotkey);
+    public void AddHotkey(Hotkey hotkey)
+    {
+        _manager.AddHotkey(hotkey);
+    }
 
-    public void RemoveHotkey(string hotkeyId) => _manager.RemoveHotkey(hotkeyId);
+    public void RemoveHotkey(string hotkeyId)
+    {
+        _manager.RemoveHotkey(hotkeyId);
+    }
 
-    public IEnumerable<Hotkey> GetHotkeys() => _manager.GetHotkeys();
+    public IEnumerable<Hotkey> GetHotkeys()
+    {
+        return _manager.GetHotkeys();
+    }
 
-    public bool ContainsHotkey(string hotkeyId) => _manager.ContainsHotkey(hotkeyId);
+    public bool ContainsHotkey(string hotkeyId)
+    {
+        return _manager.ContainsHotkey(hotkeyId);
+    }
 
-    public Hotkey GetHotkey(string hotkeyId) => _manager.GetHotkey(hotkeyId);
+    public Hotkey GetHotkey(string hotkeyId)
+    {
+        return _manager.GetHotkey(hotkeyId);
+    }
 
-    public void LoadHotkeyMappings(IDictionary<string, HotkeyInformation> mappings) => _manager.LoadHotkeyMappings(mappings);
+    public void LoadHotkeyMappings(IDictionary<string, HotkeyInformation> mappings)
+    {
+        _manager.LoadHotkeyMappings(mappings);
+    }
 
-    public Dictionary<string, HotkeyInformation> GetRemappedHotkeys() => _manager.GetRemappedHotkeys();
+    public Dictionary<string, HotkeyInformation> GetRemappedHotkeys()
+    {
+        return _manager.GetRemappedHotkeys();
+    }
 
-    public void UpdateLanguage() => _manager.UpdateLanguage();
+    public void UpdateLanguage()
+    {
+        _manager.UpdateLanguage();
+    }
 
-    public void ResetHotkeys() => _manager.ResetHotkeys();
+    public void ResetHotkeys()
+    {
+        _manager.ResetHotkeys();
+    }
 }

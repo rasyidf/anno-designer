@@ -1,7 +1,7 @@
-﻿using System.Windows;
-using AnnoDesigner.Core.Models;
+﻿using AnnoDesigner.Core.Models;
 using AnnoDesigner.Helper;
 using AnnoDesigner.Models;
+using System.Windows;
 using Xunit;
 
 namespace AnnoDesigner.Tests
@@ -24,20 +24,20 @@ namespace AnnoDesigner.Tests
         public void GridInfluenceRangeRect_InfluenceRangeIsZeroOrNegative_ShouldReturnEmptyRect(double influenceRangeToSet)
         {
             // Arrange
-            var annoObject = new AnnoObject
+            AnnoObject annoObject = new()
             {
                 InfluenceRange = influenceRangeToSet,
                 Size = new Size(10, 10),
                 Position = new Point(42, 42)
             };
-            var layoutObject = new LayoutObject(annoObject, null, null, null);
+            LayoutObject layoutObject = new(annoObject, null, null, null);
 
             // Act
-            var influenceRangeRect = layoutObject.GridInfluenceRangeRect;
+            Rect influenceRangeRect = layoutObject.GridInfluenceRangeRect;
 
             // Assert
             Assert.Equal(annoObject.Position, influenceRangeRect.Location);
-            Assert.Equal(default(Size), influenceRangeRect.Size);
+            Assert.Equal(default, influenceRangeRect.Size);
         }
 
         #endregion
@@ -51,15 +51,15 @@ namespace AnnoDesigner.Tests
         public void GetScreenRadius_SizeHeightAndWidthAreOdd_ShouldAdjustRadius(double widthToSet, double heightToSet, double expectedRadius)
         {
             // Arrange            
-            var annoObject = new AnnoObject
+            AnnoObject annoObject = new()
             {
                 Size = new Size(widthToSet, heightToSet),
                 Radius = 10
             };
-            var layoutObject = new LayoutObject(annoObject, coordinateHelper, null, null);
+            LayoutObject layoutObject = new(annoObject, coordinateHelper, null, null);
 
             // Act
-            var screenRadius = layoutObject.GetScreenRadius(10);
+            double screenRadius = layoutObject.GetScreenRadius(10);
 
             // Assert
             Assert.Equal(expectedRadius, screenRadius);
@@ -69,15 +69,15 @@ namespace AnnoDesigner.Tests
         public void GetScreenRadius_SizeHeightIsOdd_ShouldNotAdjustRadius()
         {
             // Arrange            
-            var annoObject = new AnnoObject
+            AnnoObject annoObject = new()
             {
                 Size = new Size(8, 5),
                 Radius = 10
             };
-            var layoutObject = new LayoutObject(annoObject, coordinateHelper, null, null);
+            LayoutObject layoutObject = new(annoObject, coordinateHelper, null, null);
 
             // Act
-            var screenRadius = layoutObject.GetScreenRadius(10);
+            double screenRadius = layoutObject.GetScreenRadius(10);
 
             // Assert
             Assert.Equal(100, screenRadius);
@@ -87,15 +87,15 @@ namespace AnnoDesigner.Tests
         public void GetScreenRadius_SizeWidthIsOdd_ShouldNotAdjustRadius()
         {
             // Arrange            
-            var annoObject = new AnnoObject
+            AnnoObject annoObject = new()
             {
                 Size = new Size(5, 8),
                 Radius = 10
             };
-            var layoutObject = new LayoutObject(annoObject, coordinateHelper, null, null);
+            LayoutObject layoutObject = new(annoObject, coordinateHelper, null, null);
 
             // Act
-            var screenRadius = layoutObject.GetScreenRadius(10);
+            double screenRadius = layoutObject.GetScreenRadius(10);
 
             // Assert
             Assert.Equal(100, screenRadius);
@@ -105,15 +105,15 @@ namespace AnnoDesigner.Tests
         public void GetScreenRadius_NeitherSizeWidthNorHeightIsOdd_ShouldNotAdjustRadius()
         {
             // Arrange            
-            var annoObject = new AnnoObject
+            AnnoObject annoObject = new()
             {
                 Size = new Size(8, 8),
                 Radius = 10
             };
-            var layoutObject = new LayoutObject(annoObject, coordinateHelper, null, null);
+            LayoutObject layoutObject = new(annoObject, coordinateHelper, null, null);
 
             // Act
-            var screenRadius = layoutObject.GetScreenRadius(10);
+            double screenRadius = layoutObject.GetScreenRadius(10);
 
             // Assert
             Assert.Equal(100, screenRadius);

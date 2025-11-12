@@ -1,11 +1,11 @@
-﻿using System;
+﻿using AnnoDesigner.Core.CustomEventArgs;
+using AnnoDesigner.Core.Helper;
+using AnnoDesigner.Core.Models;
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using AnnoDesigner.Core.Helper;
-using AnnoDesigner.Core.CustomEventArgs;
-using AnnoDesigner.Core.Models;
 
 namespace AnnoDesigner.Core.Controls;
 
@@ -54,19 +54,17 @@ public partial class ActionRecorder : UserControl
 
     public ActionType ResultType
     {
-        get { return (ActionType)GetValue(ResultTypeProperty); }
-        set { SetValue(ResultTypeProperty, value); }
+        get => (ActionType)GetValue(ResultTypeProperty); set => SetValue(ResultTypeProperty, value);
     }
 
     public bool IsDisplayFrozen
     {
-        get { return (bool)GetValue(IsDisplayFrozenProperty); }
-        set { SetValue(IsDisplayFrozenProperty, value); }
+        get => (bool)GetValue(IsDisplayFrozenProperty); set => SetValue(IsDisplayFrozenProperty, value);
     }
 
     public Key Key
     {
-        get { return (Key)GetValue(KeyProperty); }
+        get => (Key)GetValue(KeyProperty);
         set
         {
             SetValue(KeyProperty, value);
@@ -79,7 +77,7 @@ public partial class ActionRecorder : UserControl
 
     public ModifierKeys Modifiers
     {
-        get { return (ModifierKeys)GetValue(ModifiersProperty); }
+        get => (ModifierKeys)GetValue(ModifiersProperty);
         set
         {
             SetValue(ModifiersProperty, value);
@@ -92,7 +90,7 @@ public partial class ActionRecorder : UserControl
 
     public ExtendedMouseAction MouseAction
     {
-        get { return (ExtendedMouseAction)GetValue(MouseActionProperty); }
+        get => (ExtendedMouseAction)GetValue(MouseActionProperty);
         set
         {
             SetValue(MouseActionProperty, value);
@@ -144,9 +142,9 @@ public partial class ActionRecorder : UserControl
 
     private void UpdateDisplay()
     {
-        var modifiers = Modifiers == ModifierKeys.None ? "" : Modifiers.ToString();
-        var key = Key == Key.None ? "" : KeyboardInteropHelper.GetDisplayString(Key) ?? Key.ToString();
-        var mouse = MouseAction == ExtendedMouseAction.None ? "" : MouseAction.ToString();
+        string modifiers = Modifiers == ModifierKeys.None ? "" : Modifiers.ToString();
+        string key = Key == Key.None ? "" : KeyboardInteropHelper.GetDisplayString(Key) ?? Key.ToString();
+        string mouse = MouseAction == ExtendedMouseAction.None ? "" : MouseAction.ToString();
 
         string display;
         if (recordingKeyCombination)
@@ -177,7 +175,7 @@ public partial class ActionRecorder : UserControl
 
     protected override void OnMouseDown(MouseButtonEventArgs e)
     {
-        Focus();
+        _ = Focus();
         if (startNewRecording)
         {
             StartNewRecording();
@@ -186,7 +184,7 @@ public partial class ActionRecorder : UserControl
         if (!recordingKeyCombination)
         {
             //Do not record MouseActions that are not supported.
-            var action = PolyGesture.GetExtendedMouseAction(e);
+            ExtendedMouseAction action = PolyGesture.GetExtendedMouseAction(e);
             if (!UNSUPPORTED_MOUSE_ACTIONS.Contains(action))
             {
                 if (!recordingMouseCombination)
@@ -260,18 +258,7 @@ public partial class ActionRecorder : UserControl
 
     private void EnsureCorrectResultType()
     {
-        if (recordingKeyCombination)
-        {
-            ResultType = ActionType.KeyAction;
-        }
-        else if (recordingMouseCombination)
-        {
-            ResultType = ActionType.MouseAction;
-        }
-        else
-        {
-            ResultType = ActionType.None;
-        }
+        ResultType = recordingKeyCombination ? ActionType.KeyAction : recordingMouseCombination ? ActionType.MouseAction : ActionType.None;
     }
 
     private void StartNewRecording()

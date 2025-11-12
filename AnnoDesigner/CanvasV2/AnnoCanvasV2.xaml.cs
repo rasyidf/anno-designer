@@ -1,9 +1,9 @@
+using AnnoDesigner.CanvasV2.Rendering;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using AnnoDesigner.CanvasV2.Rendering;
 
 namespace AnnoDesigner.CanvasV2;
 
@@ -40,14 +40,14 @@ public partial class AnnoCanvasV2 : UserControl, IScrollInfo
 
             if (e.Command == ApplicationCommands.Save)
             {
-                vm.Save();
+                _ = vm.Save();
                 e.Handled = true;
                 return;
             }
 
             if (e.Command == ApplicationCommands.SaveAs)
             {
-                vm.SaveAs();
+                _ = vm.SaveAs();
                 e.Handled = true;
                 return;
             }
@@ -68,7 +68,7 @@ public partial class AnnoCanvasV2 : UserControl, IScrollInfo
         {
             vm.RenderInvalidated += InvalidateVisual;
             vm.ScrollInvalidated += () => ScrollOwner?.InvalidateScrollInfo();
-            
+
             // Initialize viewport size
             UpdateViewportSize();
         }
@@ -95,12 +95,15 @@ public partial class AnnoCanvasV2 : UserControl, IScrollInfo
     protected override void OnRender(DrawingContext drawingContext)
     {
         base.OnRender(drawingContext);
-        if (DataContext is not AnnoCanvasViewModel vm) return;
+        if (DataContext is not AnnoCanvasViewModel vm)
+        {
+            return;
+        }
 
         // Ensure viewport is up to date
         UpdateViewportSize();
-        
-        var state = vm.CreateRenderState();
+
+        RenderState state = vm.CreateRenderState();
         _renderer.Render(drawingContext, state);
     }
 
@@ -113,7 +116,7 @@ public partial class AnnoCanvasV2 : UserControl, IScrollInfo
     protected override void OnMouseDown(MouseButtonEventArgs e)
     {
         base.OnMouseDown(e);
-        Focus(); // Ensure keyboard focus for hotkeys
+        _ = Focus(); // Ensure keyboard focus for hotkeys
         ViewModel?.InputHandler.HandleMouseDown(e, e.GetPosition(this));
     }
 
@@ -138,7 +141,7 @@ public partial class AnnoCanvasV2 : UserControl, IScrollInfo
     private void ContextMenu_Opened(object sender, RoutedEventArgs e)
     {
         // Update mouse position and refresh command states when context menu opens
-        var mousePos = Mouse.GetPosition(this);
+        Point mousePos = Mouse.GetPosition(this);
         ViewModel?.ReportMousePosition(mousePos);
         CommandManager.InvalidateRequerySuggested();
     }
@@ -153,20 +156,79 @@ public partial class AnnoCanvasV2 : UserControl, IScrollInfo
     public double ViewportHeight => ViewModel.ViewportHeight;
     public double HorizontalOffset => ViewModel.HorizontalOffset;
     public double VerticalOffset => ViewModel.VerticalOffset;
-    public void LineUp() => ViewModel.LineUp();
-    public void LineDown() => ViewModel.LineDown();
-    public void LineLeft() => ViewModel.LineLeft();
-    public void LineRight() => ViewModel.LineRight();
-    public void PageUp() => ViewModel.PageUp();
-    public void PageDown() => ViewModel.PageDown();
-    public void PageLeft() => ViewModel.PageLeft();
-    public void PageRight() => ViewModel.PageRight();
-    public void MouseWheelUp() => ViewModel.MouseWheelUp();
-    public void MouseWheelDown() => ViewModel.MouseWheelDown();
-    public void MouseWheelLeft() => ViewModel.MouseWheelLeft();
-    public void MouseWheelRight() => ViewModel.MouseWheelRight();
-    public void SetHorizontalOffset(double offset) => ViewModel.SetHorizontalOffset(offset);
-    public void SetVerticalOffset(double offset) => ViewModel.SetVerticalOffset(offset);
-    public Rect MakeVisible(Visual visual, Rect rectangle) => ViewModel.MakeVisible(visual, rectangle);
+    public void LineUp()
+    {
+        ViewModel.LineUp();
+    }
+
+    public void LineDown()
+    {
+        ViewModel.LineDown();
+    }
+
+    public void LineLeft()
+    {
+        ViewModel.LineLeft();
+    }
+
+    public void LineRight()
+    {
+        ViewModel.LineRight();
+    }
+
+    public void PageUp()
+    {
+        ViewModel.PageUp();
+    }
+
+    public void PageDown()
+    {
+        ViewModel.PageDown();
+    }
+
+    public void PageLeft()
+    {
+        ViewModel.PageLeft();
+    }
+
+    public void PageRight()
+    {
+        ViewModel.PageRight();
+    }
+
+    public void MouseWheelUp()
+    {
+        ViewModel.MouseWheelUp();
+    }
+
+    public void MouseWheelDown()
+    {
+        ViewModel.MouseWheelDown();
+    }
+
+    public void MouseWheelLeft()
+    {
+        ViewModel.MouseWheelLeft();
+    }
+
+    public void MouseWheelRight()
+    {
+        ViewModel.MouseWheelRight();
+    }
+
+    public void SetHorizontalOffset(double offset)
+    {
+        ViewModel.SetHorizontalOffset(offset);
+    }
+
+    public void SetVerticalOffset(double offset)
+    {
+        ViewModel.SetVerticalOffset(offset);
+    }
+
+    public Rect MakeVisible(Visual visual, Rect rectangle)
+    {
+        return ViewModel.MakeVisible(visual, rectangle);
+    }
     #endregion
 }

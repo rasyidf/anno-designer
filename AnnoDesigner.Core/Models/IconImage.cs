@@ -8,7 +8,6 @@ namespace AnnoDesigner.Core.Models;
 [DebuggerDisplay("{" + nameof(Name) + "}")]
 public class IconImage
 {
-    private BitmapImage _icon;
 
     #region ctor
 
@@ -30,35 +29,27 @@ public class IconImage
 
     public Dictionary<string, string> Localizations { get; set; }
 
-    public string DisplayName
-    {
-        get { return NameForLanguage("eng"); }
-    }
+    public string DisplayName => NameForLanguage("eng");
 
     public string NameForLanguage(string languageCode)
     {
-        if (Localizations is null || !Localizations.TryGetValue(languageCode, out var translation))
-        {
-            return Name;
-        }
-
-        return translation;
+        return Localizations is null || !Localizations.TryGetValue(languageCode, out string translation) ? Name : translation;
     }
 
     public BitmapImage Icon
     {
         get
         {
-            if (_icon == null && !string.IsNullOrWhiteSpace(IconPath))
+            if (field == null && !string.IsNullOrWhiteSpace(IconPath))
             {
-                _icon = new BitmapImage(new Uri(IconPath));
-                if (_icon.CanFreeze)
+                field = new BitmapImage(new Uri(IconPath));
+                if (field.CanFreeze)
                 {
-                    _icon.Freeze();
+                    field.Freeze();
                 }
             }
 
-            return _icon;
+            return field;
         }
     }
 

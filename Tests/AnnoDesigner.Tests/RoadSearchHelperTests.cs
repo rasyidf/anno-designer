@@ -1,24 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using AnnoDesigner.Core.Layout;
+﻿using AnnoDesigner.Core.Layout;
 using AnnoDesigner.Core.Layout.Models;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Helper;
+using AnnoDesigner.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Abstractions;
+using System.Linq;
 using Xunit;
 
 namespace AnnoDesigner.Tests
 {
     public class RoadSearchHelperTests
     {
+        private readonly IFileSystem _fileSystem = new FileSystem();
         private static readonly LayoutFile defaultObjectList;
-
         static RoadSearchHelperTests()
         {
             defaultObjectList = new LayoutLoader().LoadLayout(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", "RoadSearchHelper", "BreadthFirstSearch_FindBuildingInfluenceRange.ad"), true);
+             
         }
-
         private string GetTestDataFile(string testCase)
         {
             return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", "RoadSearchHelper", $"{testCase}.ad");
@@ -28,7 +30,7 @@ namespace AnnoDesigner.Tests
         public void PrepareGridDictionary_SequenceIsNull_ShouldReturnNull_Issue197()
         {
             // Arrange/Act
-            var gridDictionary = RoadSearchHelper.PrepareGridDictionary(null);
+            Moved2DArray<AnnoObject> gridDictionary = RoadSearchHelper.PrepareGridDictionary(null);
 
             // Assert
             Assert.Null(gridDictionary);
@@ -38,10 +40,10 @@ namespace AnnoDesigner.Tests
         public void PrepareGridDictionary_SequenceIsEmpty_ShouldReturnNull_Issue197()
         {
             // Arrange
-            var inputSequence = Enumerable.Empty<AnnoObject>();
+            IEnumerable<AnnoObject> inputSequence = Enumerable.Empty<AnnoObject>();
 
             // Act
-            var gridDictionary = RoadSearchHelper.PrepareGridDictionary(inputSequence);
+            Moved2DArray<AnnoObject> gridDictionary = RoadSearchHelper.PrepareGridDictionary(inputSequence);
 
             // Assert
             Assert.Null(gridDictionary);
@@ -51,8 +53,8 @@ namespace AnnoDesigner.Tests
         public void PrepareGridDictionary_SingleObject()
         {
             // Arrange
-            var placedObjects = new LayoutLoader().LoadLayout(GetTestDataFile("PrepareGridDictionary_SingleObject"), true).Objects;
-            var expectedResult = new AnnoObject[][]
+            List<AnnoObject> placedObjects = new LayoutLoader().LoadLayout(GetTestDataFile("PrepareGridDictionary_SingleObject"), true).Objects;
+            AnnoObject[][] expectedResult = new AnnoObject[][]
             {
                 new AnnoObject[5],
                 new AnnoObject[]
@@ -75,7 +77,7 @@ namespace AnnoDesigner.Tests
             };
 
             // Act
-            var gridDictionary = RoadSearchHelper.PrepareGridDictionary(placedObjects);
+            Moved2DArray<AnnoObject> gridDictionary = RoadSearchHelper.PrepareGridDictionary(placedObjects);
 
             // Assert
             Assert.Equal(expectedResult, gridDictionary);
@@ -87,10 +89,10 @@ namespace AnnoDesigner.Tests
         public void PrepareGridDictionary_MultipleObjects()
         {
             // Arrange
-            var placedObjects = new LayoutLoader().LoadLayout(GetTestDataFile("PrepareGridDictionary_MultipleObjects"), true).Objects;
-            var placedObject1 = placedObjects.FirstOrDefault(o => o.Label == "Object1");
-            var placedObject2 = placedObjects.FirstOrDefault(o => o.Label == "Object2");
-            var expectedResult = new AnnoObject[][]
+            List<AnnoObject> placedObjects = new LayoutLoader().LoadLayout(GetTestDataFile("PrepareGridDictionary_MultipleObjects"), true).Objects;
+            AnnoObject placedObject1 = placedObjects.FirstOrDefault(o => o.Label == "Object1");
+            AnnoObject placedObject2 = placedObjects.FirstOrDefault(o => o.Label == "Object2");
+            AnnoObject[][] expectedResult = new AnnoObject[][]
             {
                 new AnnoObject[5],
                 new AnnoObject[]
@@ -123,7 +125,7 @@ namespace AnnoDesigner.Tests
             };
 
             // Act
-            var gridDictionary = RoadSearchHelper.PrepareGridDictionary(placedObjects);
+            Moved2DArray<AnnoObject> gridDictionary = RoadSearchHelper.PrepareGridDictionary(placedObjects);
 
             // Assert
             Assert.Equal(expectedResult, gridDictionary);
@@ -135,10 +137,10 @@ namespace AnnoDesigner.Tests
         public void PrepareGridDictionary_MultipleObjectsWithNegativeCoordinates()
         {
             // Arrange
-            var placedObjects = new LayoutLoader().LoadLayout(GetTestDataFile("PrepareGridDictionary_MultipleObjectsWithNegativeCoordinates"), true).Objects;
+            List<AnnoObject> placedObjects = new LayoutLoader().LoadLayout(GetTestDataFile("PrepareGridDictionary_MultipleObjectsWithNegativeCoordinates"), true).Objects;
 
             // Act
-            var gridDictionary = RoadSearchHelper.PrepareGridDictionary(placedObjects);
+            Moved2DArray<AnnoObject> gridDictionary = RoadSearchHelper.PrepareGridDictionary(placedObjects);
 
             // Assert
             Assert.Equal(-10, gridDictionary.Offset.x);
@@ -149,12 +151,12 @@ namespace AnnoDesigner.Tests
         public void BreadthFirstSearch_FindObjectsInInfluenceRange()
         {
             // Arrange
-            var placedObjects = new LayoutLoader().LoadLayout(GetTestDataFile("BreadthFirstSearch_FindObjectsInInfluenceRange"), true).Objects;
-            var startObjects = placedObjects.Where(o => o.Label == "Start").ToList();
+            List<AnnoObject> placedObjects = new LayoutLoader().LoadLayout(GetTestDataFile("BreadthFirstSearch_FindObjectsInInfluenceRange"), true).Objects;
+            List<AnnoObject> startObjects = placedObjects.Where(o => o.Label == "Start").ToList();
 
             // Act
-            var objectsInInfluence = new List<AnnoObject>();
-            RoadSearchHelper.BreadthFirstSearch(placedObjects, startObjects, o => (int)o.InfluenceRange + 1, inRangeAction: o => objectsInInfluence.Add(o));
+            List<AnnoObject> objectsInInfluence = [];
+            _ = RoadSearchHelper.BreadthFirstSearch(placedObjects, startObjects, o => (int)o.InfluenceRange + 1, inRangeAction: objectsInInfluence.Add);
 
             // Assert
             Assert.Equal(placedObjects.Where(o => o.Label == "TargetIn").ToHashSet(), [.. objectsInInfluence]);
@@ -165,14 +167,14 @@ namespace AnnoDesigner.Tests
         public void BreadthFirstSearch_FindBuildingInfluenceRange()
         {
             // Arrange
-            var placedObjects = defaultObjectList.Objects;
-            var startObjects = placedObjects.Where(o => o.Label == "Start").ToList();
-            foreach (var startObject in startObjects)
+            List<AnnoObject> placedObjects = defaultObjectList.Objects;
+            List<AnnoObject> startObjects = placedObjects.Where(o => o.Label == "Start").ToList();
+            foreach (AnnoObject startObject in startObjects)
             {
-                var expectedCount = 4 * Enumerable.Range(1, (int)startObject.InfluenceRange).Sum() + 1;
+                int expectedCount = (4 * Enumerable.Range(1, (int)startObject.InfluenceRange).Sum()) + 1;
 
                 // Act
-                var visitedCells = RoadSearchHelper.BreadthFirstSearch(placedObjects, new[] { startObject }, o => (int)o.InfluenceRange);
+                bool[][] visitedCells = RoadSearchHelper.BreadthFirstSearch(placedObjects, new[] { startObject }, o => (int)o.InfluenceRange);
 
                 // Assert
                 Assert.Equal(expectedCount, visitedCells.Sum(c => c.Count(visited => visited)));
@@ -183,13 +185,13 @@ namespace AnnoDesigner.Tests
         public void BreadthFirstSearch_StartObjectCountIsZero_ShouldReturnEmptyResult()
         {
             // Arrange
-            var placedObjects = defaultObjectList.Objects;
-            var startObjects = Enumerable.Empty<AnnoObject>();
+            List<AnnoObject> placedObjects = defaultObjectList.Objects;
+            IEnumerable<AnnoObject> startObjects = Enumerable.Empty<AnnoObject>();
 
-            var expectedResult = new bool[0][];
+            bool[][] expectedResult = new bool[0][];
 
             // Act
-            var visitedCells = RoadSearchHelper.BreadthFirstSearch(placedObjects, startObjects, o => (int)o.InfluenceRange);
+            bool[][] visitedCells = RoadSearchHelper.BreadthFirstSearch(placedObjects, startObjects, o => (int)o.InfluenceRange);
 
             // Assert
             Assert.Equal(expectedResult, visitedCells);
@@ -200,13 +202,13 @@ namespace AnnoDesigner.Tests
         public void BreadthFirstSearch_PlacedObjectsEmpty_ShouldReturnEmptyResult_Issue197()
         {
             // Arrange
-            var placedObjects = Enumerable.Empty<AnnoObject>();
-            var startObjects = defaultObjectList.Objects;
+            IEnumerable<AnnoObject> placedObjects = Enumerable.Empty<AnnoObject>();
+            List<AnnoObject> startObjects = defaultObjectList.Objects;
 
-            var expectedResult = new bool[0][];
+            bool[][] expectedResult = new bool[0][];
 
             // Act
-            var visitedCells = RoadSearchHelper.BreadthFirstSearch(placedObjects, startObjects, o => (int)o.InfluenceRange);
+            bool[][] visitedCells = RoadSearchHelper.BreadthFirstSearch(placedObjects, startObjects, o => (int)o.InfluenceRange);
 
             // Assert
             Assert.Equal(expectedResult, visitedCells);
@@ -218,12 +220,12 @@ namespace AnnoDesigner.Tests
         {
             // Arrange
             IEnumerable<AnnoObject> placedObjects = null;
-            var startObjects = defaultObjectList.Objects;
+            List<AnnoObject> startObjects = defaultObjectList.Objects;
 
-            var expectedResult = new bool[0][];
+            bool[][] expectedResult = new bool[0][];
 
             // Act
-            var visitedCells = RoadSearchHelper.BreadthFirstSearch(placedObjects, startObjects, o => (int)o.InfluenceRange);
+            bool[][] visitedCells = RoadSearchHelper.BreadthFirstSearch(placedObjects, startObjects, o => (int)o.InfluenceRange);
 
             // Assert
             Assert.Equal(expectedResult, visitedCells);

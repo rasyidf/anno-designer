@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
-using AnnoDesigner.Core.Helper;
+﻿using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.Presets.Models;
 using NLog;
+using System;
+using System.Linq;
 
 namespace AnnoDesigner.Core.Presets.Loader;
 
@@ -12,8 +12,7 @@ public class ColorPresetsLoader
 
     public ColorPresets Load(string pathToColorPresetsFile)
     {
-        ColorPresets result = null;
-
+        ColorPresets result;
         try
         {
             result = SerializationHelper.LoadFromFile<ColorPresets>(pathToColorPresetsFile);
@@ -33,7 +32,7 @@ public class ColorPresetsLoader
 
         try
         {
-            var colorPresets = Load(colorPresetsFilePath);
+            ColorPresets colorPresets = Load(colorPresetsFilePath);
 
             result = colorPresets?.AvailableSchemes.FirstOrDefault(x => x.Name.Equals("Default", StringComparison.OrdinalIgnoreCase));
         }

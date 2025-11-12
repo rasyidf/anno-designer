@@ -25,19 +25,19 @@ public static class FileHelper
             return;
         }
 #if DEBUG
-        var fileAttributes = _fileSystem.File.GetAttributes(filePath);
+        FileAttributes fileAttributes = _fileSystem.File.GetAttributes(filePath);
 
         //check whether a file is read only
-        var isReadOnly = fileAttributes.HasFlag(FileAttributes.ReadOnly);
+        bool isReadOnly = fileAttributes.HasFlag(FileAttributes.ReadOnly);
 
         //check whether a file is hidden
-        var isHidden = fileAttributes.HasFlag(FileAttributes.Hidden);
+        bool isHidden = fileAttributes.HasFlag(FileAttributes.Hidden);
 
         //check whether a file has archive attribute
-        var isArchive = fileAttributes.HasFlag(FileAttributes.Archive);
+        bool isArchive = fileAttributes.HasFlag(FileAttributes.Archive);
 
         //check whether a file is system file
-        var isSystem = fileAttributes.HasFlag(FileAttributes.System);
+        bool isSystem = fileAttributes.HasFlag(FileAttributes.System);
 #endif            
         try
         {
@@ -45,7 +45,7 @@ public static class FileHelper
         }
         catch (Exception ex)
         {
-            var errorMessage = $"The attributes of the file \"{filePath}\" could not be set to 'normal'.";
+            string errorMessage = $"The attributes of the file \"{filePath}\" could not be set to 'normal'.";
             throw new IOException(errorMessage, ex);
         }
     }

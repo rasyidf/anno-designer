@@ -64,28 +64,32 @@ public static class HyperlinkExtensions
     public static readonly DependencyProperty IsExternalProperty =
         DependencyProperty.RegisterAttached("IsExternal", typeof(bool), typeof(HyperlinkExtensions), new UIPropertyMetadata(false, OnIsExternalChanged));
 
-    
+
 
     private static void OnIsExternalChanged(object sender, DependencyPropertyChangedEventArgs args)
     {
-        var hyperlink = sender as Hyperlink;
+        Hyperlink hyperlink = sender as Hyperlink;
         if ((bool)args.NewValue)
+        {
             hyperlink.RequestNavigate += Hyperlink_RequestNavigate;
+        }
         else
+        {
             hyperlink.RequestNavigate -= Hyperlink_RequestNavigate;
+        }
     }
 
     private static void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
     {
-        var hyperlink = sender as Hyperlink;
+        Hyperlink hyperlink = sender as Hyperlink;
 
-        var confirmNavigation = GetConfirmNavigation(hyperlink);
-        if (!confirmNavigation || 
+        bool confirmNavigation = GetConfirmNavigation(hyperlink);
+        if (!confirmNavigation ||
             MessageBox.Show(
-                GetNavigationMessage(hyperlink), GetNavigationTitle(hyperlink), 
+                GetNavigationMessage(hyperlink), GetNavigationTitle(hyperlink),
                 MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
         {
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            _ = Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
             e.Handled = true;
         }
     }

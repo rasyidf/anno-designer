@@ -3,8 +3,8 @@ using AnnoDesigner.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
 using static AnnoDesigner.Core.CoreConstants;
@@ -13,9 +13,6 @@ namespace AnnoDesigner.ViewModels;
 
 public class PresetsTreeSearchViewModel : Notify
 {
-    private string _searchText;
-    private bool _hasFocus;
-    private ObservableCollection<GameVersionFilter> _gameVersionFilters;
     private bool _isUpdatingGameVersionFilter;
 
     public PresetsTreeSearchViewModel()
@@ -55,22 +52,22 @@ public class PresetsTreeSearchViewModel : Notify
 
     public string SearchText
     {
-        get => _searchText;
-        set => UpdateProperty(ref _searchText, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool HasFocus
     {
-        get => _hasFocus;
-        set => UpdateProperty(ref _hasFocus, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public ObservableCollection<GameVersionFilter> GameVersionFilters
     {
-        get => _gameVersionFilters;
+        get;
         set
         {
-            if (UpdateProperty(ref _gameVersionFilters, value))
+            if (UpdateProperty(ref field, value))
             {
                 HookGameVersionFilters();
             }
@@ -176,7 +173,7 @@ public class PresetsTreeSearchViewModel : Notify
         try
         {
             _isUpdatingGameVersionFilter = true;
-            foreach (var filter in GameVersionFilters)
+            foreach (GameVersionFilter filter in GameVersionFilters)
             {
                 filter.IsSelected = true;
             }
@@ -193,7 +190,7 @@ public class PresetsTreeSearchViewModel : Notify
         try
         {
             _isUpdatingGameVersionFilter = true;
-            foreach (var filter in GameVersionFilters)
+            foreach (GameVersionFilter filter in GameVersionFilters)
             {
                 filter.IsSelected = false;
             }
@@ -215,7 +212,7 @@ public class PresetsTreeSearchViewModel : Notify
         GameVersionFilters.CollectionChanged -= GameVersionFilters_CollectionChanged;
         GameVersionFilters.CollectionChanged += GameVersionFilters_CollectionChanged;
 
-        foreach (var item in GameVersionFilters)
+        foreach (GameVersionFilter item in GameVersionFilters)
         {
             item.PropertyChanged -= GameVersionFilter_PropertyChanged;
             item.PropertyChanged += GameVersionFilter_PropertyChanged;

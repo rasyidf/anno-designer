@@ -1,11 +1,11 @@
-﻿using System.Windows;
-using System.Windows.Media;
-using AnnoDesigner.Core.Models;
+﻿using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Models;
 using AnnoDesigner.Core.Services;
 using AnnoDesigner.Models;
 using AnnoDesigner.Undo;
 using Moq;
+using System.Windows;
+using System.Windows.Media;
 using Xunit;
 
 namespace AnnoDesigner.Tests
@@ -23,17 +23,17 @@ namespace AnnoDesigner.Tests
 
         public AnnoCanvasTests()
         {
-            var mockedAppSettings = new Mock<IAppSettings>();
-            mockedAppSettings.Setup(x => x.ColorGridLines).Returns(() => "{\"Type\":\"Default\",\"Color\":{\"A\":255,\"R\":0,\"G\":0,\"B\":0}}");
-            mockedAppSettings.Setup(x => x.ColorObjectBorderLines).Returns(() => "{\"Type\":\"Default\",\"Color\":{\"A\":255,\"R\":0,\"G\":0,\"B\":0}}");
+            Mock<IAppSettings> mockedAppSettings = new();
+            _ = mockedAppSettings.Setup(x => x.ColorGridLines).Returns(() => "{\"Type\":\"Default\",\"Color\":{\"A\":255,\"R\":0,\"G\":0,\"B\":0}}");
+            _ = mockedAppSettings.Setup(x => x.ColorObjectBorderLines).Returns(() => "{\"Type\":\"Default\",\"Color\":{\"A\":255,\"R\":0,\"G\":0,\"B\":0}}");
             _appSettings = mockedAppSettings.Object;
 
-            var mockedBrushCache = new Mock<IBrushCache>();
-            mockedBrushCache.Setup(x => x.GetSolidBrush(It.IsAny<Color>())).Returns(() => new SolidColorBrush(Colors.Black));
+            Mock<IBrushCache> mockedBrushCache = new();
+            _ = mockedBrushCache.Setup(x => x.GetSolidBrush(It.IsAny<Color>())).Returns(() => new SolidColorBrush(Colors.Black));
             _brushCache = mockedBrushCache.Object;
 
-            var mockedPenCache = new Mock<IPenCache>();
-            mockedPenCache.Setup(x => x.GetPen(It.IsAny<Brush>(), It.IsAny<double>())).Returns(() => new Pen(new SolidColorBrush(Colors.Black), 2));
+            Mock<IPenCache> mockedPenCache = new();
+            _ = mockedPenCache.Setup(x => x.GetPen(It.IsAny<Brush>(), It.IsAny<double>())).Returns(() => new Pen(new SolidColorBrush(Colors.Black), 2));
             _penCache = mockedPenCache.Object;
 
             _coordinateHelper = new Mock<ICoordinateHelper>().Object;
@@ -76,10 +76,10 @@ namespace AnnoDesigner.Tests
         public void Rotate_NoCurrentObjectsButSelectedObject_ShouldCloneSelectedObject()
         {
             // Arrange
-            var canvas = GetCanvas();
+            IAnnoCanvas canvas = GetCanvas();
 
-            var selectedObject = CreateLayoutObject(0, 0, 2, 2);
-            canvas.SelectedObjects.Add(selectedObject);
+            LayoutObject selectedObject = CreateLayoutObject(0, 0, 2, 2);
+            _ = canvas.SelectedObjects.Add(selectedObject);
 
             Assert.Empty(canvas.CurrentObjects);
 
@@ -87,7 +87,7 @@ namespace AnnoDesigner.Tests
             canvas.RotateCommand.Execute(null);
 
             // Assert
-            Assert.Single(canvas.CurrentObjects);
+            _ = Assert.Single(canvas.CurrentObjects);
 
             selectedObject.Size = new Size(4, 4);
             Assert.NotEqual(selectedObject.Size, canvas.CurrentObjects[0].Size);

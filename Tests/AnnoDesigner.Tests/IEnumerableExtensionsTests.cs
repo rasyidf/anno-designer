@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AnnoDesigner.Core.Models;
+﻿using AnnoDesigner.Core.Models;
 using AnnoDesigner.Extensions;
 using AnnoDesigner.Models;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace AnnoDesigner.Tests
@@ -26,7 +26,7 @@ namespace AnnoDesigner.Tests
         public void WithoutIgnoredObjects_ListIsNull_ShouldReturnNull()
         {
             // Arrange/Act
-            var result = IEnumerableExtensions.WithoutIgnoredObjects(null);
+            ICollection<LayoutObject> result = IEnumerableExtensions.WithoutIgnoredObjects(null);
 
             // Assert
             Assert.Null(result);
@@ -36,7 +36,7 @@ namespace AnnoDesigner.Tests
         public void WithoutIgnoredObjects_ListIsEmpty_ShouldReturnEmptyList()
         {
             // Arrange/Act
-            var result = IEnumerableExtensions.WithoutIgnoredObjects([]);
+            ICollection<LayoutObject> result = IEnumerableExtensions.WithoutIgnoredObjects([]);
 
             // Assert
             Assert.Empty(result);
@@ -46,22 +46,22 @@ namespace AnnoDesigner.Tests
         public void WithoutIgnoredObjects_ListHasNoIgnorableObjects_ShouldReturnSameList()
         {
             // Arrange
-            var list = new List<LayoutObject>
-            {
-                new LayoutObject(
+            List<LayoutObject> list =
+            [
+                new(
                     new AnnoObject
                     {
                         Template = "Dummy"
                     } ,mockedCoordinateHelper, mockedBrushCache, mockedPenCache),
-                new LayoutObject(
+                new(
                     new AnnoObject
                     {
                         Template = "AnotherDummy"
                     } ,mockedCoordinateHelper, mockedBrushCache, mockedPenCache),
-            };
+            ];
 
             // Act
-            var result = IEnumerableExtensions.WithoutIgnoredObjects(list);
+            ICollection<LayoutObject> result = IEnumerableExtensions.WithoutIgnoredObjects(list);
 
             // Assert
             Assert.Equal(list.Count(), result.Count());
@@ -75,27 +75,27 @@ namespace AnnoDesigner.Tests
         public void WithoutIgnoredObjects_ListHasIgnorableObjects_ShouldReturnFilteredList()
         {
             // Arrange
-            var list = new List<LayoutObject>
-            {
-                new LayoutObject(
+            List<LayoutObject> list =
+            [
+                new(
                     new AnnoObject
                     {
                         Template = "Blocker"
                     } ,mockedCoordinateHelper, mockedBrushCache, mockedPenCache),
-                new LayoutObject(
+                new(
                     new AnnoObject
                     {
                         Template = "Dummy"
                     } ,mockedCoordinateHelper, mockedBrushCache, mockedPenCache),
-                new LayoutObject(
+                new(
                     new AnnoObject
                     {
                         Template = "AnotherDummy"
                     } ,mockedCoordinateHelper, mockedBrushCache, mockedPenCache),
-            };
+            ];
 
             // Act
-            var result = IEnumerableExtensions.WithoutIgnoredObjects(list);
+            ICollection<LayoutObject> result = IEnumerableExtensions.WithoutIgnoredObjects(list);
 
             // Assert
             Assert.NotEqual(list.Count(), result.Count());

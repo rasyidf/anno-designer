@@ -1,11 +1,12 @@
 ﻿using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
 using System;
-using System.Diagnostics;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
 
@@ -21,15 +22,15 @@ public class HotkeyCommandManager : Notify, INotifyCollectionChanged
     /// </summary>
     private readonly ObservableCollection<Hotkey> _observableCollection;
     /// <summary>
-    /// Stores hotkey information loaded from user settings. Use <see cref="EnsureMappedHotkeys"/>
+    /// Stores hotkey information loaded from user settings.  
     /// </summary>
     private IDictionary<string, HotkeyInformation> hotkeyUserMappings;
     private readonly Dictionary<string, Hotkey> hotkeys;
 
     public HotkeyCommandManager(ILocalizationHelper localizationHelperToUse)
     {
-        hotkeys = new Dictionary<string, Hotkey>();
-        _observableCollection = new ObservableCollection<Hotkey>();
+        hotkeys = [];
+        _observableCollection = [];
         ObservableCollection = _observableCollection;
         _localizationHelper = localizationHelperToUse;
         Debug.WriteLine($"[HotkeyCommandManager] Created instance={GetHashCode()}");
@@ -165,13 +166,13 @@ public class HotkeyCommandManager : Notify, INotifyCollectionChanged
     }
 
     /// <summary>
-    /// Retrieves a <see cref="Dictionary{string, HotkeyInformation}"/> of Hotkeys that have been remapped from their defaults. 
+    /// Retrieves a <see cref="IDictionary"/> of Hotkeys that have been remapped from their defaults. 
     /// Hotkeys that have not been changed are ignored.
     /// </summary>
     /// <returns></returns>
     public Dictionary<string, HotkeyInformation> GetRemappedHotkeys()
     {
-        Dictionary<string, HotkeyInformation> remapped = new Dictionary<string, HotkeyInformation>();
+        Dictionary<string, HotkeyInformation> remapped = [];
         foreach (Hotkey h in hotkeys.Values)
         {
             if (h.IsRemapped())

@@ -1,12 +1,7 @@
-using AnnoDesigner.Core.DataStructures;
-using AnnoDesigner.Core.Helper;
-using AnnoDesigner.Core.Layout;
 using AnnoDesigner.Core.Layout.Exceptions;
-using AnnoDesigner.Core.Layout.Helper;
 using AnnoDesigner.Core.Layout.Models;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Services;
-using AnnoDesigner.Helper;
 using AnnoDesigner.Models;
 using NLog;
 using System;
@@ -16,7 +11,6 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace AnnoDesigner.Services
 {
@@ -84,15 +78,12 @@ namespace AnnoDesigner.Services
             {
                 logger.Warn(layoutEx, "Version of layout file is not supported.");
 
-                if (await _messageBoxService.ShowQuestion(
+                return await _messageBoxService.ShowQuestion(
                     null,
                     _localizationHelper.GetLocalization("FileVersionUnsupportedMessage"),
-                    _localizationHelper.GetLocalization("FileVersionUnsupportedTitle")))
-                {
-                    return await LoadLayoutFromFileAsync(filePath, true);
-                }
-
-                return null;
+                    _localizationHelper.GetLocalization("FileVersionUnsupportedTitle"))
+                    ? await LoadLayoutFromFileAsync(filePath, true)
+                    : null;
             }
             catch (Exception ex)
             {
@@ -109,12 +100,9 @@ namespace AnnoDesigner.Services
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(jsonString))
-                {
-                    return null;
-                }
-
-                return await Task.Run(() =>
+                return string.IsNullOrWhiteSpace(jsonString)
+                    ? null
+                    : await Task.Run(() =>
                 {
                     byte[] jsonArray = Encoding.UTF8.GetBytes(jsonString);
                     using MemoryStream ms = new(jsonArray);
@@ -125,15 +113,12 @@ namespace AnnoDesigner.Services
             {
                 logger.Warn(layoutEx, "Version of layout does not match.");
 
-                if (await _messageBoxService.ShowQuestion(
+                return await _messageBoxService.ShowQuestion(
                     null,
                     _localizationHelper.GetLocalization("FileVersionMismatchMessage"),
-                    _localizationHelper.GetLocalization("FileVersionMismatchTitle")))
-                {
-                    return await LoadLayoutFromJsonAsync(jsonString, true);
-                }
-
-                return null;
+                    _localizationHelper.GetLocalization("FileVersionMismatchTitle"))
+                    ? await LoadLayoutFromJsonAsync(jsonString, true)
+                    : null;
             }
             catch (Exception ex)
             {
@@ -192,7 +177,7 @@ namespace AnnoDesigner.Services
         {
             if (layout == null || layout.Objects == null)
             {
-                return new List<LayoutObject>();
+                return [];
             }
 
             List<LayoutObject> layoutObjects = new(layout.Objects.Count);

@@ -82,17 +82,12 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
     public BuildingPresets BuildingPresets { get; }
 
     /// <summary>
-    /// Backing field of the GridSize property.
-    /// </summary>
-    private int _gridSize = Constants.GridStepDefault;
-
-    /// <summary>
     /// Gets or sets the width of the grid cells.
     /// Increasing the grid size results in zooming in and vice versa.
     /// </summary>
     public int GridSize
     {
-        get => _gridSize;
+        get;
         set
         {
             int tmp = value;
@@ -106,162 +101,127 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
                 tmp = Constants.GridStepMax;
             }
 
-            if (_gridSize != tmp)
+            if (field != tmp)
             {
-                _gridSize = tmp;
+                field = tmp;
                 InvalidateVisual();
             }
         }
-    }
-
-    /// <summary>
-    /// Backing field of the RenderGrid property.
-    /// </summary>
-    private bool _renderGrid;
+    } = Constants.GridStepDefault;
 
     /// <summary>
     /// Gets or sets a value indicating whether the grid should be rendered.
     /// </summary>
     public bool RenderGrid
     {
-        get => _renderGrid;
+        get;
         set
         {
-            if (_renderGrid != value)
+            if (field != value)
             {
-                _renderGrid = value;
+                field = value;
                 _isRenderingForced = true;
                 InvalidateVisual();
             }
         }
     }
-
-    /// <summary>
-    /// Backing field of the RenderInfluences property.
-    /// </summary>
-    private bool _renderInfluences;
 
     /// <summary>
     /// Gets or sets a value indicating whether the influences should be rendered.
     /// </summary>
     public bool RenderInfluences
     {
-        get => _renderInfluences;
+        get;
         set
         {
-            if (_renderInfluences != value)
+            if (field != value)
             {
-                _renderInfluences = value;
+                field = value;
                 _isRenderingForced = true;
                 InvalidateVisual();
             }
         }
     }
-
-    /// <summary>
-    /// Backing field of the RenderLabel property.
-    /// </summary>
-    private bool _renderLabel;
 
     /// <summary>
     /// Gets or sets a value indicating whether the labels of objects should be rendered.
     /// </summary>
     public bool RenderLabel
     {
-        get => _renderLabel;
+        get;
         set
         {
-            if (_renderLabel != value)
+            if (field != value)
             {
-                _renderLabel = value;
+                field = value;
                 _isRenderingForced = true;
                 InvalidateVisual();
             }
         }
     }
-
-    /// <summary>
-    /// Backing field of the RenderIcon property.
-    /// </summary>
-    private bool _renderIcon;
 
     /// <summary>
     /// Gets or sets a value indicating whether the icons of objects should be rendered.
     /// </summary>
     public bool RenderIcon
     {
-        get => _renderIcon;
+        get;
         set
         {
-            if (_renderIcon != value)
+            if (field != value)
             {
-                _renderIcon = value;
+                field = value;
                 _isRenderingForced = true;
                 InvalidateVisual();
             }
         }
     }
-
-    /// <summary>
-    /// Backing field of the RenderTrueInfluenceRange property.
-    /// </summary>
-    private bool _renderTrueInfluenceRange;
 
     /// <summary>
     /// Gets or sets a value indicating whether the influence range should be calculated from roads present in the grid.
     /// </summary>
     public bool RenderTrueInfluenceRange
     {
-        get => _renderTrueInfluenceRange;
+        get;
         set
         {
-            if (_renderTrueInfluenceRange != value)
+            if (field != value)
             {
-                _renderTrueInfluenceRange = value;
+                field = value;
                 _isRenderingForced = true;
                 InvalidateVisual();
             }
         }
     }
-
-    /// <summary>
-    /// Backing field of the RenderHarborBlockedArea property.
-    /// </summary>
-    private bool _renderHarborBlockedArea;
 
     /// <summary>
     /// Gets or sets value indication whether the blocked harbor aread should be rendered.
     /// </summary>
     public bool RenderHarborBlockedArea
     {
-        get => _renderHarborBlockedArea;
+        get;
         set
         {
-            if (_renderHarborBlockedArea != value)
+            if (field != value)
             {
-                _renderHarborBlockedArea = value;
+                field = value;
                 _isRenderingForced = true;
                 InvalidateVisual();
             }
         }
     }
-
-    /// <summary>
-    /// Backing field of the RenderPanorama property.
-    /// </summary>
-    private bool _renderPanorama;
 
     /// <summary>
     /// Gets or sets a value indicating whether the skyscraper panorama should be visible.
     /// </summary>
     public bool RenderPanorama
     {
-        get => _renderPanorama;
+        get;
         set
         {
-            if (_renderPanorama != value)
+            if (field != value)
             {
-                _renderPanorama = value;
+                field = value;
                 _isRenderingForced = true;
                 InvalidateVisual();
             }
@@ -269,28 +229,23 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
     }
 
     /// <summary>
-    /// Backing field of the CurrentObject property
-    /// </summary>
-    private List<LayoutObject> _currentObjects = [];
-
-    /// <summary>
     /// Current object to be placed. Fires an event when changed.
     /// </summary>
     public List<LayoutObject> CurrentObjects
     {
-        get => _currentObjects;
+        get;
         private set
         {
-            if (_currentObjects != value)
+            if (field != value)
             {
-                _currentObjects = value;
+                field = value;
                 if (value.Count != 0)
                 {
                     OnCurrentObjectChanged?.Invoke(value[0]);
                 }
             }
         }
-    }
+    } = [];
 
     /// <summary>
     /// List of all currently placed objects.
@@ -309,21 +264,16 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
     public event Action<LayoutObject> OnCurrentObjectChanged;
 
     /// <summary>
-    /// Backing field of the StatusMessage property.
-    /// </summary>
-    private string _statusMessage;
-
-    /// <summary>
     /// Current status message.
     /// </summary>
     public string StatusMessage
     {
-        get => _statusMessage;
+        get;
         private set
         {
-            if (_statusMessage != value)
+            if (field != value)
             {
-                _statusMessage = value;
+                field = value;
                 OnStatusMessageChanged?.Invoke(value);
             }
         }
@@ -335,21 +285,16 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
     public event Action<string> OnStatusMessageChanged;
 
     /// <summary>
-    /// Backing field of the LoadedFile property.
-    /// </summary>
-    private string _loadedFile;
-
-    /// <summary>
     /// Last loaded file, i.e. the currently active file. Fire an event when changed.
     /// </summary>
     public string LoadedFile
     {
-        get => _loadedFile;
+        get;
         set
         {
-            if (_loadedFile != value)
+            if (field != value)
             {
-                _loadedFile = value;
+                field = value;
                 OnLoadedFileChanged?.Invoke(this, new FileLoadedEventArgs(value));
             }
         }
@@ -395,20 +340,15 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
     }
 
     /// <summary>
-    /// Backing field of the CurrentMode property.
-    /// </summary>
-    private MouseMode _currentMode;
-
-    /// <summary>
     /// Indicates the current mouse mode.
     /// </summary>
     private MouseMode CurrentMode
     {
-        get => _currentMode;
+        get;
         set
         {
-            _currentMode = value;
-            StatusMessage = "Mode: " + _currentMode;
+            field = value;
+            StatusMessage = "Mode: " + field;
         }
     }
 
@@ -808,8 +748,8 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
     {
         double width = RenderSize.Width;
         double height = RenderSize.Height;
-        _viewport.Width = _coordinateHelper.ScreenToGrid(width, _gridSize);
-        _viewport.Height = _coordinateHelper.ScreenToGrid(height, _gridSize);
+        _viewport.Width = _coordinateHelper.ScreenToGrid(width, GridSize);
+        _viewport.Height = _coordinateHelper.ScreenToGrid(height, GridSize);
 
         if (ScrollOwner != null && _invalidateScrollInfo)
         {
@@ -839,8 +779,8 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
          |
          |  Relative to the viewport, the object has been shifted "up".
          */
-        _viewportTransform.X = _coordinateHelper.GridToScreen(-_viewport.Left, _gridSize);
-        _viewportTransform.Y = _coordinateHelper.GridToScreen(-_viewport.Top, _gridSize);
+        _viewportTransform.X = _coordinateHelper.GridToScreen(-_viewport.Left, GridSize);
+        _viewportTransform.Y = _coordinateHelper.GridToScreen(-_viewport.Top, GridSize);
 
         // assure pixel perfect drawing using guidelines.
         // this value is cached and refreshed in LoadGridLineColor(), as it uses pen thickness in its calculation;
@@ -854,7 +794,7 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
         {
             //check if redraw is necessary
             if (_isRenderingForced ||
-                _gridSize != _lastGridSize ||
+                GridSize != _lastGridSize ||
                 height != _lastHeight ||
                 width != _lastWidth ||
                 _needsRefreshAfterSettingsChanged)
@@ -868,20 +808,20 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
                 context.PushGuidelineSet(_guidelineSet);
 
                 //vertical lines
-                for (double i = _viewport.HorizontalAlignmentValue * _gridSize; i < width; i += _gridSize)
+                for (double i = _viewport.HorizontalAlignmentValue * GridSize; i < width; i += GridSize)
                 {
                     context.DrawLine(_gridLinePen, new Point(i, 0), new Point(i, height));
                 }
 
                 //horizontal lines
-                for (double i = _viewport.VerticalAlignmentValue * _gridSize; i < height; i += _gridSize)
+                for (double i = _viewport.VerticalAlignmentValue * GridSize; i < height; i += GridSize)
                 {
                     context.DrawLine(_gridLinePen, new Point(0, i), new Point(width, i));
                 }
 
                 context.Close();
 
-                _lastGridSize = _gridSize;
+                _lastGridSize = GridSize;
                 _lastHeight = height;
                 _lastWidth = width;
                 _needsRefreshAfterSettingsChanged = false;
@@ -1044,7 +984,7 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
                 LayoutObject hoveredObj = GetObjectAt(_mousePosition);
                 if (hoveredObj != null)
                 {
-                    drawingContext.DrawRectangle(null, _highlightPen, hoveredObj.CalculateScreenRect(_gridSize));
+                    drawingContext.DrawRectangle(null, _highlightPen, hoveredObj.CalculateScreenRect(GridSize));
                 }
             }
         }
@@ -1091,7 +1031,7 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
                 Pen pen = _penCache.GetPen(_debugBrushDark, 2);
                 foreach (Rect rect in PlacedObjects.GetQuadrantRects())
                 {
-                    drawingContext.DrawRectangle(brush, pen, _coordinateHelper.GridToScreen(rect, _gridSize));
+                    drawingContext.DrawRectangle(brush, pen, _coordinateHelper.GridToScreen(rect, GridSize));
                 }
             }
 
@@ -1101,7 +1041,7 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
                 color.A = 0x08;
                 SolidColorBrush brush = _brushCache.GetSolidBrush(color);
                 Pen pen = _penCache.GetPen(_debugBrushLight, 1);
-                Rect collisionRectScreen = _coordinateHelper.GridToScreen(_collisionRect, _gridSize);
+                Rect collisionRectScreen = _coordinateHelper.GridToScreen(_collisionRect, GridSize);
                 drawingContext.DrawRectangle(brush, pen, collisionRectScreen);
             }
 
@@ -1187,7 +1127,7 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
                 //The first time this is called, App.DpiScale is still 0 which causes this code to throw an error
                 if (App.DpiScale.PixelsPerDip != 0)
                 {
-                    Point gridPosition = _coordinateHelper.ScreenToFractionalGrid(_mousePosition, _gridSize);
+                    Point gridPosition = _coordinateHelper.ScreenToFractionalGrid(_mousePosition, GridSize);
                     gridPosition = _viewport.OriginToViewport(gridPosition);
                     double x = gridPosition.X;
                     double y = gridPosition.Y;
@@ -1208,7 +1148,7 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
             {
                 if (_debugShowSelectionRectCoordinates)
                 {
-                    Rect rect = _coordinateHelper.ScreenToGrid(_selectionRect, _gridSize);
+                    Rect rect = _coordinateHelper.ScreenToGrid(_selectionRect, GridSize);
                     double top = rect.Top;
                     double left = rect.Left;
                     double h = rect.Height;
@@ -1833,7 +1773,7 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
     /// Add the objects to SelectedObjects, optionally also add all objects which match one of their identifiers.
     /// </summary>
     /// <param name="includeSameObjects"> 
-    /// If <see langword="true"/> then apply to objects whose identifier matches one of those in <see cref="objectsToAdd"/>.
+    /// If <see langword="true"/> then apply to objects whose identifier matches one of those in objectsToAdd.
     /// </param>
     private void AddSelectedObjects(IEnumerable<LayoutObject> objectsToAdd, bool includeSameObjects)
     {
@@ -1852,7 +1792,7 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
     /// Remove the objects from SelectedObjects, optionally also remove all objects which match one of their identifiers.
     /// </summary>
     /// <param name="includeSameObjects"> 
-    /// If <see langword="true"> then apply to objects whose identifier matches one of those in <see cref="objectsToRemove">.
+    /// If <see langword="true"/> then apply to objects whose identifier matches one of those in <see cref="objectsToRemove"/>.
     /// </param>
     private void RemoveSelectedObjects(IEnumerable<LayoutObject> objectsToRemove, bool includeSameObjects)
     {
@@ -1890,7 +1830,7 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
     /// Remove a single object from SelectedObjects, optionally also remove all objects with the same identifier.
     /// </summary>
     /// <param name="includeSameObjects"> 
-    /// If <see langword="true"> then apply to objects whose identifier match that of <see cref="objectToRemove">.
+    /// If <see langword="true"/> then apply to objects whose identifier match that of <see cref="objectToRemove"/>.
     /// </param>
     private void RemoveSelectedObject(LayoutObject objectToRemove, bool includeSameObjects = false)
     {
@@ -2657,8 +2597,8 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
     {
         obj.Position = _mousePosition;
         // note: setting of the backing field doesn't fire the changed event
-        _currentObjects.Clear();
-        _currentObjects.Add(obj);
+        CurrentObjects.Clear();
+        CurrentObjects.Add(obj);
         InvalidateVisual();
     }
 

@@ -1,29 +1,25 @@
-﻿using System.IO;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.IO;
+using System.IO.Abstractions;
 using System.Runtime.Serialization.Json;
 using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace AnnoDesigner.Core.Helper;
 
 public static class SerializationHelper
 {
+    private static readonly IFileSystem _fileSystem;
     private static readonly JsonConverter[] _converter;
-
     static SerializationHelper()
     {
-        _converter =
-        [
-            new VersionConverter(),
-            new IsoDateTimeConverter(),
-            new StringEnumConverter()
-        ];
+        _converter = [new VersionConverter(), new IsoDateTimeConverter(), new StringEnumConverter()];
+        _fileSystem = new FileSystem();
     }
-
     private static JsonSerializer GetSerializer()
     {
-        var serializer = new JsonSerializer();
-        foreach (var curConverter in _converter)
+        JsonSerializer serializer = new();
+        foreach (JsonConverter curConverter in _converter)
         {
             serializer.Converters.Add(curConverter);
         }
@@ -39,7 +35,7 @@ public static class SerializationHelper
     /// <param name="filename">output JSON filename</param>
     public static void SaveToFile<T>(T obj, string filename)
     {
-        File.WriteAllText(filename, SaveToJsonString(obj));
+        _fileSystem.File.WriteAllText(filename, SaveToJsonString(obj));
     }
 
     /// <summary>
@@ -50,9 +46,9 @@ public static class SerializationHelper
     /// <param name="stream">output JSON stream</param>
     public static void SaveToStream<T>(T obj, Stream stream)
     {
-        var serializer = GetSerializer();
-        using var sw = new StreamWriter(stream, Encoding.UTF8, 1024, true);//use constructor that does not close base stream
-        using var jsonWriter = new JsonTextWriter(sw);
+        JsonSerializer serializer = GetSerializer();
+        using StreamWriter sw = new(stream, Encoding.UTF8, 1024, true);//use constructor that does not close base stream
+        using JsonTextWriter jsonWriter = new(sw);
         serializer.Serialize(jsonWriter, obj, typeof(T));
         jsonWriter.Flush();
     }
@@ -76,7 +72,7 @@ public static class SerializationHelper
     /// <returns>deserialized object</returns>
     public static T LoadFromFile<T>(string filename)
     {
-        var fileContents = File.ReadAllText(filename);
+        string fileContents = _fileSystem.File.ReadAllText(filename);
         return LoadFromJsonString<T>(fileContents);
     }
 
@@ -88,9 +84,9 @@ public static class SerializationHelper
     /// <returns>deserialized object</returns>
     public static T LoadFromStream<T>(Stream stream)
     {
-        var serializer = GetSerializer();
-        using var sr = new StreamReader(stream);
-        using var jsonReader = new JsonTextReader(sr);
+        JsonSerializer serializer = GetSerializer();
+        using StreamReader sr = new(stream);
+        using JsonTextReader jsonReader = new(sr);
         return serializer.Deserialize<T>(jsonReader);
     }
 
@@ -104,12 +100,7 @@ public static class SerializationHelper
     /// <returns>deserialized object</returns>
     public static T LoadFromJsonString<T>(string jsonString)
     {
-        if (string.IsNullOrWhiteSpace(jsonString))
-        {
-            return default;
-        }
-
-        return JsonConvert.DeserializeObject<T>(jsonString, _converter);
+        return string.IsNullOrWhiteSpace(jsonString) ? default : JsonConvert.DeserializeObject<T>(jsonString, _converter);
     }
 
     /// <summary>
@@ -120,8 +111,8 @@ public static class SerializationHelper
     /// <returns>deserialized object</returns>
     public static T LoadFromJsonStringLegacy<T>(string jsonString)
     {
-        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
-        var serializer = new DataContractJsonSerializer(typeof(T));
+        using MemoryStream ms = new(Encoding.UTF8.GetBytes(jsonString));
+        DataContractJsonSerializer serializer = new(typeof(T));
         return (T)serializer.ReadObject(ms);
     }
 }

@@ -6,15 +6,14 @@ namespace AnnoDesigner.Undo.Operations;
 
 public class ModifyObjectPropertiesOperation<TObject, TProperty> : BaseOperation
 {
-    private string propertyName;
     private PropertyInfo propertyInfo;
 
     public string PropertyName
     {
-        get => propertyName;
+        get;
         set
         {
-            propertyName = value;
+            field = value;
             propertyInfo = typeof(TObject).GetProperty(value);
 #if DEBUG
             if (!propertyInfo.PropertyType.IsAssignableFrom(typeof(TProperty)))

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Globalization;
-using AnnoDesigner.Converters;
+﻿using AnnoDesigner.Converters;
 using AnnoDesigner.Models;
 using Moq;
+using System;
+using System.Globalization;
 using Xunit;
 
 namespace AnnoDesigner.Tests
@@ -11,26 +11,20 @@ namespace AnnoDesigner.Tests
     {
         public UserDefinedColorToDisplayNameConverterTests()
         {
-            var commonsMock = new Mock<ICommons>();
-            commonsMock.SetupGet(x => x.CurrentLanguage).Returns(() => "English");
-            commonsMock.SetupGet(x => x.CurrentLanguageCode).Returns(() => "eng");
+            Mock<ICommons> commonsMock = new();
+            _ = commonsMock.SetupGet(x => x.CurrentLanguage).Returns(() => "English");
+            _ = commonsMock.SetupGet(x => x.CurrentLanguageCode).Returns(() => "eng");
             Localization.Localization.Init(commonsMock.Object);
         }
 
         #region test data
 
-        public static TheoryData<UserDefinedColor, string> KnownValueTestData
+        public static TheoryData<UserDefinedColor, string> KnownValueTestData => new()
         {
-            get
-            {
-                return new TheoryData<UserDefinedColor, string>
-                {
-                    { new UserDefinedColor{ Type = UserDefinedColorType.Custom }, "Custom" },
-                    { new UserDefinedColor{ Type = UserDefinedColorType.Default }, "Default" },
-                    { new UserDefinedColor{ Type = UserDefinedColorType.Light }, "Light" },
-                };
-            }
-        }
+            { new UserDefinedColor { Type = UserDefinedColorType.Custom }, "Custom" },
+            { new UserDefinedColor { Type = UserDefinedColorType.Default }, "Default" },
+            { new UserDefinedColor { Type = UserDefinedColorType.Light }, "Light" },
+        };
 
         #endregion
 
@@ -41,10 +35,10 @@ namespace AnnoDesigner.Tests
         public void Convert_PassedKnownValue_ShouldReturnCorrectValue(UserDefinedColor input, string expected)
         {
             // Arrange
-            var converter = new UserDefinedColorToDisplayNameConverter();
+            UserDefinedColorToDisplayNameConverter converter = new();
 
             // Act
-            var result = converter.Convert(input, typeof(string), 0, CultureInfo.CurrentCulture);
+            object result = converter.Convert(input, typeof(string), 0, CultureInfo.CurrentCulture);
 
             // Assert
             Assert.Equal(expected, result);
@@ -56,10 +50,10 @@ namespace AnnoDesigner.Tests
         public void Convert_PassedUnknownValue_ShouldReturnInput(object input)
         {
             // Arrange
-            var converter = new UserDefinedColorToDisplayNameConverter();
+            UserDefinedColorToDisplayNameConverter converter = new();
 
             // Act
-            var result = converter.Convert(input, typeof(string), null, CultureInfo.CurrentCulture);
+            object result = converter.Convert(input, typeof(string), null, CultureInfo.CurrentCulture);
 
             // Assert
             Assert.Equal(input, result);
@@ -73,10 +67,10 @@ namespace AnnoDesigner.Tests
         public void ConvertBack_PassedAnyValue_ShouldThrow()
         {
             // Arrange
-            var converter = new UserDefinedColorToDisplayNameConverter();
+            UserDefinedColorToDisplayNameConverter converter = new();
 
             // Act/Assert
-            Assert.Throws<NotImplementedException>(() => converter.ConvertBack(string.Empty, typeof(UserDefinedColor), null, CultureInfo.CurrentCulture));
+            _ = Assert.Throws<NotImplementedException>(() => converter.ConvertBack(string.Empty, typeof(UserDefinedColor), null, CultureInfo.CurrentCulture));
         }
 
         #endregion

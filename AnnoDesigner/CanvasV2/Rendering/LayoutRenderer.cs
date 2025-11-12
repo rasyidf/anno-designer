@@ -1,17 +1,14 @@
+using AnnoDesigner.Core.Models;
+using AnnoDesigner.Helper;
+using AnnoDesigner.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using AnnoDesigner.Core.Extensions;
-using AnnoDesigner.Core.Models;
-using AnnoDesigner.Models;
-using AnnoDesigner.CanvasV2.Input;
-using AnnoDesigner.Helper;
 
 namespace AnnoDesigner.CanvasV2.Rendering;
 
@@ -38,12 +35,15 @@ public sealed class LayoutRenderer
     /// </summary>
     public void Render(DrawingContext dc, RenderState state)
     {
-        if (dc is null) return;
-        
+        if (dc is null)
+        {
+            return;
+        }
+
         int grid = state.GridSize;
         double widthPx = state.Viewport.Width * grid;
         double heightPx = state.Viewport.Height * grid;
-        
+
         if (double.IsNaN(widthPx) || widthPx <= 0 || double.IsNaN(heightPx) || heightPx <= 0)
         {
             return;
@@ -113,9 +113,16 @@ public sealed class LayoutRenderer
         double fracY = state.Viewport.Top - Math.Floor(state.Viewport.Top);
         double startX = (1.0 - fracX) % 1.0 * grid;
         double startY = (1.0 - fracY) % 1.0 * grid;
-        
-        if (double.IsNaN(startX)) startX = 0;
-        if (double.IsNaN(startY)) startY = 0;
+
+        if (double.IsNaN(startX))
+        {
+            startX = 0;
+        }
+
+        if (double.IsNaN(startY))
+        {
+            startY = 0;
+        }
 
         Pen gridPen = _caches.GridPen;
         for (double x = startX; x < widthPx; x += grid)
@@ -131,9 +138,9 @@ public sealed class LayoutRenderer
     private void RenderPlacedObjects(DrawingContext dc, RenderState state, int gridSize)
     {
         // Sort objects by Z-index (ascending) so higher Z-index objects render on top
-        var sortedObjects = state.ObjectsToDraw.OrderBy(o => o.ZIndex).ToList();
-        
-        foreach (var lo in sortedObjects)
+        List<LayoutObject> sortedObjects = state.ObjectsToDraw.OrderBy(o => o.ZIndex).ToList();
+
+        foreach (LayoutObject lo in sortedObjects)
         {
             RenderSingleObject(dc, state, lo, gridSize);
         }
@@ -143,12 +150,12 @@ public sealed class LayoutRenderer
     {
         // Push opacity for transparency effect (like v1)
         dc.PushOpacity(0.5);
-        
-        foreach (var lo in state.CurrentObjects)
+
+        foreach (LayoutObject lo in state.CurrentObjects)
         {
             RenderSingleObject(dc, state, lo, gridSize);
         }
-        
+
         dc.Pop();
     }
 
@@ -239,7 +246,7 @@ public sealed class LayoutRenderer
     private void RenderObjectSelection(DrawingContext dc, RenderState state)
     {
         Pen highlightPen = _caches.HighlightPen;
-        foreach (var lo in state.SelectedObjects)
+        foreach (LayoutObject lo in state.SelectedObjects)
         {
             Rect r = lo.CalculateScreenRect(state.GridSize);
             dc.DrawRectangle(null, highlightPen, r);
@@ -249,7 +256,7 @@ public sealed class LayoutRenderer
     private void RenderObjectInfluenceRange(DrawingContext dc, RenderState state)
     {
         // Combine selected and current objects for influence rendering
-        var objectsWithInfluence = state.SelectedObjects
+        List<LayoutObject> objectsWithInfluence = state.SelectedObjects
             .Concat(state.CurrentObjects)
             .Where(o => o.WrappedAnnoObject?.Radius >= 0.5 || o.WrappedAnnoObject?.InfluenceRange > 0.5)
             .ToList();
@@ -265,13 +272,13 @@ public sealed class LayoutRenderer
 
         if (state.RenderTrueInfluenceRange && state.AllPlacedObjects.Count > 0)
         {
-            var allObjects = state.AllPlacedObjects.Concat(objectsWithInfluence).ToHashSet();
+            HashSet<LayoutObject> allObjects = state.AllPlacedObjects.Concat(objectsWithInfluence).ToHashSet();
             placedAnnoObjects = allObjects.Select(o => o.WrappedAnnoObject).ToList();
             Dictionary<AnnoObject, LayoutObject> placedObjectDictionary = allObjects.ToDictionary(o => o.WrappedAnnoObject);
 
             void Highlight(AnnoObject objectInRange)
             {
-                if (placedObjectDictionary.TryGetValue(objectInRange, out var layoutObj))
+                if (placedObjectDictionary.TryGetValue(objectInRange, out LayoutObject layoutObj))
                 {
                     dc.DrawRectangle(_caches.InfluencedBrush, _caches.InfluencedPen, layoutObj.CalculateScreenRect(state.GridSize));
                 }
@@ -290,7 +297,7 @@ public sealed class LayoutRenderer
         }
 
         // Render influence polygons in parallel for performance
-        ConcurrentBag<(long index, StreamGeometry geometry)> geometries = new();
+        ConcurrentBag<(long index, StreamGeometry geometry)> geometries = [];
         _ = Parallel.ForEach(objectsWithInfluence, (curLayoutObject, _, index) =>
         {
             // Basic radius rendering
@@ -303,10 +310,12 @@ public sealed class LayoutRenderer
             // Influence range polygon rendering
             if (curLayoutObject.WrappedAnnoObject.InfluenceRange > 0.5)
             {
-                StreamGeometry sg = new();
-                // Use EvenOdd fill rule so polygons with holes are rendered correctly when multiple
-                // figures (outer boundary + holes) are emitted into the same geometry.
-                sg.FillRule = FillRule.EvenOdd;
+                StreamGeometry sg = new()
+                {
+                    // Use EvenOdd fill rule so polygons with holes are rendered correctly when multiple
+                    // figures (outer boundary + holes) are emitted into the same geometry.
+                    FillRule = FillRule.EvenOdd
+                };
                 using (StreamGeometryContext sgc = sg.Open())
                 {
                     if (state.RenderTrueInfluenceRange && gridDictionary != null && placedAnnoObjects != null)
@@ -328,7 +337,7 @@ public sealed class LayoutRenderer
         });
 
         // Draw radius circles (must be on main thread)
-        foreach (var obj in objectsWithInfluence.Where(o => o.WrappedAnnoObject.Radius >= 0.5))
+        foreach (LayoutObject obj in objectsWithInfluence.Where(o => o.WrappedAnnoObject.Radius >= 0.5))
         {
             double radius = obj.GetScreenRadius(state.GridSize);
             EllipseGeometry circle = obj.GetInfluenceCircle(state.GridSize, radius);
@@ -373,7 +382,7 @@ public sealed class LayoutRenderer
 
         // Support polygons with holes: GetBoundaryPointsWithHoles returns the outer boundary
         // first and then holes. We use EvenOdd fill rule so holes will be treated correctly.
-        var polygons = PolygonBoundaryFinderHelper.GetBoundaryPointsWithHoles(cellsInInfluenceRange).ToList();
+        List<IReadOnlyList<(int x, int y)>> polygons = PolygonBoundaryFinderHelper.GetBoundaryPointsWithHoles(cellsInInfluenceRange).ToList();
         if (polygons.Count == 0)
         {
             return;
@@ -381,9 +390,12 @@ public sealed class LayoutRenderer
 
         // For multiple polygons (outer + holes) ensure EvenOdd fill handling
         // Note: caller opens the StreamGeometryContext, so we only emit figures here.
-        foreach (var points in polygons)
+        foreach (IReadOnlyList<(int x, int y)> points in polygons)
         {
-            if (points == null || points.Count < 1) continue;
+            if (points == null || points.Count < 1)
+            {
+                continue;
+            }
 
             // Convert grid coordinate of first point to screen and begin a new figure
             Point startPoint = state.CoordinateHelper.GridToScreen(

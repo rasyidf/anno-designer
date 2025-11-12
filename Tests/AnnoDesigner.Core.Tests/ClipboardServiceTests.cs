@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AnnoDesigner.Core.Layout;
+﻿using AnnoDesigner.Core.Layout;
 using AnnoDesigner.Core.Layout.Models;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Services;
 using AnnoDesigner.Core.Tests.Mocks;
 using Moq;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using Xunit;
 
 namespace AnnoDesigner.Core.Tests
@@ -55,7 +56,7 @@ namespace AnnoDesigner.Core.Tests
         public void Copy_ListIsEmpty_ShouldNotAddDataToClipboard()
         {
             // Arrange
-            var service = GetService();
+            IClipboardService service = GetService();
 
             // Act
             service.Copy(Array.Empty<AnnoObject>());
@@ -68,10 +69,10 @@ namespace AnnoDesigner.Core.Tests
         public void Copy_ListIsNull_ShouldNotThrowAndNotAddDataToClipboard()
         {
             // Arrange
-            var service = GetService();
+            IClipboardService service = GetService();
 
             // Act
-            var ex = Record.Exception(() => service.Copy(null));
+            Exception ex = Record.Exception(() => service.Copy(null));
 
             // Assert
             Assert.Null(ex);
@@ -82,15 +83,15 @@ namespace AnnoDesigner.Core.Tests
         public void Copy_ListHasData_ShouldAddDataToClipboard()
         {
             // Arrange
-            var service = GetService();
-            var data = GetListOfObjects();
+            IClipboardService service = GetService();
+            List<AnnoObject> data = GetListOfObjects();
 
             // Act
             service.Copy(data);
 
             // Assert
-            var clipboardStream = _mockedClipboard.GetData(CoreConstants.AnnoDesignerClipboardFormat) as System.IO.Stream;
-            var copiedObjects = _mockedLayoutLoader.LoadLayout(clipboardStream, forceLoad: true).Objects;
+            Stream clipboardStream = _mockedClipboard.GetData(CoreConstants.AnnoDesignerClipboardFormat) as System.IO.Stream;
+            List<AnnoObject> copiedObjects = _mockedLayoutLoader.LoadLayout(clipboardStream, forceLoad: true).Objects;
 
             Assert.Equal(data.Count, copiedObjects.Count);
             Assert.All(data, x =>
@@ -104,13 +105,13 @@ namespace AnnoDesigner.Core.Tests
         public void Copy_ListHasData_ShouldClearClipboardBeforeAddingData()
         {
             // Arrange
-            var mockedClipboard = new Mock<IClipboard>();
-            var callOrder = 0;
+            Mock<IClipboard> mockedClipboard = new();
+            int callOrder = 0;
             _ = mockedClipboard.Setup(x => x.Clear()).Callback(() => Assert.Equal(0, callOrder++));
             _ = mockedClipboard.Setup(x => x.SetData(It.IsAny<string>(), It.IsAny<object>())).Callback(() => Assert.Equal(1, callOrder++));
 
-            var service = GetService(clipboardToUse: mockedClipboard.Object);
-            var data = GetListOfObjects();
+            IClipboardService service = GetService(clipboardToUse: mockedClipboard.Object);
+            List<AnnoObject> data = GetListOfObjects();
 
             // Act
             service.Copy(data);
@@ -123,13 +124,13 @@ namespace AnnoDesigner.Core.Tests
         public void Copy_ListHasData_ShouldFlushClipboardAfterAddingData()
         {
             // Arrange
-            var mockedClipboard = new Mock<IClipboard>();
-            var callOrder = 0;
+            Mock<IClipboard> mockedClipboard = new();
+            int callOrder = 0;
             _ = mockedClipboard.Setup(x => x.SetData(It.IsAny<string>(), It.IsAny<object>())).Callback(() => Assert.Equal(0, callOrder++));
             _ = mockedClipboard.Setup(x => x.Flush()).Callback(() => Assert.Equal(1, callOrder++));
 
-            var service = GetService(clipboardToUse: mockedClipboard.Object);
-            var data = GetListOfObjects();
+            IClipboardService service = GetService(clipboardToUse: mockedClipboard.Object);
+            List<AnnoObject> data = GetListOfObjects();
 
             // Act
             service.Copy(data);
@@ -146,10 +147,10 @@ namespace AnnoDesigner.Core.Tests
         public void Paste_ClipboardHasNoData_ShouldReturnEmpty()
         {
             // Arrange
-            var service = GetService();
+            IClipboardService service = GetService();
 
             // Act
-            var result = service.Paste();
+            ICollection<AnnoObject> result = service.Paste();
 
             // Assert
             Assert.NotNull(result);
@@ -160,11 +161,11 @@ namespace AnnoDesigner.Core.Tests
         public void Paste_Files_ClipboardHasMultipleFiles_ShouldReturnEmpty()
         {
             // Arrange
-            var service = GetService();
+            IClipboardService service = GetService();
             _mockedClipboard.AddFilesToClipboard(["first file path", "second file path"]);
 
             // Act
-            var result = service.Paste();
+            ICollection<AnnoObject> result = service.Paste();
 
             // Assert
             Assert.NotNull(result);
@@ -175,13 +176,13 @@ namespace AnnoDesigner.Core.Tests
         public void Paste_Files_ClipboardFileListReturnsNull_ShouldReturnEmpty()
         {
             // Arrange
-            var mockedClipboard = new Mock<IClipboard>();
+            Mock<IClipboard> mockedClipboard = new();
             _ = mockedClipboard.Setup(x => x.GetFileDropList()).Returns(() => null);
 
-            var service = GetService(clipboardToUse: mockedClipboard.Object);
+            IClipboardService service = GetService(clipboardToUse: mockedClipboard.Object);
 
             // Act
-            var result = service.Paste();
+            ICollection<AnnoObject> result = service.Paste();
 
             // Assert
             Assert.NotNull(result);
@@ -192,17 +193,17 @@ namespace AnnoDesigner.Core.Tests
         public void Paste_Files_ClipboardHasSingleFile_ShouldReturnLayoutObjects()
         {
             // Arrange
-            var data = GetListOfObjects();
+            List<AnnoObject> data = GetListOfObjects();
 
-            var mockedLayoutLoader = new Mock<ILayoutLoader>();
+            Mock<ILayoutLoader> mockedLayoutLoader = new();
             _ = mockedLayoutLoader.Setup(x => x.LoadLayout(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns(() => new LayoutFile(data));
 
-            var service = GetService(layoutLoaderToUse: mockedLayoutLoader.Object);
+            IClipboardService service = GetService(layoutLoaderToUse: mockedLayoutLoader.Object);
             _mockedClipboard.AddFilesToClipboard(["first"]);
 
             // Act
-            var result = service.Paste();
+            ICollection<AnnoObject> result = service.Paste();
 
             // Assert
             Assert.Equal(data, result);
@@ -212,17 +213,17 @@ namespace AnnoDesigner.Core.Tests
         public void Paste_Files_ClipboardHasOnlySingleFileAndLayoutLoaderThrows_ShouldReturnEmpty()
         {
             // Arrange
-            var data = GetListOfObjects();
+            List<AnnoObject> data = GetListOfObjects();
 
-            var mockedLayoutLoader = new Mock<ILayoutLoader>();
+            Mock<ILayoutLoader> mockedLayoutLoader = new();
             _ = mockedLayoutLoader.Setup(x => x.LoadLayout(It.IsAny<string>(), It.IsAny<bool>()))
                 .Throws(new JsonReaderException());
 
-            var service = GetService(layoutLoaderToUse: mockedLayoutLoader.Object);
+            IClipboardService service = GetService(layoutLoaderToUse: mockedLayoutLoader.Object);
             _mockedClipboard.AddFilesToClipboard(["first"]);
 
             // Act
-            var result = service.Paste();
+            ICollection<AnnoObject> result = service.Paste();
 
             // Assert
             Assert.NotNull(result);
@@ -234,10 +235,10 @@ namespace AnnoDesigner.Core.Tests
         {
             // Arrange
             _mockedClipboard.SetData(CoreConstants.AnnoDesignerClipboardFormat, new { Id = "unknown object" });
-            var service = GetService();
+            IClipboardService service = GetService();
 
             // Act
-            var result = service.Paste();
+            ICollection<AnnoObject> result = service.Paste();
 
             // Assert
             Assert.NotNull(result);
@@ -248,17 +249,17 @@ namespace AnnoDesigner.Core.Tests
         public void Paste_Data_ClipboardHasKnownDataType_ShouldReturnLayoutObjects()
         {
             // Arrange
-            var data = GetListOfObjects();
+            List<AnnoObject> data = GetListOfObjects();
 
-            using var memoryStream = new System.IO.MemoryStream();
+            using MemoryStream memoryStream = new();
             _mockedLayoutLoader.SaveLayout(new LayoutFile(data), memoryStream);
-            memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
+            _ = memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
             _mockedClipboard.SetData(CoreConstants.AnnoDesignerClipboardFormat, memoryStream);
 
-            var service = GetService();
+            IClipboardService service = GetService();
 
             // Act
-            var result = service.Paste();
+            ICollection<AnnoObject> result = service.Paste();
 
             // Assert
             Assert.Equal(data.Count, result.Count);
@@ -273,21 +274,21 @@ namespace AnnoDesigner.Core.Tests
         public void Paste_Data_ClipboardHasKnownDataTypeAndLayoutLoaderThrows_ShouldReturnEmpty()
         {
             // Arrange
-            var data = GetListOfObjects();
+            List<AnnoObject> data = GetListOfObjects();
 
-            var mockedLayoutLoader = new Mock<ILayoutLoader>();
+            Mock<ILayoutLoader> mockedLayoutLoader = new();
             _ = mockedLayoutLoader.Setup(x => x.LoadLayout(It.IsAny<System.IO.Stream>(), It.IsAny<bool>()))
                 .Throws(new JsonReaderException());
 
-            using var memoryStream = new System.IO.MemoryStream();
+            using MemoryStream memoryStream = new();
             _mockedLayoutLoader.SaveLayout(new LayoutFile(data), memoryStream);
-            memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
+            _ = memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
             _mockedClipboard.SetData(CoreConstants.AnnoDesignerClipboardFormat, memoryStream);
 
-            var service = GetService(layoutLoaderToUse: mockedLayoutLoader.Object);
+            IClipboardService service = GetService(layoutLoaderToUse: mockedLayoutLoader.Object);
 
             // Act
-            var result = service.Paste();
+            ICollection<AnnoObject> result = service.Paste();
 
             // Assert
             Assert.NotNull(result);
@@ -300,13 +301,13 @@ namespace AnnoDesigner.Core.Tests
             // Arrange
             _mockedClipboard.SetText(testData_v4_LayoutWithVersionAndObjects);
 
-            using var streamWithLayout = new System.IO.MemoryStream(Encoding.UTF8.GetBytes(testData_v4_LayoutWithVersionAndObjects));
-            var expectedLayout = _mockedLayoutLoader.LoadLayout(streamWithLayout, forceLoad: true);
+            using MemoryStream streamWithLayout = new(Encoding.UTF8.GetBytes(testData_v4_LayoutWithVersionAndObjects));
+            LayoutFile expectedLayout = _mockedLayoutLoader.LoadLayout(streamWithLayout, forceLoad: true);
 
-            var service = GetService();
+            IClipboardService service = GetService();
 
             // Act
-            var result = service.Paste();
+            ICollection<AnnoObject> result = service.Paste();
 
             // Assert
             Assert.Equal(expectedLayout.Objects.Count, result.Count);
@@ -323,10 +324,10 @@ namespace AnnoDesigner.Core.Tests
             // Arrange
             _mockedClipboard.SetText("not a layout");
 
-            var service = GetService();
+            IClipboardService service = GetService();
 
             // Act
-            var result = service.Paste();
+            ICollection<AnnoObject> result = service.Paste();
 
             // Assert
             Assert.NotNull(result);
@@ -339,14 +340,14 @@ namespace AnnoDesigner.Core.Tests
             // Arrange
             _mockedClipboard.SetText(testData_v4_LayoutWithVersionAndObjects);
 
-            var mockedLayoutLoader = new Mock<ILayoutLoader>();
+            Mock<ILayoutLoader> mockedLayoutLoader = new();
             _ = mockedLayoutLoader.Setup(x => x.LoadLayout(It.IsAny<System.IO.Stream>(), It.IsAny<bool>()))
                 .Throws(new JsonReaderException());
 
-            var service = GetService(layoutLoaderToUse: mockedLayoutLoader.Object);
+            IClipboardService service = GetService(layoutLoaderToUse: mockedLayoutLoader.Object);
 
             // Act
-            var result = service.Paste();
+            ICollection<AnnoObject> result = service.Paste();
 
             // Assert
             Assert.NotNull(result);

@@ -27,12 +27,6 @@ public class PresetsTreeViewModel : Notify
 
     private readonly ILocalizationHelper _localizationHelper;
     private readonly ICommons _commons;
-    private ObservableCollection<GenericTreeItem> _items;
-    private ICollectionView _filteredItems;
-    private GenericTreeItem _selectedItem;
-    private string _buildingPresetsVersion;
-    private string _filterText;
-    private CoreConstants.GameVersion _filterGameVersion;
 
     public PresetsTreeViewModel(ILocalizationHelper localizationHelperToUse, ICommons commonsToUse)
     {
@@ -52,34 +46,34 @@ public class PresetsTreeViewModel : Notify
 
     public ObservableCollection<GenericTreeItem> Items
     {
-        get => _items;
-        set => UpdateProperty(ref _items, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public ICollectionView FilteredItems
     {
-        get => _filteredItems;
-        set => UpdateProperty(ref _filteredItems, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public GenericTreeItem SelectedItem
     {
-        get => _selectedItem;
-        private set => UpdateProperty(ref _selectedItem, value);
+        get;
+        private set => UpdateProperty(ref field, value);
     }
 
     public string BuildingPresetsVersion
     {
-        get => _buildingPresetsVersion;
-        private set => UpdateProperty(ref _buildingPresetsVersion, value);
+        get;
+        private set => UpdateProperty(ref field, value);
     }
 
     public string FilterText
     {
-        get => _filterText;
+        get;
         set
         {
-            if (UpdateProperty(ref _filterText, value))
+            if (UpdateProperty(ref field, value))
             {
                 Filter();
             }
@@ -88,10 +82,10 @@ public class PresetsTreeViewModel : Notify
 
     public CoreConstants.GameVersion FilterGameVersion
     {
-        get => _filterGameVersion;
+        get;
         set
         {
-            if (UpdateProperty(ref _filterGameVersion, value))
+            if (UpdateProperty(ref field, value))
             {
                 Filter();
             }

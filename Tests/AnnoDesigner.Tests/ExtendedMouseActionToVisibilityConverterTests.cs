@@ -1,8 +1,8 @@
-﻿using System;
+﻿using AnnoDesigner.Converters;
+using AnnoDesigner.Core.Models;
+using System;
 using System.Globalization;
 using System.Windows;
-using AnnoDesigner.Converters;
-using AnnoDesigner.Core.Models;
 using Xunit;
 
 namespace AnnoDesigner.Tests
@@ -23,10 +23,10 @@ namespace AnnoDesigner.Tests
         public void Convert_PassedKnownValue_ShouldReturnCorrectValue(ExtendedMouseAction input, Visibility expected)
         {
             // Arrange
-            var converter = new ExtendedMouseActionToVisibilityConverter();
+            ExtendedMouseActionToVisibilityConverter converter = new();
 
             // Act
-            var result = converter.Convert(input, typeof(Visibility), null, CultureInfo.CurrentCulture);
+            object result = converter.Convert(input, typeof(Visibility), null, CultureInfo.CurrentCulture);
 
             // Assert
             Assert.Equal(expected, result);
@@ -39,10 +39,10 @@ namespace AnnoDesigner.Tests
         public void Convert_PassedUnknownOrNoneValue_ShouldReturnNull(ExtendedMouseAction input)
         {
             // Arrange
-            var converter = new ExtendedMouseActionToVisibilityConverter();
+            ExtendedMouseActionToVisibilityConverter converter = new();
 
             // Act
-            var result = converter.Convert(input, typeof(Visibility), null, CultureInfo.CurrentCulture);
+            object result = converter.Convert(input, typeof(Visibility), null, CultureInfo.CurrentCulture);
 
             // Assert
             Assert.Null(result);
@@ -52,10 +52,10 @@ namespace AnnoDesigner.Tests
         public void Convert_PassedNullValue_ShouldReturnNull()
         {
             // Arrange
-            var converter = new ExtendedMouseActionToVisibilityConverter();
+            ExtendedMouseActionToVisibilityConverter converter = new();
 
             // Act
-            var result = converter.Convert(null, typeof(Visibility), null, CultureInfo.CurrentCulture);
+            object result = converter.Convert(null, typeof(Visibility), null, CultureInfo.CurrentCulture);
 
             // Assert
             Assert.Null(result);
@@ -69,10 +69,10 @@ namespace AnnoDesigner.Tests
         public void ConvertBack_PassedAnyValue_ShouldThrow()
         {
             // Arrange
-            var converter = new ExtendedMouseActionToVisibilityConverter();
+            ExtendedMouseActionToVisibilityConverter converter = new();
 
             // Act/Assert
-            Assert.Throws<NotImplementedException>(() => converter.ConvertBack(ExtendedMouseAction.LeftClick, typeof(Visibility), null, CultureInfo.CurrentCulture));
+            _ = Assert.Throws<NotImplementedException>(() => converter.ConvertBack(ExtendedMouseAction.LeftClick, typeof(Visibility), null, CultureInfo.CurrentCulture));
         }
 
         #endregion

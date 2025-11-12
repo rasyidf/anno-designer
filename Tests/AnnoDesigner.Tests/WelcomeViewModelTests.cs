@@ -2,6 +2,7 @@
 using AnnoDesigner.Models;
 using AnnoDesigner.ViewModels;
 using Moq;
+using System;
 using Xunit;
 
 namespace AnnoDesigner.Tests
@@ -28,7 +29,7 @@ namespace AnnoDesigner.Tests
         public void Ctor_ShouldSetDefaultValues()
         {
             // Arrange/Act
-            var viewModel = GetViewModel();
+            WelcomeViewModel viewModel = GetViewModel();
 
             // Assert
             Assert.Null(viewModel.SelectedItem);
@@ -40,7 +41,7 @@ namespace AnnoDesigner.Tests
         public void Ctor_ShouldSetCorrectNumberOfLanguages()
         {
             // Arrange/Act
-            var viewModel = GetViewModel();
+            WelcomeViewModel viewModel = GetViewModel();
 
             // Assert
             Assert.Equal(6, viewModel.Languages.Count);
@@ -54,10 +55,10 @@ namespace AnnoDesigner.Tests
         public void ContinueCommand_SelectedItemIsNull_ShouldNotCanExecute()
         {
             // Arrange
-            var viewModel = GetViewModel();
+            WelcomeViewModel viewModel = GetViewModel();
 
             // Act
-            var result = viewModel.ContinueCommand.CanExecute(null);
+            bool result = viewModel.ContinueCommand.CanExecute(null);
 
             // Assert
             Assert.False(result);
@@ -67,11 +68,11 @@ namespace AnnoDesigner.Tests
         public void ContinueCommand_SelectedItemIsNotNull_ShouldCanExecute()
         {
             // Arrange
-            var viewModel = GetViewModel();
+            WelcomeViewModel viewModel = GetViewModel();
             viewModel.SelectedItem = viewModel.Languages[0];
 
             // Act
-            var result = viewModel.ContinueCommand.CanExecute(null);
+            bool result = viewModel.ContinueCommand.CanExecute(null);
 
             // Assert
             Assert.True(result);
@@ -81,13 +82,13 @@ namespace AnnoDesigner.Tests
         public void ContinueCommand_IsExecuted_ShouldSetSelectedLanguageInCommons()
         {
             // Arrange
-            var commons = new Mock<ICommons>();
-            commons.SetupAllProperties();
+            Mock<ICommons> commons = new();
+            _ = commons.SetupAllProperties();
 
-            var viewModel = GetViewModel(commons.Object);
+            WelcomeViewModel viewModel = GetViewModel(commons.Object);
             viewModel.SelectedItem = viewModel.Languages[1];
 
-            var expectedLanguage = viewModel.SelectedItem.Name;
+            string expectedLanguage = viewModel.SelectedItem.Name;
 
             // Act
             viewModel.ContinueCommand.Execute(null);
@@ -100,16 +101,16 @@ namespace AnnoDesigner.Tests
         public void ContinueCommand_IsExecuted_ShouldSetSelectedLanguageInAppSettings()
         {
             // Arrange            
-            var commons = new Mock<ICommons>();
-            commons.SetupAllProperties();
+            Mock<ICommons> commons = new();
+            _ = commons.SetupAllProperties();
 
-            var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            Mock<IAppSettings> appSettings = new();
+            _ = appSettings.SetupAllProperties();
 
-            var viewModel = GetViewModel(commons.Object, appSettings.Object);
+            WelcomeViewModel viewModel = GetViewModel(commons.Object, appSettings.Object);
             viewModel.SelectedItem = viewModel.Languages[1];
 
-            var expectedLanguage = viewModel.SelectedItem.Name;
+            string expectedLanguage = viewModel.SelectedItem.Name;
 
             // Act
             viewModel.ContinueCommand.Execute(null);
@@ -122,13 +123,13 @@ namespace AnnoDesigner.Tests
         public void ContinueCommand_IsExecuted_ShouldSaveAppSettings()
         {
             // Arrange            
-            var appSettings = new Mock<IAppSettings>();
-            appSettings.SetupAllProperties();
+            Mock<IAppSettings> appSettings = new();
+            _ = appSettings.SetupAllProperties();
 
-            var viewModel = GetViewModel(_mockedCommons, appSettings.Object);
+            WelcomeViewModel viewModel = GetViewModel(_mockedCommons, appSettings.Object);
             viewModel.SelectedItem = viewModel.Languages[1];
 
-            var expectedLanguage = viewModel.SelectedItem.Name;
+            string expectedLanguage = viewModel.SelectedItem.Name;
 
             // Act
             viewModel.ContinueCommand.Execute(null);
@@ -141,10 +142,10 @@ namespace AnnoDesigner.Tests
         public void ContinueCommand_IsExecutedWithICloseable_ShouldCallClose()
         {
             // Arrange
-            var viewModel = GetViewModel();
+            WelcomeViewModel viewModel = GetViewModel();
             viewModel.SelectedItem = viewModel.Languages[1];
 
-            var closeable = new Mock<ICloseable>();
+            Mock<ICloseable> closeable = new();
 
             // Act
             viewModel.ContinueCommand.Execute(closeable.Object);
@@ -157,11 +158,11 @@ namespace AnnoDesigner.Tests
         public void ContinueCommand_IsExecutedWithoutICloseable_ShouldNotThrow()
         {
             // Arrange
-            var viewModel = GetViewModel();
+            WelcomeViewModel viewModel = GetViewModel();
             viewModel.SelectedItem = viewModel.Languages[1];
 
             // Act
-            var ex = Record.Exception(() => viewModel.ContinueCommand.Execute(null));
+            Exception ex = Record.Exception(() => viewModel.ContinueCommand.Execute(null));
 
             // Assert
             Assert.Null(ex);

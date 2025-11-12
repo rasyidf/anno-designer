@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using AnnoDesigner.Core.Models;
+﻿using AnnoDesigner.Core.Models;
+using System.Collections.Generic;
 
 namespace AnnoDesigner.Core.RecentFiles;
 
@@ -9,7 +9,7 @@ public class RecentFilesInMemorySerializer : IRecentFilesSerializer
 
     public RecentFilesInMemorySerializer()
     {
-        _recentFiles = [];            
+        _recentFiles = [];
     }
 
     public List<RecentFile> Deserialize()

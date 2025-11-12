@@ -1,12 +1,12 @@
 ﻿using AnnoDesigner.Models;
-using System;
-using System.Diagnostics;
 using AnnoDesigner.ViewModels;
+using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 
 namespace AnnoDesigner.PreferencesPages;
 
@@ -68,17 +68,17 @@ public partial class ManageKeybindingsPage : Page, INavigatedTo
         // Diagnostic output: log manager instance and current collection contents
         try
         {
-            var manager = ViewModel.HotkeyCommandManager;
+            HotkeyCommandManager manager = ViewModel.HotkeyCommandManager;
             Debug.WriteLine($"[ManageKeybindingsPage] NavigatedTo: HotkeyCommandManager instance={manager?.GetHashCode()}");
-            var obs = manager?.ObservableCollection;
+            ObservableCollection<Hotkey> obs = manager?.ObservableCollection;
             Debug.WriteLine($"[ManageKeybindingsPage] ObservableCollection count={obs?.Count}");
             if (obs != null)
             {
-                foreach (var hk in obs)
+                foreach (Hotkey hk in obs)
                 {
                     try
                     {
-                        var info = hk.GetHotkeyInformation();
+                        HotkeyInformation info = hk.GetHotkeyInformation();
                         Debug.WriteLine($"[ManageKeybindingsPage] Hotkey: Id={hk.HotkeyId}, Desc={hk.Description}, Type={info.Type}, Key={info.Key}, Modifiers={info.Modifiers}, MouseAction={info.MouseAction}");
                     }
                     catch (Exception ex)

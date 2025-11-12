@@ -14,17 +14,8 @@ namespace AnnoDesigner.ViewModels;
 
 public class StatisticsViewModel : Notify
 {
-    private bool _isVisible;
-    private string _usedArea;
-    private double _usedTiles;
-    private double _minTiles;
-    private string _efficiency;
-    private bool _areStatisticsAvailable;
-    private bool _showBuildingList;
-    private bool _showStatisticsBuildingCount;
+
     //private bool _showSelectedBuildingList;
-    private ObservableCollection<StatisticsBuilding> _buildings;
-    private ObservableCollection<StatisticsBuilding> _selectedBuildings;
     private readonly StatisticsCalculationHelper _statisticsCalculationHelper;
     private readonly ConcurrentDictionary<string, BuildingInfo> _cachedPresetsBuilding;
     private readonly ILocalizationHelper _localizationHelper;
@@ -52,70 +43,70 @@ public class StatisticsViewModel : Notify
 
     public bool IsVisible
     {
-        get => _isVisible;
-        set => UpdateProperty(ref _isVisible, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string UsedArea
     {
-        get => _usedArea;
-        set => UpdateProperty(ref _usedArea, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public double UsedTiles
     {
-        get => _usedTiles;
-        set => UpdateProperty(ref _usedTiles, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public double MinTiles
     {
-        get => _minTiles;
-        set => UpdateProperty(ref _minTiles, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string Efficiency
     {
-        get => _efficiency;
-        set => UpdateProperty(ref _efficiency, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool AreStatisticsAvailable
     {
-        get => _areStatisticsAvailable;
-        set => UpdateProperty(ref _areStatisticsAvailable, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool ShowBuildingList
     {
-        get => _showBuildingList;
+        get;
         set
         {
-            _ = UpdateProperty(ref _showBuildingList, value);
+            _ = UpdateProperty(ref field, value);
             OnPropertyChanged(nameof(ShowSelectedBuildingList));
         }
     }
 
     public bool ShowStatisticsBuildingCount
     {
-        get => _showStatisticsBuildingCount;
-        set => UpdateProperty(ref _showStatisticsBuildingCount, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool ShowSelectedBuildingList => ShowBuildingList && SelectedBuildings.Any();
 
     public ObservableCollection<StatisticsBuilding> Buildings
     {
-        get => _buildings;
-        set => UpdateProperty(ref _buildings, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public ObservableCollection<StatisticsBuilding> SelectedBuildings
     {
-        get => _selectedBuildings;
+        get;
         set
         {
-            _ = UpdateProperty(ref _selectedBuildings, value);
+            _ = UpdateProperty(ref field, value);
             OnPropertyChanged(nameof(ShowSelectedBuildingList));
         }
     }
@@ -203,14 +194,14 @@ public class StatisticsViewModel : Notify
                 }
                 else
                 {
-                    /// Ruled those 2 out to keep Building Name Changes done through the Labeling of the building
-                    /// and when the building is not in the preset. Those statisticBuildings.name will not translated to
-                    /// other luangages anymore, as users can give there own names.
-                    /// However i made it so, that if localizations get those translations, it will translated.
-                    /// 06-02-2021, on request of user(s) on Discord read this on
-                    /// https://discord.com/channels/571011757317947406/571011757317947410/800118895855665203
-                    //item.ElementAt(0).Identifier = "";
-                    //statisticBuilding.Name = _localizationHelper.GetLocalization("StatNameNotFound");
+                    // Ruled those 2 out to keep Building Name Changes done through the Labeling of the building
+                    // and when the building is not in the preset. Those statisticBuildings.name will not translated to
+                    // other luangages anymore, as users can give there own names.
+                    // However i made it so, that if localizations get those translations, it will translated.
+                    // 06-02-2021, on request of user(s) on Discord read this on
+                    // https://discord.com/channels/571011757317947406/571011757317947410/800118895855665203
+                    // item.ElementAt(0).Identifier = "";
+                    // statisticBuilding.Name = _localizationHelper.GetLocalization("StatNameNotFound");
 
                     statisticBuilding.Count = item.Count();
                     statisticBuilding.Name = _localizationHelper.GetLocalization(item.ElementAt(0).Identifier);

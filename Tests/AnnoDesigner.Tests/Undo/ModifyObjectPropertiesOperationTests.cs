@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Media;
-using AnnoDesigner.Core.Models;
+﻿using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
 using AnnoDesigner.Undo.Operations;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Windows.Media;
 using Xunit;
 
 namespace AnnoDesigner.Tests.Undo
@@ -25,9 +25,9 @@ namespace AnnoDesigner.Tests.Undo
         public void Undo_SingleObject_ShouldSetColor()
         {
             // Arrange
-            var expectedColor = Colors.Black;
-            var obj = CreateLayoutObject(Colors.White);
-            var operation = new ModifyObjectPropertiesOperation<LayoutObject, SerializableColor>()
+            Color expectedColor = Colors.Black;
+            LayoutObject obj = CreateLayoutObject(Colors.White);
+            ModifyObjectPropertiesOperation<LayoutObject, SerializableColor> operation = new()
             {
                 PropertyName = nameof(LayoutObject.Color),
                 ObjectPropertyValues = new List<(LayoutObject, SerializableColor, SerializableColor)>()
@@ -47,8 +47,8 @@ namespace AnnoDesigner.Tests.Undo
         public void Undo_ShouldInvokeRedrawAction()
         {
             // Arrange
-            var actionMock = new Mock<Action>();
-            var operation = new ModifyObjectPropertiesOperation<LayoutObject, SerializableColor>()
+            Mock<Action> actionMock = new();
+            ModifyObjectPropertiesOperation<LayoutObject, SerializableColor> operation = new()
             {
                 PropertyName = nameof(LayoutObject.Color),
                 ObjectPropertyValues = new List<(LayoutObject, SerializableColor, SerializableColor)>(),
@@ -66,11 +66,11 @@ namespace AnnoDesigner.Tests.Undo
         public void Undo_MultipleObjects_ShouldSetColors()
         {
             // Arrange
-            var expectedColor1 = Colors.Black;
-            var expectedColor2 = Colors.Blue;
-            var obj1 = CreateLayoutObject(Colors.White);
-            var obj2 = CreateLayoutObject(Colors.Red);
-            var operation = new ModifyObjectPropertiesOperation<LayoutObject, SerializableColor>()
+            Color expectedColor1 = Colors.Black;
+            Color expectedColor2 = Colors.Blue;
+            LayoutObject obj1 = CreateLayoutObject(Colors.White);
+            LayoutObject obj2 = CreateLayoutObject(Colors.Red);
+            ModifyObjectPropertiesOperation<LayoutObject, SerializableColor> operation = new()
             {
                 PropertyName = nameof(LayoutObject.Color),
                 ObjectPropertyValues = new List<(LayoutObject, SerializableColor, SerializableColor)>()
@@ -96,9 +96,9 @@ namespace AnnoDesigner.Tests.Undo
         public void Redo_SingleObject_ShouldSetColor()
         {
             // Arrange
-            var expectedColor = Colors.Black;
-            var obj = CreateLayoutObject(Colors.White);
-            var operation = new ModifyObjectPropertiesOperation<LayoutObject, SerializableColor>()
+            Color expectedColor = Colors.Black;
+            LayoutObject obj = CreateLayoutObject(Colors.White);
+            ModifyObjectPropertiesOperation<LayoutObject, SerializableColor> operation = new()
             {
                 PropertyName = nameof(LayoutObject.Color),
                 ObjectPropertyValues = new List<(LayoutObject, SerializableColor, SerializableColor)>()
@@ -118,11 +118,11 @@ namespace AnnoDesigner.Tests.Undo
         public void Redo_MultipleObjects_ShouldSetColors()
         {
             // Arrange
-            var expectedColor1 = Colors.Black;
-            var expectedColor2 = Colors.Blue;
-            var obj1 = CreateLayoutObject(Colors.White);
-            var obj2 = CreateLayoutObject(Colors.Red);
-            var operation = new ModifyObjectPropertiesOperation<LayoutObject, SerializableColor>()
+            Color expectedColor1 = Colors.Black;
+            Color expectedColor2 = Colors.Blue;
+            LayoutObject obj1 = CreateLayoutObject(Colors.White);
+            LayoutObject obj2 = CreateLayoutObject(Colors.Red);
+            ModifyObjectPropertiesOperation<LayoutObject, SerializableColor> operation = new()
             {
                 PropertyName = nameof(LayoutObject.Color),
                 ObjectPropertyValues = new List<(LayoutObject, SerializableColor, SerializableColor)>()
@@ -144,8 +144,8 @@ namespace AnnoDesigner.Tests.Undo
         public void Redo_ShouldInvokeRedrawAction()
         {
             // Arrange
-            var actionMock = new Mock<Action>();
-            var operation = new ModifyObjectPropertiesOperation<LayoutObject, SerializableColor>()
+            Mock<Action> actionMock = new();
+            ModifyObjectPropertiesOperation<LayoutObject, SerializableColor> operation = new()
             {
                 PropertyName = nameof(LayoutObject.Color),
                 ObjectPropertyValues = new List<(LayoutObject, SerializableColor, SerializableColor)>(),

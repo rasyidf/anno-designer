@@ -7,15 +7,6 @@ namespace AnnoDesigner.Models.PresetsTree;
 [DebuggerDisplay("{" + nameof(Header) + ",nq}")]
 public class GenericTreeItem : Notify
 {
-    private GenericTreeItem _parent;
-    private string _header;
-    private AnnoObject _annoObject;
-    private ObservableCollection<GenericTreeItem> _children;
-    private bool _isExpanded;
-    private bool _isVisible;
-    private bool _isSelected;
-    private int _id;
-
     public GenericTreeItem(GenericTreeItem parent)
     {
         Parent = parent;
@@ -28,36 +19,36 @@ public class GenericTreeItem : Notify
 
     public GenericTreeItem Parent
     {
-        get => _parent;
-        private set => UpdateProperty(ref _parent, value);
+        get;
+        private set => UpdateProperty(ref field, value);
     }
 
     public GenericTreeItem Root => Parent == null ? this : Parent.Root;
 
     public string Header
     {
-        get => _header;
-        set => UpdateProperty(ref _header, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public AnnoObject AnnoObject
     {
-        get => _annoObject;
-        set => UpdateProperty(ref _annoObject, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public ObservableCollection<GenericTreeItem> Children
     {
-        get => _children;
-        set => UpdateProperty(ref _children, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool IsExpanded
     {
-        get => _isExpanded;
+        get;
         set
         {
-            _ = UpdateProperty(ref _isExpanded, value);
+            _ = UpdateProperty(ref field, value);
 
             //also expand all parent nodes
             if (value && Parent != null)
@@ -69,14 +60,14 @@ public class GenericTreeItem : Notify
 
     public bool IsVisible
     {
-        get => _isVisible;
-        set => UpdateProperty(ref _isVisible, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public bool IsSelected
     {
-        get => _isSelected;
-        set => UpdateProperty(ref _isSelected, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     /// <summary>
@@ -84,7 +75,7 @@ public class GenericTreeItem : Notify
     /// </summary>        
     public int Id
     {
-        get => _id;
-        set => UpdateProperty(ref _id, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 }

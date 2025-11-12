@@ -1,10 +1,10 @@
-﻿using System;
+﻿using AnnoDesigner.Core.Models;
+using PresetParser.Anno1404_Anno2070.Models;
+using PresetParser.Models;
+using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
-using AnnoDesigner.Core.Models;
-using PresetParser.Anno1404_Anno2070.Models;
-using PresetParser.Models;
 
 namespace PresetParser.Anno1404_Anno2070;
 
@@ -29,28 +29,16 @@ public class LocalizationHelper
         string[] languages,
         string basePath)
     {
-        if (languages == null)
-        {
-            throw new ArgumentNullException(nameof(languages));
-        }
-
-        if (versionSpecificPaths == null)
-        {
-            throw new ArgumentNullException(nameof(versionSpecificPaths));
-        }
-
-        if (annoVersion != Constants.ANNO_VERSION_1404 &&
-            annoVersion != Constants.ANNO_VERSION_2070)
-        {
-            return null;
-        }
-
-        if (!versionSpecificPaths.ContainsKey(annoVersion))
-        {
-            throw new ArgumentException($"{nameof(annoVersion)} was not found in path list.", nameof(versionSpecificPaths));
-        }
-
-        return GetLocalizationsforAnno1404AndAnno2070(annoVersion, addPrefix, versionSpecificPaths, languages, basePath);
+        return languages == null
+            ? throw new ArgumentNullException(nameof(languages))
+            : versionSpecificPaths == null
+            ? throw new ArgumentNullException(nameof(versionSpecificPaths))
+            : annoVersion is not Constants.ANNO_VERSION_1404 and
+            not Constants.ANNO_VERSION_2070
+            ? null
+            : !versionSpecificPaths.ContainsKey(annoVersion)
+            ? throw new ArgumentException($"{nameof(annoVersion)} was not found in path list.", nameof(versionSpecificPaths))
+            : GetLocalizationsforAnno1404AndAnno2070(annoVersion, addPrefix, versionSpecificPaths, languages, basePath);
     }
 
     private Dictionary<string, SerializableDictionary<string>> GetLocalizationsforAnno1404AndAnno2070(string annoVersion,
@@ -154,7 +142,7 @@ public class LocalizationHelper
             }
             else
             {
-                localizations.Remove(reference.Guid);
+                _ = localizations.Remove(reference.Guid);
             }
         }
 

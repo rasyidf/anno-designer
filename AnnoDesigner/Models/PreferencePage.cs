@@ -5,32 +5,27 @@ namespace AnnoDesigner.Models;
 
 public class PreferencePage : Notify
 {
-    private string _headerKeyForTranslation;
-    private string _name;
-    private Notify _viewModel;
-    private SymbolRegular _icon;
-
     public string HeaderKeyForTranslation
     {
-        get => _headerKeyForTranslation;
-        set => UpdateProperty(ref _headerKeyForTranslation, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string Name
     {
-        get => _name;
-        set => UpdateProperty(ref _name, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public Notify ViewModel
     {
-        get => _viewModel;
-        set => UpdateProperty(ref _viewModel, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public SymbolRegular Icon
     {
-        get => _icon;
-        set => UpdateProperty(ref _icon, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 }

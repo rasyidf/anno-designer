@@ -29,7 +29,7 @@ public interface ICoordinateHelper
 
     Point ScreenToFractionalGrid(Point screenPoint, int gridStep);
 
-    public Rect ScreenToGrid(Rect rect, int gridStep);
+    Rect ScreenToGrid(Rect rect, int gridStep);
 
-    public Rect GridToScreen(Rect rect, int gridStep);
+    Rect GridToScreen(Rect rect, int gridStep);
 }

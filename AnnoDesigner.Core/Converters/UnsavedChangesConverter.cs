@@ -11,17 +11,9 @@ public sealed class UnsavedChangesConverter : IMultiValueConverter
 
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values.Length < 1)
-        {
-            return DependencyProperty.UnsetValue;
-        }
-
-        if (values.Length < 2 || values[1] is false)
-        {
-            return values[0];
-        }
-
-        return string.Format(Format, values[0] as string);
+        return values.Length < 1
+            ? DependencyProperty.UnsetValue
+            : values.Length < 2 || values[1] is false ? values[0] : string.Format(Format, values[0] as string);
     }
 
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

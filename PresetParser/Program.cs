@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Abstractions;
-using System.Linq;
-using System.Xml;
-using AnnoDesigner.Core.Extensions;
+﻿using AnnoDesigner.Core.Extensions;
 using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Models;
@@ -13,6 +7,12 @@ using PresetParser.Anno1800;
 using PresetParser.Anno1800.Models;
 using PresetParser.Extensions;
 using PresetParser.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Abstractions;
+using System.Linq;
+using System.Xml;
 
 namespace PresetParser;
 
@@ -287,7 +287,7 @@ public class Program
                 Environment.Exit(0);
             }
 
-            if (annoVersion == Constants.ANNO_VERSION_1404 || annoVersion == Constants.ANNO_VERSION_2070 || annoVersion == Constants.ANNO_VERSION_2205 || annoVersion == Constants.ANNO_VERSION_1800 || annoVersion == "-ALL")
+            if (annoVersion is Constants.ANNO_VERSION_1404 or Constants.ANNO_VERSION_2070 or Constants.ANNO_VERSION_2205 or Constants.ANNO_VERSION_1800 or "-ALL")
             {
                 validVersion = true;
             }
@@ -295,7 +295,7 @@ public class Program
             {
                 Console.Write("Please enter an Anno version:");
                 annoVersion = Console.ReadLine();
-                if (annoVersion == Constants.ANNO_VERSION_1404 || annoVersion == Constants.ANNO_VERSION_2070 || annoVersion == Constants.ANNO_VERSION_2205 || annoVersion == Constants.ANNO_VERSION_1800)
+                if (annoVersion is Constants.ANNO_VERSION_1404 or Constants.ANNO_VERSION_2070 or Constants.ANNO_VERSION_2205 or Constants.ANNO_VERSION_1800)
                 {
                     validVersion = true;
                     testVersion = true;
@@ -318,7 +318,7 @@ public class Program
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("The path to the file was not valid!");
                     Console.ForegroundColor = oldColor;
-                    Console.ReadKey();
+                    _ = Console.ReadKey();
                     Environment.Exit(0);
                 }
 
@@ -327,7 +327,7 @@ public class Program
                     BuildingPresets loadedPresets = SerializationHelper.LoadFromFile<BuildingPresets>(filePathToValidate);
 
                     ValidateBuildings([.. loadedPresets.Buildings.Cast<IBuildingInfo>()]);
-                    Console.ReadLine();
+                    _ = Console.ReadLine();
                     Environment.Exit(0);
                 }
                 catch (Exception ex)
@@ -383,7 +383,7 @@ public class Program
         // </summary>
         //These should stay constant for different anno versions (hopefully!)
         #region Anno 1404 xPaths
-        if (annoVersion == Constants.ANNO_VERSION_1404 || annoVersion == "-ALL")
+        if (annoVersion is Constants.ANNO_VERSION_1404 or "-ALL")
         {
             VersionSpecificPaths.Add(Constants.ANNO_VERSION_1404, []);
             VersionSpecificPaths[Constants.ANNO_VERSION_1404].Add("icons",
@@ -410,7 +410,7 @@ public class Program
         #endregion
 
         #region Anno 2070 xPaths
-        if (annoVersion == Constants.ANNO_VERSION_2070 || annoVersion == "-ALL")
+        if (annoVersion is Constants.ANNO_VERSION_2070 or "-ALL")
         {
             VersionSpecificPaths.Add(Constants.ANNO_VERSION_2070, []);
             VersionSpecificPaths[Constants.ANNO_VERSION_2070].Add("icons",
@@ -436,7 +436,7 @@ public class Program
         #endregion
 
         #region Anno 2205 xPaths
-        if (annoVersion == Constants.ANNO_VERSION_2205 || annoVersion == "-ALL")
+        if (annoVersion is Constants.ANNO_VERSION_2205 or "-ALL")
         {
             VersionSpecificPaths.Add(Constants.ANNO_VERSION_2205, []);
             // Trying to read data from the objects.exm 
@@ -484,7 +484,7 @@ public class Program
         #endregion
 
         #region Anno 1800 xPaths
-        if (annoVersion == Constants.ANNO_VERSION_1800 || annoVersion == "-ALL")
+        if (annoVersion is Constants.ANNO_VERSION_1800 or "-ALL")
         {
             VersionSpecificPaths.Add(Constants.ANNO_VERSION_1800, []);
             // Trying to read data from the objects.exm 
@@ -591,7 +591,7 @@ public class Program
         Console.WriteLine("This list contains {0} Buildings", annoBuildingsListCount);
         Console.WriteLine();
         #region Make DVDataFile "DuxVitae-Replaced.csv" for Convert Tool by DuxVitae
-        if (annoVersion == "-ALL" || annoVersion == Constants.ANNO_VERSION_1800) // Only for Anno 1800 purpose
+        if (annoVersion is "-ALL" or Constants.ANNO_VERSION_1800) // Only for Anno 1800 purpose
         {
             // This file is need to get the right building objects from the presets when GUID's are removed, not added,
             // or replaced by other objects, so DuxVitae can use this file to pinpoint the right GUID's in the presets.  
@@ -619,10 +619,10 @@ public class Program
             #endregion
             foreach (string DVData in DVDataList)
             {
-                if (!String.IsNullOrEmpty(DVData))
+                if (!string.IsNullOrEmpty(DVData))
                 {
                     string[] DVDataCheck = DVData.Split(',');
-                    if ((DVDataCheck.Length > 3))
+                    if (DVDataCheck.Length > 3)
                     {
                         int DVDataGUID = Convert.ToInt32(DVDataCheck[0]);
                         DVFile.WriteLine(DVDataList[DVDataGUID]);
@@ -642,7 +642,7 @@ public class Program
         Console.WriteLine("presets.json, in the Anno Designer directory!");
         Console.WriteLine();
         Console.WriteLine("DONE - press enter to exit");
-        Console.ReadLine();
+        _ = Console.ReadLine();
         #endregion //End Prepare JSON Files0
     }
 
@@ -699,7 +699,7 @@ public class Program
     // (Made 14-06-2022) 
     private static void ValidateIconFile(string IconFileName, string GUID_or_IdentifierName, string BuildingHeader)
     {
-        var _fs = new FileSystem();
+        FileSystem _fs = new();
         if (!canCheckIconFiles && !checkIconFilePathDone)
         {
             string workingDirectory = Environment.CurrentDirectory;
@@ -784,7 +784,7 @@ public class Program
         Console.WriteLine("Parsing assets.xml:");
         PathRef[] assetPathRefs = VersionSpecificPaths[annoVersion]["assets"];
         #region Start prepare Anno 1404 or Anno 2070
-        if (annoVersion == Constants.ANNO_VERSION_1404 || annoVersion == Constants.ANNO_VERSION_2070)
+        if (annoVersion is Constants.ANNO_VERSION_1404 or Constants.ANNO_VERSION_2070)
         {
             // prepare localizations
             // This call will set the extra Anno Version Number on the icon translation for Anno 1404 ('A4_')
@@ -1128,7 +1128,7 @@ public class Program
         // to get 2 buildings from OrnamentFeedbackBuilding, all other OrnamentFeedbackBuildings will be skipped
         if (templateValue == "OrnamentFeedbackBuilding" && annoVersion == Constants.ANNO_VERSION_2070)
         {
-            if (guidValue != "7110000" && guidValue != "7110001")
+            if (guidValue is not "7110000" and not "7110001")
             {
                 return;
             }
@@ -1198,7 +1198,7 @@ public class Program
             if (factionName == "(3) Techs" && identifierName == "underwater markethouse II") { factionName = "Others"; }
             if (identifierName == "techs_academy") { groupName = "Public"; }
             if (identifierName == "vineyard") { identifierName = "A5_vineyard"; }
-            if (groupName == "Farmfields" || groupName == "Farmfield") { groupName = "Farm Fields"; }
+            if (groupName is "Farmfields" or "Farmfield") { groupName = "Farm Fields"; }
             if (factionName == "Others" && identifierName.Contains("black_smoker_miner") == true) { groupName = "Black Smokers (Normal)"; }
             if (factionName == "(3) Techs" && identifierName == "black_smoker_miner_platinum")
             {
@@ -1319,7 +1319,7 @@ public class Program
                     }
                 }
                 //put tier number before translation of residences for anno 2070
-                if (b.Guid == 10011 || b.Guid == 10021 || b.Guid == 10088)
+                if (b.Guid is 10011 or 10021 or 10088)
                 {
                     foreach (string Language in Languages)
                     {
@@ -1327,7 +1327,7 @@ public class Program
                         languageCount++;
                     }
                 }
-                if (b.Guid == 10013 || b.Guid == 10076 || b.Guid == 10209)
+                if (b.Guid is 10013 or 10076 or 10209)
                 {
                     foreach (string Language in Languages)
                     {
@@ -1335,7 +1335,7 @@ public class Program
                         languageCount++;
                     }
                 }
-                if (b.Guid == 10119 || b.Guid == 10116 || b.Guid == 40000006)
+                if (b.Guid is 10119 or 10116 or 40000006)
                 {
                     foreach (string Language in Languages)
                     {
@@ -1343,7 +1343,7 @@ public class Program
                         languageCount++;
                     }
                 }
-                if (b.Guid == 10117 || b.Guid == 10118)
+                if (b.Guid is 10117 or 10118)
                 {
                     foreach (string Language in Languages)
                     {
@@ -1426,7 +1426,7 @@ public class Program
 
         #region Skip Unused buildings in Anno Designer List
         //Skip Energy Connector Top Object (no field, nor object | 01-07-2022) 
-        if (guidValue == "1003535" || guidValue == "1002878" || guidValue == "1001410" || guidValue == "13000158" || guidValue == "13000424")
+        if (guidValue is "1003535" or "1002878" or "1001410" or "13000158" or "13000424")
         {
             return;
         }
@@ -1534,7 +1534,7 @@ public class Program
         // read the xml key : <Energy> / <RadiusUsed> and then divide by 4096 for the training centers
         if (string.IsNullOrEmpty(Convert.ToString(b.InfluenceRadius)) || b.InfluenceRadius == 0)
         {
-            b.InfluenceRadius = (Convert.ToInt32(values?["Energy"]?["RadiusUsed"]?.InnerText) / 4096);
+            b.InfluenceRadius = Convert.ToInt32(values?["Energy"]?["RadiusUsed"]?.InnerText) / 4096;
         }
         // Set influenceRadius to 0, if it is still Null/Empty
         if (string.IsNullOrEmpty(Convert.ToString(b.InfluenceRadius)))
@@ -1655,32 +1655,32 @@ public class Program
 
                 # region Set tier numbers and mesurements on the residence buildings (02-07-2022)
                 //Small Residences (3x3, Temperate only)
-                if (b.Guid == 1000005 || b.Guid == 1000152 || b.Guid == 1000153 || b.Guid == 1000154)
+                if (b.Guid is 1000005 or 1000152 or 1000153 or 1000154)
                 {
                     translation += " (3x3)";
                 }
                 //Small Residences (6x6, Temperate only)
-                if (b.Guid == 1000151 || b.Guid == 1000192 || b.Guid == 1000193 || b.Guid == 1000194 || b.Guid == 13000388)
+                if (b.Guid is 1000151 or 1000192 or 1000193 or 1000194 or 13000388)
                 {
                     translation += " (6x6)";
                 }
                 //Tier numbers 1 (all regions)
-                if (b.Guid == 1000005 || b.Guid == 1000151 || b.Guid == 1000247 || b.Guid == 1000183 || b.Guid == 7000007)
+                if (b.Guid is 1000005 or 1000151 or 1000247 or 1000183 or 7000007)
                 {
                     translation = $"(1) {translation}";
                 }
                 //Tier numbers 2 (all regions)
-                if (b.Guid == 1000152 || b.Guid == 1000192 || b.Guid == 1000248 || b.Guid == 1000184 || b.Guid == 7000008)
+                if (b.Guid is 1000152 or 1000192 or 1000248 or 1000184 or 7000008)
                 {
                     translation = $"(2) {translation}";
                 }
                 //Tier numbers 3 (Temperate only)
-                if (b.Guid == 1000153 || b.Guid == 1000193)
+                if (b.Guid is 1000153 or 1000193)
                 {
                     translation = $"(3) {translation}";
                 }
                 //Tier numbers 4 (Temperate only)
-                if (b.Guid == 1000154 || b.Guid == 1000194)
+                if (b.Guid is 1000154 or 1000194)
                 {
                     translation = $"(4) {translation}";
                 }
@@ -1725,7 +1725,7 @@ public class Program
                 if (translation.IsPartOf(testGUIDNames2205))
                 {
                     Console.WriteLine(">>------------------------------------------------------------------------<<");
-                    Console.ReadKey();
+                    _ = Console.ReadKey();
 
                     if (buildingGuid.Contains(ExcludeGUIDList2205))
                     {
@@ -1845,7 +1845,7 @@ public class Program
 
         //Skip the 2 following mines, as those are manual added to the DVDataList
         //1308 = second bauxit mine , 1353 = second helium mine
-        if (guidNumber == 1308 || guidNumber == 1353)
+        if (guidNumber is 1308 or 1353)
         {
             return;
         }
@@ -2075,7 +2075,7 @@ public class Program
         }
 
         // Empire of the Skies (DLC 20-09-2022)
-        if (guidNumber == 835 || guidNumber == 648 || guidNumber == 1345 || guidNumber == 1418)
+        if (guidNumber is 835 or 648 or 1345 or 1418)
         {
             factionName = "(20) Empire of the Skies";
             groupName = "Production Buildings";
@@ -2084,7 +2084,7 @@ public class Program
                 templateName = "FactoryBuilding7";
             }
         }
-        if (guidNumber == 1372 || guidNumber == 1375 || guidNumber == 2399)
+        if (guidNumber is 1372 or 1375 or 2399)
         {
             factionName = "(20) Empire of the Skies";
             groupName = "Mining Buildings";
@@ -2134,12 +2134,12 @@ public class Program
             groupName = "Public Buildings";
             identifierName = "Service_arctic_02 (Post Office)";
         }
-        if (guidNumber == 538 || guidNumber == 962 || guidNumber == 3741)
+        if (guidNumber is 538 or 962 or 3741)
         {
             factionName = "(03) Artisans";
             groupName = "Public Buildings";
         }
-        if (guidNumber == 3661 || guidNumber == 3761 || guidNumber == 2654)
+        if (guidNumber is 3661 or 3761 or 2654)
         {
             factionName = "(08) Obreros";
             groupName = "Public Buildings";
@@ -2151,12 +2151,12 @@ public class Program
             factionName = "(11) Technicians";
             groupName = "Airship Platform Module";
         }
-        if (guidNumber == 966 || guidNumber == 964)
+        if (guidNumber is 966 or 964)
         {
             factionName = "(03) Artisans";
             groupName = "Airship Platform Module";
         }
-        if (guidNumber == 967 || guidNumber == 2274 || guidNumber == 2276)
+        if (guidNumber is 967 or 2274 or 2276)
         {
             factionName = "(08) Obreros";
             groupName = "Airship Platform Module";
@@ -2179,7 +2179,7 @@ public class Program
             groupName = "Ornaments";
             templateName = "Scenario1";
         }
-        if (((guidNumber > 769 && guidNumber < 951) && guidNumber != 835 && !identifierName.StartsWith("Multifactory_Magazin(DropGoods)_")) || guidNumber == 686)
+        if ((guidNumber > 769 && guidNumber < 951 && guidNumber != 835 && !identifierName.StartsWith("Multifactory_Magazin(DropGoods)_")) || guidNumber == 686)
         {
             factionName = "(30) Scenario 1: Eden Burning";
             switch (templateName)
@@ -2207,7 +2207,7 @@ public class Program
         }
 
         //Scenario 2 : Seasons of Silver Ornamentals/Buildings
-        if ((identifierName.Contains("Scenario02")) || (identifierName == "Amoniac Factory") || (identifierName == "Cyanide Pool Module") || (identifierName == "Cyanide Leacher") || (identifierName == "SilverMint") || (identifierName == "SilverSmelter"))
+        if (identifierName.Contains("Scenario02") || (identifierName == "Amoniac Factory") || (identifierName == "Cyanide Pool Module") || (identifierName == "Cyanide Leacher") || (identifierName == "SilverMint") || (identifierName == "SilverSmelter"))
         {
             factionName = "(31) Scenario 2: Seasons of Silver";
             groupName = null;
@@ -2319,8 +2319,10 @@ public class Program
 
         #region Manual on Identifiers DVDatalist inserts, do not add the current building
 
-        if (identifierName == "Africa_tractor_module_02 (Harvester)") { DVDataList[119026] = DVDataList[119026] + DVDataSeperator + Convert.ToString(guidNumber); return; };
-        if (identifierName == "Scenario02_tractor_module_02 (Harvester)") { DVDataList[25547] = DVDataList[25547] + DVDataSeperator + Convert.ToString(guidNumber); return; };
+        if (identifierName == "Africa_tractor_module_02 (Harvester)") { DVDataList[119026] = DVDataList[119026] + DVDataSeperator + Convert.ToString(guidNumber); return; }
+        ;
+        if (identifierName == "Scenario02_tractor_module_02 (Harvester)") { DVDataList[25547] = DVDataList[25547] + DVDataSeperator + Convert.ToString(guidNumber); return; }
+        ;
 
         #endregion
 
@@ -2354,14 +2356,9 @@ public class Program
         {
             // Split the Value <IconFilenames>innertext</IconFilenames> to get only the Name.png
             string[] sDVIcons = DVicon.Split('/');
-            if (sDVIcons.LastOrDefault().StartsWith("icon_"))
-            {
-                DVicon = sDVIcons.LastOrDefault().Replace("icon_", DVreplaceName);
-            }
-            else /* Put the Replace name on front*/
-            {
-                DVicon = DVreplaceName + sDVIcons.LastOrDefault();
-            }
+            DVicon = sDVIcons.LastOrDefault().StartsWith("icon_")
+                ? sDVIcons.LastOrDefault().Replace("icon_", DVreplaceName)
+                : DVreplaceName + sDVIcons.LastOrDefault();
             if ((DVicon == "A7_Zoo module.png") && (b.Guid != 100455))
             {
                 string DVisExcludedGuidStr = Convert.ToString(b.Guid);
@@ -2376,7 +2373,7 @@ public class Program
             }
         }
         // DVDataList for the Zoo Modules that has not the Default Zoo Icon
-        if ((((b.Identifier.StartsWith("Culture_01_module_")) || ((b.Group == "CultureModule") && (b.Faction == "All Worlds") && (DVicon == "A7_general_module_01.png"))) && (b.Guid != 100455)))
+        if ((b.Identifier.StartsWith("Culture_01_module_") || ((b.Group == "CultureModule") && (b.Faction == "All Worlds") && (DVicon == "A7_general_module_01.png"))) && (b.Guid != 100455))
         {
             string DVisExcludedGuidStr = Convert.ToString(b.Guid);
             DVDataList[100455] = DVDataList[100455] + DVDataSeperator + DVisExcludedGuidStr;
@@ -2384,7 +2381,7 @@ public class Program
         }
 
         // DVDataList for the Museum Modules on part of IdentifierName
-        if ((b.Identifier.StartsWith("Culture_02_module_")) && (b.Guid != 100454))
+        if (b.Identifier.StartsWith("Culture_02_module_") && (b.Guid != 100454))
         {
             string DVisExcludedGuidStr = Convert.ToString(b.Guid);
             DVDataList[100454] = DVDataList[100454] + DVDataSeperator + DVisExcludedGuidStr;
@@ -2392,7 +2389,7 @@ public class Program
         }
 
         // DVDataList for the Botanica Garden Modules on part of IdentifierName
-        if ((b.Identifier.StartsWith("C03_")) && (b.Guid != 111104))
+        if (b.Identifier.StartsWith("C03_") && (b.Guid != 111104))
         {
             string DVisExcludedGuidStr = Convert.ToString(b.Guid);
             DVDataList[111104] = DVDataList[111104] + DVDataSeperator + DVisExcludedGuidStr;
@@ -2516,14 +2513,9 @@ public class Program
         {
             // Split the Value <IconFilenames>innertext</IconFilenames> to get only the Name.png
             string[] sIcons = icon.Split('/');
-            if (sIcons.LastOrDefault().StartsWith("icon_"))
-            {
-                icon = sIcons.LastOrDefault().Replace("icon_", replaceName);
-            }
-            else /* Put the Replace name on front*/
-            {
-                icon = replaceName + sIcons.LastOrDefault();
-            }
+            icon = sIcons.LastOrDefault().StartsWith("icon_")
+                ? sIcons.LastOrDefault().Replace("icon_", replaceName)
+                : replaceName + sIcons.LastOrDefault();
 
             switch (guidName)
             {
@@ -2551,7 +2543,7 @@ public class Program
 
             //Place all (24) Seasonal Decorations Pack CDLC in the right menu (on IconFileName)
             // spring_ / summer_ / winter_ / autumn_
-            if ((icon.StartsWith("A7_spring_")) || (icon.StartsWith("A7_summer_")) || (icon.StartsWith("A7_autumn_")) || (icon.StartsWith("A7_winter_")))
+            if (icon.StartsWith("A7_spring_") || icon.StartsWith("A7_summer_") || icon.StartsWith("A7_autumn_") || icon.StartsWith("A7_winter_"))
             {
                 b.Faction = "Ornaments"; b.Group = "26 Seasonal Decorations";
             }
@@ -2615,19 +2607,19 @@ public class Program
         {
             if (b.Identifier.Contains("(Warehouse ")) { b.IconFileName = replaceName + "warehouse.png"; }
             if (b.Identifier.Contains("(Depot)") || b.Group.StartsWith("1010519")) { b.IconFileName = replaceName + "depot.png"; }
-            if (b.Group == "100783" || b.Group == "101403") { b.IconFileName = replaceName + "oil_habour_01.png"; }
+            if (b.Group is "100783" or "101403") { b.IconFileName = replaceName + "oil_habour_01.png"; }
             if (b.Group == "100519") { b.IconFileName = "A7_pier.png"; }
             if (b.Group == "100429") { b.IconFileName = "A7_visitor_harbour.png"; }
             if (b.Identifier.StartsWith("Kontor_airship_arctic_")) { b.IconFileName = replaceName + "airship_landing_plattform.png"; }
             if (b.Identifier.StartsWith("Kontor_imperial_") || b.Identifier.StartsWith("Kontor_main_")) { b.IconFileName = replaceName + "kontor_main.png"; }
-            if (b.Group == "101404" || b.Group == "119259") { b.IconFileName = replaceName + "oil_habour_01.png"; }
+            if (b.Group is "101404" or "119259") { b.IconFileName = replaceName + "oil_habour_01.png"; }
             if (b.Group == "1010311") { b.IconFileName = replaceName + "gold_ore.png"; }
             if (b.Group == "100415") { b.IconFileName = replaceName + "townhall.png"; }
             if (b.Group == "100586") { b.IconFileName = replaceName + "harbour_kontor.png"; }
             if (b.Group == "100784") { b.IconFileName = replaceName + "oil_storage.png"; }
             if (b.Group == "1010525") { b.IconFileName = replaceName + "repair_crane.png"; }
             if (b.Group == "1010516") { b.IconFileName = replaceName + "guildhouse.png"; }
-            if ((b.Group == "Slot" && b.Faction == "Not Placed Yet -Moderate" && b.Identifier != "Heavy_01_01_slot (Oil Pump Slot)")) { b.IconFileName = replaceName + "mineral_desposits.png"; }
+            if (b.Group == "Slot" && b.Faction == "Not Placed Yet -Moderate" && b.Identifier != "Heavy_01_01_slot (Oil Pump Slot)") { b.IconFileName = replaceName + "mineral_desposits.png"; }
             if (b.Identifier == "Random slot mining arctic") { b.IconFileName = replaceName + "oil.png"; }
             if (b.Group == "1010522") { b.IconFileName = replaceName + "defense_tower_pucklegun.png"; }
             if (b.Group == "1010523") { b.IconFileName = replaceName + "defense_tower_cannon.png"; }
@@ -2688,7 +2680,7 @@ public class Program
             oldColor = Console.ForegroundColor;
             foreach (string DVData in DVDataList)
             {
-                if (!String.IsNullOrEmpty(DVData))
+                if (!string.IsNullOrEmpty(DVData))
                 {
                     string[] DVDataCheck = DVData.Split(',');
                     if (DVDataCheck.Length > 2)
@@ -2782,7 +2774,7 @@ public class Program
         {
             b.InfluenceRange = Convert.ToInt32(values["PublicService"]["FullSatisfactionDistance"].InnerText);
         }
-        else if ((!string.IsNullOrEmpty(values?["BuffFactory"]?["PublicServiceData"]?["FullSatisfactionDistance"]?.InnerText)))
+        else if (!string.IsNullOrEmpty(values?["BuffFactory"]?["PublicServiceData"]?["FullSatisfactionDistance"]?.InnerText))
         {
             // Fix #407, missing InfluenceRange on Stores/Malls (and maybe some other buildings)
             b.InfluenceRange = Convert.ToInt32(values["BuffFactory"]["PublicServiceData"]["FullSatisfactionDistance"].InnerText);
@@ -3057,12 +3049,12 @@ public class Program
                     }
                     #region Give all residences a Tier Number
                     //Tier numbers 1 (all regions)
-                    if (b.Guid == 1010343 || b.Guid == 101254 || b.Guid == 112091 || b.Guid == 114436)
+                    if (b.Guid is 1010343 or 101254 or 112091 or 114436)
                     {
                         translation = "(1) " + translation;
                     }
                     //Tier numbers 2 (all regions)
-                    if (b.Guid == 1010344 || b.Guid == 101255 || b.Guid == 112652 || b.Guid == 114437)
+                    if (b.Guid is 1010344 or 101255 or 112652 or 114437)
                     {
                         translation = "(2) " + translation;
                     }
@@ -3105,7 +3097,7 @@ public class Program
                     translation = translation.FirstCharToUpper();
                 }
 
-                if (templateName == "FarmBuilding" || templateName == "Farmfield")
+                if (templateName is "FarmBuilding" or "Farmfield")
                 {
                     string fieldAmountValue = null;
                     string fieldGuidValue = null;
@@ -3117,7 +3109,8 @@ public class Program
                                 fieldGuidValue = values["ModuleOwner"]["ConstructionOptions"]["Item"]["ModuleGUID"].InnerText;
                                 fieldAmountValue = values?["ModuleOwner"]?["ModuleLimits"]?["Main"]?["Limit"]?.InnerText;
                                 break;
-                            };
+                            }
+                            ;
                         case "Farmfield":
                             {
                                 fieldGuidValue = values["Standard"]["GUID"].InnerText;
@@ -3220,7 +3213,7 @@ public class Program
                 case "A7_repair_crane.png": if (b.Guid != 1010525) { DVDataGUID2 = 1010525; DVDatacounted2 = true; } break;
                 case "A7_guildhouse.png": if (b.Guid != 1010516) { DVDataGUID2 = 1010516; DVDatacounted2 = true; } break;
                 case "A7_mineral_desposits.png": if (b.Guid != 1000029) { DVDataGUID2 = 1000029; DVDatacounted2 = true; } break;
-                case "A7_oil.png": if (b.Guid != 100849 && b.Guid != 101331 && b.Guid != 1010561) { DVDataGUID2 = 100849; DVDatacounted2 = true; } else if (b.Guid != 101331 && b.Guid != 100849 && b.Guid != 101062 && b.Guid != 116037) { DVDataGUID2 = 101331; DVDatacounted2 = true; } break;
+                case "A7_oil.png": if (b.Guid is not 100849 and not 101331 and not 1010561) { DVDataGUID2 = 100849; DVDatacounted2 = true; } else if (b.Guid is not 101331 and not 100849 and not 101062 and not 116037) { DVDataGUID2 = 101331; DVDatacounted2 = true; } break;
                 case "A7_defense_tower_pucklegun.png": if (b.Guid != 1010522) { DVDataGUID2 = 1010522; DVDatacounted2 = true; } break;
                 case "A7_defense_tower_cannon.png": if (b.Guid != 1010523) { DVDataGUID2 = 1010523; DVDatacounted2 = true; } break;
                 case "A7_sail_shipyard.png": if (b.Guid != 1010520) { DVDataGUID2 = 1010520; DVDatacounted2 = true; } break;
@@ -3229,12 +3222,12 @@ public class Program
         }
 
         // DVDatalilst for other buildings on (part of) Identifier/faction names:
-        if ((b.Identifier.StartsWith("Tourist_monument_0") && (b.Guid != 132765))) { DVDataGUID2 = 132765; DVDatacounted2 = true; }
-        if ((b.Faction == "Not Placed Yet -Moderate" && b.Identifier == "Forester" && (b.IconFileName == "A7_wood_log.png") && (b.Guid != 1010266))) { DVDataGUID2 = 1010266; DVDatacounted2 = true; }
-        if ((b.Faction.StartsWith("Not Placed Yet -") && (b.IconFileName == "A7_tractor.png") && (b.Guid != 269837))) { DVDataGUID2 = 269837; DVDatacounted2 = true; }
-        if ((b.Identifier.Contains("(Clay Harvester)") && b.Guid != 117743)) { DVDataGUID2 = 117743; DVDatacounted2 = true; }
-        if ((b.Identifier.Contains("(Paper Mill)") && b.Guid != 117744)) { DVDataGUID2 = 117744; DVDatacounted2 = true; }
-        if ((b.Identifier.Contains("(Water Pump)") && b.Guid != 114544)) { DVDataGUID2 = 114544; DVDatacounted2 = true; }
+        if (b.Identifier.StartsWith("Tourist_monument_0") && (b.Guid != 132765)) { DVDataGUID2 = 132765; DVDatacounted2 = true; }
+        if (b.Faction == "Not Placed Yet -Moderate" && b.Identifier == "Forester" && (b.IconFileName == "A7_wood_log.png") && (b.Guid != 1010266)) { DVDataGUID2 = 1010266; DVDatacounted2 = true; }
+        if (b.Faction.StartsWith("Not Placed Yet -") && (b.IconFileName == "A7_tractor.png") && (b.Guid != 269837)) { DVDataGUID2 = 269837; DVDatacounted2 = true; }
+        if (b.Identifier.Contains("(Clay Harvester)") && b.Guid != 117743) { DVDataGUID2 = 117743; DVDatacounted2 = true; }
+        if (b.Identifier.Contains("(Paper Mill)") && b.Guid != 117744) { DVDataGUID2 = 117744; DVDatacounted2 = true; }
+        if (b.Identifier.Contains("(Water Pump)") && b.Guid != 114544) { DVDataGUID2 = 114544; DVDatacounted2 = true; }
 
         // If one of the object above is placed in the datafile as replaced building,
         // send a message on console and skip the building; 
@@ -3248,10 +3241,10 @@ public class Program
             Console.ForegroundColor = oldColor2; return;
         }
 
-        if ((b.Guid != 100455) && (b.Guid != 100454) && (b.Guid != 111104) && (b.Guid != 113452) &&
-            (b.Guid != 112685) && (b.Guid != 132765) && (b.Guid != 118938) && (b.Guid != 1010371) &&
-            (b.Guid != 100783) && (b.Guid != 1010540) && (b.Guid != 100429) && (b.Guid != 686) &&
-            (b.Guid != 4260) && (b.Guid != 4258) && (b.Guid != 2654) && (b.Guid != 1372) && (b.Guid != 1375))
+        if (b.Guid is not 100455 and not 100454 and not 111104 and not 113452 and
+            not 112685 and not 132765 and not 118938 and not 1010371 and
+            not 100783 and not 1010540 and not 100429 and not 686 and
+            not 4260 and not 4258 and not 2654 and not 1372 and not 1375)
         {
             if (string.IsNullOrEmpty(DVDataList[b.Guid]))
             {
@@ -3267,18 +3260,19 @@ public class Program
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Enter any key to continue");
                 Console.ForegroundColor = oldColor2;
-                Console.ReadLine();
+                _ = Console.ReadLine();
             }
         }
         #endregion
 
         // Remove CultureModules Menu and the OrnamentalBuilding Menu that Appeared
-        if ((b.Header == "(A7) Anno 1800" && b.Faction == "All Worlds") && (b.Group == "CultureModule" || b.Group == "OrnamentalBuilding")) { return; }
+        if (b.Header == "(A7) Anno 1800" && b.Faction == "All Worlds" && (b.Group == "CultureModule" || b.Group == "OrnamentalBuilding")) { return; }
 
         // Remove the Not Placed Buildings
         // comment out the line below if you make a new preset after update of the game 'ANNO 1800', or when a new 'ANNO 1800 DLC' is released 
-        if (b.Faction == "Not Placed Yet -Moderate" || b.Faction == "Not Placed Yet -Arctic" || b.Faction == "Not Placed Yet -Africa" || b.Faction == "Not Placed Yet -Colony01" || b.Faction == "Not Placed Yet -All Worlds") { return; }
-        if (b.Faction == "Not Placed Yet -") { return; };
+        if (b.Faction is "Not Placed Yet -Moderate" or "Not Placed Yet -Arctic" or "Not Placed Yet -Africa" or "Not Placed Yet -Colony01" or "Not Placed Yet -All Worlds") { return; }
+        if (b.Faction == "Not Placed Yet -") { return; }
+        ;
 
         //Validate iconfilename, if not exists it will be written into a file of missing icons
         ValidateIconFile(b.IconFileName, Convert.ToString(b.Guid), b.Header);

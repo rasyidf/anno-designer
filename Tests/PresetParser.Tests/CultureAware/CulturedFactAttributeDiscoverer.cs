@@ -5,9 +5,9 @@ using Xunit.Sdk;
 
 namespace PresetParser.Tests.CultureAware
 {
-    public class CulturedFactAttributeDiscoverer : IXunitTestCaseDiscoverer
+    internal class CulturedFactAttributeDiscoverer : IXunitTestCaseDiscoverer
     {
-        readonly IMessageSink diagnosticMessageSink;
+        private readonly IMessageSink diagnosticMessageSink;
 
         public CulturedFactAttributeDiscoverer(IMessageSink diagnosticMessageSink)
         {
@@ -16,16 +16,16 @@ namespace PresetParser.Tests.CultureAware
 
         public IEnumerable<IXunitTestCase> Discover(ITestFrameworkDiscoveryOptions discoveryOptions, ITestMethod testMethod, IAttributeInfo factAttribute)
         {
-            var ctorArgs = factAttribute.GetConstructorArguments().ToArray();
-            var cultures = Reflector.ConvertArguments(ctorArgs, new[] { typeof(string[]) }).Cast<string[]>().Single();
+            object[] ctorArgs = factAttribute.GetConstructorArguments().ToArray();
+            string[] cultures = Reflector.ConvertArguments(ctorArgs, new[] { typeof(string[]) }).Cast<string[]>().Single();
 
             if (cultures == null || cultures.Length == 0)
             {
                 cultures = new[] { "en-US", "de-DE" };
             }
 
-            var methodDisplay = discoveryOptions.MethodDisplayOrDefault();
-            var methodDisplayOptions = discoveryOptions.MethodDisplayOptionsOrDefault();
+            TestMethodDisplay methodDisplay = discoveryOptions.MethodDisplayOrDefault();
+            TestMethodDisplayOptions methodDisplayOptions = discoveryOptions.MethodDisplayOptionsOrDefault();
 
             return cultures.Select(culture => new CulturedXunitTestCase(diagnosticMessageSink, methodDisplay, methodDisplayOptions, testMethod, culture)).ToList();
         }

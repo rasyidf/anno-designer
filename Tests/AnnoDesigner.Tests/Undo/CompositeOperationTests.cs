@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using AnnoDesigner.Undo.Operations;
+﻿using AnnoDesigner.Undo.Operations;
 using Moq;
+using System.Collections.Generic;
 using Xunit;
 
 namespace AnnoDesigner.Tests.Undo
@@ -13,14 +13,14 @@ namespace AnnoDesigner.Tests.Undo
         public void Undo_ShouldUndoOperationsInCorrectOrder()
         {
             // Arrange
-            var order = new List<IOperation>();
+            List<IOperation> order = [];
 
-            var op1 = new Mock<IOperation>();
+            Mock<IOperation> op1 = new();
             _ = op1.Setup(op => op.Undo()).Callback(() => order.Add(op1.Object));
-            var op2 = new Mock<IOperation>();
+            Mock<IOperation> op2 = new();
             _ = op2.Setup(op => op.Undo()).Callback(() => order.Add(op2.Object));
 
-            var operation = new CompositeOperation()
+            CompositeOperation operation = new()
             {
                 Operations =
                 [
@@ -44,14 +44,14 @@ namespace AnnoDesigner.Tests.Undo
         public void Redo_ShouldRedoOperationsInCorrectOrder()
         {
             // Arrange
-            var order = new List<IOperation>();
+            List<IOperation> order = [];
 
-            var op1 = new Mock<IOperation>();
+            Mock<IOperation> op1 = new();
             _ = op1.Setup(op => op.Redo()).Callback(() => order.Add(op1.Object));
-            var op2 = new Mock<IOperation>();
+            Mock<IOperation> op2 = new();
             _ = op2.Setup(op => op.Redo()).Callback(() => order.Add(op2.Object));
 
-            var operation = new CompositeOperation()
+            CompositeOperation operation = new()
             {
                 Operations =
                 [

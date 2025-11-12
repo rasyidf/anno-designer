@@ -1,7 +1,7 @@
-﻿using System;
+﻿using AnnoDesigner.Core.Models;
+using System;
 using System.Windows;
 using System.Windows.Input;
-using AnnoDesigner.Core.Models;
 using Xunit;
 
 namespace AnnoDesigner.Core.Tests
@@ -18,9 +18,9 @@ namespace AnnoDesigner.Core.Tests
         public void Set_Type_InvalidGestureType_ShouldThrowArgumentException()
         {
             //Arrange
-            var p = new PolyGesture(Key.A, ModifierKeys.Control);
+            PolyGesture p = new(Key.A, ModifierKeys.Control);
             //Act and Assert
-            Assert.Throws<ArgumentException>(() => p.Type = (GestureType)int.MaxValue);
+            _ = Assert.Throws<ArgumentException>(() => p.Type = (GestureType)int.MaxValue);
         }
 
         [Theory]
@@ -39,10 +39,10 @@ namespace AnnoDesigner.Core.Tests
         public void Matches_NullArgument_ShouldReturnFalse()
         {
             //Arrange
-            var p = new PolyGesture();
+            PolyGesture p = new();
 
             //Act
-            var actual = p.Matches(null, null);
+            bool actual = p.Matches(null, null);
 
             //Assert
             Assert.False(actual);
@@ -52,13 +52,13 @@ namespace AnnoDesigner.Core.Tests
         public void Matches_InvalidInputEventArgsType_ShouldReturnFalse()
         {
             //Arrange
-            var p = new PolyGesture
+            PolyGesture p = new()
             {
                 Type = GestureType.KeyGesture
             };
 
             //Act
-            var actual = p.Matches(null, new InputEventArgs(new TestDevice(), 0));
+            bool actual = p.Matches(null, new InputEventArgs(new TestDevice(), 0));
 
             //Assert
             Assert.False(actual);

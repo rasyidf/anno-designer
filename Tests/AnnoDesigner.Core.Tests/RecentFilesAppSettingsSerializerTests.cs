@@ -1,6 +1,8 @@
 ﻿using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.RecentFiles;
 using Moq;
+using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace AnnoDesigner.Core.Tests
@@ -9,10 +11,10 @@ namespace AnnoDesigner.Core.Tests
     {
         private IRecentFilesSerializer GetSerializer(IAppSettings appSettingsToUse = null)
         {
-            var mockedSettings = new Mock<IAppSettings>();
-            mockedSettings.SetupAllProperties();
+            Mock<IAppSettings> mockedSettings = new();
+            _ = mockedSettings.SetupAllProperties();
 
-            var settings = appSettingsToUse ?? mockedSettings.Object;
+            IAppSettings settings = appSettingsToUse ?? mockedSettings.Object;
 
             return new RecentFilesAppSettingsSerializer(settings);
         }
@@ -26,14 +28,14 @@ namespace AnnoDesigner.Core.Tests
         public void Deserialize_SavedListIsIsNullOrWhiteSpace_ShouldReturnEmptyList(string savedList)
         {
             // Arrange
-            var mockedSettings = new Mock<IAppSettings>();
-            mockedSettings.SetupAllProperties();
-            mockedSettings.SetupGet(x => x.RecentFiles).Returns(() => savedList);
+            Mock<IAppSettings> mockedSettings = new();
+            _ = mockedSettings.SetupAllProperties();
+            _ = mockedSettings.SetupGet(x => x.RecentFiles).Returns(() => savedList);
 
-            var serializer = GetSerializer(mockedSettings.Object);
+            IRecentFilesSerializer serializer = GetSerializer(mockedSettings.Object);
 
             // Act
-            var result = serializer.Deserialize();
+            List<RecentFile> result = serializer.Deserialize();
 
             // Assert
             Assert.Empty(result);
@@ -43,14 +45,14 @@ namespace AnnoDesigner.Core.Tests
         public void Deserialize_CanNotDeserialize_ShouldReturnEmptyList()
         {
             // Arrange
-            var mockedSettings = new Mock<IAppSettings>();
-            mockedSettings.SetupAllProperties();
-            mockedSettings.SetupGet(x => x.RecentFiles).Returns(() => "[{\"myPath\":\"dummyPath\"}]");
+            Mock<IAppSettings> mockedSettings = new();
+            _ = mockedSettings.SetupAllProperties();
+            _ = mockedSettings.SetupGet(x => x.RecentFiles).Returns(() => "[{\"myPath\":\"dummyPath\"}]");
 
-            var serializer = GetSerializer(mockedSettings.Object);
+            IRecentFilesSerializer serializer = GetSerializer(mockedSettings.Object);
 
             // Act
-            var result = serializer.Deserialize();
+            List<RecentFile> result = serializer.Deserialize();
 
             // Assert
             Assert.Empty(result);
@@ -64,10 +66,10 @@ namespace AnnoDesigner.Core.Tests
         public void Serialize_ParameterIsNull_ShouldNotThrow()
         {
             // Arrange
-            var serializer = GetSerializer();
+            IRecentFilesSerializer serializer = GetSerializer();
 
             // Act
-            var ex = Record.Exception(() => serializer.Serialize(null));
+            Exception ex = Record.Exception(() => serializer.Serialize(null));
 
             // Assert
             Assert.Null(ex);
@@ -77,11 +79,11 @@ namespace AnnoDesigner.Core.Tests
         public void Serialize_ParameterIsNotNull_ShouldCallSaveOnAppSettings()
         {
             // Arrange
-            var mockedSettings = new Mock<IAppSettings>();
-            mockedSettings.SetupAllProperties();
-            mockedSettings.SetupGet(x => x.RecentFiles).Returns(() => string.Empty);
+            Mock<IAppSettings> mockedSettings = new();
+            _ = mockedSettings.SetupAllProperties();
+            _ = mockedSettings.SetupGet(x => x.RecentFiles).Returns(() => string.Empty);
 
-            var serializer = GetSerializer(mockedSettings.Object);
+            IRecentFilesSerializer serializer = GetSerializer(mockedSettings.Object);
 
             // Act
             serializer.Serialize([]);

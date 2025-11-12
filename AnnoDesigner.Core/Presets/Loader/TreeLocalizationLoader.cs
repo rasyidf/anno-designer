@@ -1,9 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO.Abstractions;
-using AnnoDesigner.Core.Helper;
+﻿using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.Presets.Models;
 using NLog;
+using System;
+using System.Diagnostics;
+using System.IO.Abstractions;
 
 namespace AnnoDesigner.Core.Presets.Loader;
 
@@ -11,7 +11,7 @@ public class TreeLocalizationLoader : ITreeLocalizationLoader
 {
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-    private IFileSystem _fileSystem;
+    private readonly IFileSystem _fileSystem;
 
     public TreeLocalizationLoader(IFileSystem fileSystemToUse)
     {
@@ -26,7 +26,7 @@ public class TreeLocalizationLoader : ITreeLocalizationLoader
             throw new ArgumentNullException(nameof(pathToTreeLocalizationFile));
         }
 
-        var fileContents = _fileSystem.File.ReadAllText(pathToTreeLocalizationFile);
+        string fileContents = _fileSystem.File.ReadAllText(pathToTreeLocalizationFile);
 
         return Load(fileContents);
     }
@@ -39,11 +39,10 @@ public class TreeLocalizationLoader : ITreeLocalizationLoader
             throw new ArgumentNullException(nameof(jsonString));
         }
 
-        TreeLocalizationContainer result = null;
-
+        TreeLocalizationContainer result;
         try
         {
-            var sw = Stopwatch.StartNew();
+            Stopwatch sw = Stopwatch.StartNew();
 
             result = SerializationHelper.LoadFromJsonString<TreeLocalizationContainer>(jsonString);
 

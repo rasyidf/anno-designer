@@ -30,7 +30,7 @@ public class UpdateHelper(string basePathToUse,
     IAppSettings appSettingsToUse,
     IMessageBoxService messageBoxServiceToUse,
     ILocalizationHelper localizationHelperToUse) : IUpdateHelper
-{
+{ 
     private readonly FileSystem _fileSystem = new();
     private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -43,16 +43,13 @@ public class UpdateHelper(string basePathToUse,
     private const string TAG_PRESETS_WIKIBUILDINGINFO = "PresetsWikiBuildingInfov";
     private const string TAG_ANNO_DESIGNER = "AnnoDesignerv";
 
-    private GitHubClient _apiClient;
-    private HttpClient _httpClient;
-
     private GitHubClient ApiClient
     {
         get
         {
-            _apiClient ??= new GitHubClient(new Octokit.ProductHeaderValue($"anno-designer-{Constants.Version}", "1.0"));
+            field ??= new GitHubClient(new Octokit.ProductHeaderValue($"anno-designer-{Constants.Version}", "1.0"));
 
-            return _apiClient;
+            return field;
         }
     }
 
@@ -60,7 +57,7 @@ public class UpdateHelper(string basePathToUse,
     {
         get
         {
-            if (_httpClient == null)
+            if (field == null)
             {
                 HttpClientHandler handler = new();
                 if (handler.SupportsAutomaticDecompression)
@@ -68,31 +65,19 @@ public class UpdateHelper(string basePathToUse,
                     handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
                 }
 
-                _httpClient = new HttpClient(handler, true)
+                field = new HttpClient(handler, true)
                 {
                     Timeout = TimeSpan.FromSeconds(30)
                 };
-                _httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"anno-designer-{Constants.Version}", "1.0"));
-
-                //detect DNS changes (default is infinite)
-                //ServicePointManager.FindServicePoint(new Uri(BASE_URI)).ConnectionLeaseTimeout = (int)TimeSpan.FromMinutes(1).TotalMilliseconds;
-                //default is 2 minutes
-                ServicePointManager.DnsRefreshTimeout = (int)TimeSpan.FromMinutes(1).TotalMilliseconds;
-                //increases the concurrent outbound connections
-                if (ServicePointManager.DefaultConnectionLimit < 1024)
-                {
-                    ServicePointManager.DefaultConnectionLimit = 1024;
-                }
-                //only allow secure protocols
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                field.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"anno-designer-{Constants.Version}", "1.0"));
+                 
             }
 
-            return _httpClient;
+            return field;
         }
     }
 
-    private IReadOnlyList<Release> AllReleases { get; set; }
-
+    private IReadOnlyList<Release> AllReleases { get; set; } 
     #region IUpdateHelper members        
 
     public async Task<List<AvailableRelease>> GetAvailableReleasesAsync()

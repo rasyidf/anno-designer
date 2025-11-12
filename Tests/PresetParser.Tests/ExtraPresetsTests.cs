@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PresetParser.Models;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -10,10 +12,10 @@ namespace PresetParser.Tests
         [InlineData(null)]
         [InlineData(" ")]
         [InlineData("")]
-        public void GetExtraPresets_AnnoVersionIsNullOrWhiteSpace_ShouldReturnEmptyList(string annoVersion)
+        public void GetExtraPresetsAnnoVersionIsNullOrWhiteSpaceShouldReturnEmptyList(string annoVersion)
         {
             // Arrange/Act
-            var result = ExtraPresets.GetExtraPresets(annoVersion);
+            IEnumerable<ExtraPreset> result = ExtraPresets.GetExtraPresets(annoVersion);
 
             // Assert
             Assert.Empty(result);
@@ -24,10 +26,10 @@ namespace PresetParser.Tests
         [InlineData(Constants.ANNO_VERSION_2070, 5)]
         [InlineData(Constants.ANNO_VERSION_1800, 64)]
         [InlineData(Constants.ANNO_VERSION_2205, 0)]
-        public void GetExtraPresets_AnnoVersionIsKnown_ShouldReturnCorrectExtraPresetsCount(string annoVersion, int expectedCount)
+        public void GetExtraPresetsAnnoVersionIsKnownShouldReturnCorrectExtraPresetsCount(string annoVersion, int expectedCount)
         {
             // Arrange/Act
-            var result = ExtraPresets.GetExtraPresets(annoVersion).ToList();
+            List<ExtraPreset> result = ExtraPresets.GetExtraPresets(annoVersion).ToList();
 
             // Assert
             Assert.Equal(expectedCount, result.Count);
@@ -38,10 +40,10 @@ namespace PresetParser.Tests
         [InlineData(Constants.ANNO_VERSION_2070)]
         [InlineData(Constants.ANNO_VERSION_1800)]
         [InlineData(Constants.ANNO_VERSION_2205)]
-        public void GetExtraPresets_EveryElement_ShouldContainValuesForAllLocalizations(string annoVersion)
+        public void GetExtraPresetsEveryElementShouldContainValuesForAllLocalizations(string annoVersion)
         {
             // Arrange/Act
-            var result = ExtraPresets.GetExtraPresets(annoVersion).ToList();
+            List<ExtraPreset> result = ExtraPresets.GetExtraPresets(annoVersion).ToList();
 
             // Assert
             Assert.All(result, x =>
@@ -58,23 +60,23 @@ namespace PresetParser.Tests
         #region ExtraRoads tests
 
         [Fact]
-        public void GetExtraRoads_ShouldReturnCorrectCount()
+        public void GetExtraRoadsShouldReturnCorrectCount()
         {
             // Arrange
-            var expectedCount = 17;
+            int expectedCount = 17;
 
             // Act
-            var result = ExtraPresets.GetExtraRoads().ToList();
+            List<ExtraRoads> result = ExtraPresets.GetExtraRoads().ToList();
 
             // Assert
             Assert.Equal(expectedCount, result.Count);
         }
 
         [Fact]
-        public void GetExtraRoads_EveryElement_ShouldContainValuesForAllLocalizations()
+        public void GetExtraRoadsEveryElementShouldContainValuesForAllLocalizations()
         {
             // Arrange/Act
-            var result = ExtraPresets.GetExtraRoads().ToList();
+            List<ExtraRoads> result = ExtraPresets.GetExtraRoads().ToList();
 
             // Assert
             Assert.All(result, x =>
@@ -89,10 +91,10 @@ namespace PresetParser.Tests
         }
 
         [Fact]
-        public void GetExtraRoads_EveryElement_ShouldCorrectCommonValues()
+        public void GetExtraRoadsEveryElementShouldCorrectCommonValues()
         {
             // Arrange/Act
-            var result = ExtraPresets.GetExtraRoads().ToList();
+            List<ExtraRoads> result = ExtraPresets.GetExtraRoads().ToList();
 
             // Assert
             Assert.All(result, x =>
@@ -107,10 +109,10 @@ namespace PresetParser.Tests
         }
 
         [Fact]
-        public void GetExtraRoads_EveryElement_ShouldHaveCorrectIdentifier()
+        public void GetExtraRoadsEveryElementShouldHaveCorrectIdentifier()
         {
             // Arrange/Act
-            var result = ExtraPresets.GetExtraRoads().ToList();
+            List<ExtraRoads> result = ExtraPresets.GetExtraRoads().ToList();
 
             // Assert
             Assert.All(result, x =>
@@ -124,23 +126,23 @@ namespace PresetParser.Tests
         #region BlockingTile tests
 
         [Fact]
-        public void GetBlockingTiles_ShouldReturnCorrectCount()
+        public void GetBlockingTilesShouldReturnCorrectCount()
         {
             // Arrange
-            var expectedCount = 1;
+            int expectedCount = 1;
 
             // Act
-            var result = ExtraPresets.GetBlockingTiles().ToList();
+            List<BlockingTile> result = ExtraPresets.GetBlockingTiles().ToList();
 
             // Assert
             Assert.Equal(expectedCount, result.Count);
         }
 
         [Fact]
-        public void GetBlockingTiles_EveryElement_ShouldContainValuesForAllLocalizations()
+        public void GetBlockingTilesEveryElementShouldContainValuesForAllLocalizations()
         {
             // Arrange/Act
-            var result = ExtraPresets.GetBlockingTiles().ToList();
+            List<BlockingTile> result = ExtraPresets.GetBlockingTiles().ToList();
 
             // Assert
             Assert.All(result, x =>
@@ -155,10 +157,10 @@ namespace PresetParser.Tests
         }
 
         [Fact]
-        public void GetBlockingTiles_EveryElement_ShouldCorrectCommonValues()
+        public void GetBlockingTilesEveryElementShouldCorrectCommonValues()
         {
             // Arrange/Act
-            var result = ExtraPresets.GetBlockingTiles().ToList();
+            List<BlockingTile> result = ExtraPresets.GetBlockingTiles().ToList();
 
             // Assert
             Assert.All(result, x =>
@@ -174,10 +176,10 @@ namespace PresetParser.Tests
         }
 
         [Fact]
-        public void GetBlockingTiles_EveryElement_ShouldHaveCorrectIdentifier()
+        public void GetBlockingTilesEveryElementShouldHaveCorrectIdentifier()
         {
             // Arrange/Act
-            var result = ExtraPresets.GetBlockingTiles().ToList();
+            List<BlockingTile> result = ExtraPresets.GetBlockingTiles().ToList();
 
             // Assert
             Assert.All(result, x =>

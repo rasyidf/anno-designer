@@ -13,22 +13,18 @@ public sealed class SimpleFeatureFlags : IFeatureFlags
 
     public bool IsEnabled(string name)
     {
-        if (_values.TryGetValue(name, out var value))
+        return _values.TryGetValue(name, out object value) && value switch
         {
-            return value switch
-            {
-                bool b => b,
-                int i => i != 0,
-                string s when bool.TryParse(s, out var parsed) => parsed,
-                _ => false
-            };
-        }
-        return false;
+            bool b => b,
+            int i => i != 0,
+            string s when bool.TryParse(s, out bool parsed) => parsed,
+            _ => false
+        };
     }
 
     public bool TryGet<T>(string name, out T value)
     {
-        if (_values.TryGetValue(name, out var raw) && raw is T casted)
+        if (_values.TryGetValue(name, out object raw) && raw is T casted)
         {
             value = casted;
             return true;
@@ -46,7 +42,7 @@ public sealed class SimpleFeatureFlags : IFeatureFlags
     // Convenience bulk loader
     public void Load(IDictionary<string, object?> initial)
     {
-        foreach (var kvp in initial)
+        foreach (KeyValuePair<string, object> kvp in initial)
         {
             _values[kvp.Key] = kvp.Value;
         }

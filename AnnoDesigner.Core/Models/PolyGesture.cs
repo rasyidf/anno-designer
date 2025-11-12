@@ -34,8 +34,8 @@ public class PolyGesture : InputGesture, INotifyPropertyChanged
     /// </summary>
     public Key Key
     {
-        get => _key;
-        set => UpdateProperty(ref _key, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     /// <summary>
@@ -43,8 +43,8 @@ public class PolyGesture : InputGesture, INotifyPropertyChanged
     /// </summary>
     public ModifierKeys ModifierKeys
     {
-        get => _modifierKeys;
-        set => UpdateProperty(ref _modifierKeys, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     /// <summary>
@@ -52,8 +52,8 @@ public class PolyGesture : InputGesture, INotifyPropertyChanged
     /// </summary>
     public ExtendedMouseAction MouseAction
     {
-        get => _mouseAction;
-        set => UpdateProperty(ref _mouseAction, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     /// <summary>
@@ -61,18 +61,9 @@ public class PolyGesture : InputGesture, INotifyPropertyChanged
     /// </summary>
     public GestureType Type
     {
-        get => _gestureType;
-        set
-        {
-            if (IsDefinedGestureType(value))
-            {
-                UpdateProperty(ref _gestureType, value);
-            }
-            else
-            {
-                throw new ArgumentException($"Value provided is not valid for enum {nameof(GestureType)}", nameof(Type));
-            }
-        }
+        get; set => _ = IsDefinedGestureType(value)
+                     ? UpdateProperty(ref field, value)
+                     : throw new ArgumentException($"Value provided is not valid for enum {nameof(GestureType)}", nameof(Type));
     }
 
     /// <summary>
@@ -83,14 +74,7 @@ public class PolyGesture : InputGesture, INotifyPropertyChanged
     /// <returns>True if the gesture matches, false otherwise</returns>
     public override bool Matches(object targetElement, InputEventArgs inputEventArgs)
     {
-        if (_gestureType == GestureType.MouseGesture)
-        {
-            return MatchMouseGesture(inputEventArgs);
-        }
-        else
-        {
-            return MatchKeyGesture(inputEventArgs);
-        }
+        return Type == GestureType.MouseGesture ? MatchMouseGesture(inputEventArgs) : MatchKeyGesture(inputEventArgs);
     }
 
     /// <summary>
@@ -100,12 +84,8 @@ public class PolyGesture : InputGesture, INotifyPropertyChanged
     /// <returns></returns>
     private bool MatchMouseGesture(InputEventArgs inputEventArgs)
     {
-        var mouseAction = GetExtendedMouseAction(inputEventArgs);
-        if (mouseAction != ExtendedMouseAction.None)
-        {
-            return MouseAction == mouseAction && ModifierKeys == Keyboard.Modifiers;
-        }
-        return false;
+        ExtendedMouseAction mouseAction = GetExtendedMouseAction(inputEventArgs);
+        return mouseAction != ExtendedMouseAction.None && MouseAction == mouseAction && ModifierKeys == Keyboard.Modifiers;
     }
 
     /// <summary>
@@ -116,17 +96,8 @@ public class PolyGesture : InputGesture, INotifyPropertyChanged
     private bool MatchKeyGesture(InputEventArgs inputEventArgs)
     {
         //never match Key.None
-        if (inputEventArgs is KeyEventArgs eventArgs && eventArgs.Key != Key.None)
-        {
-            return Key == eventArgs.Key && ModifierKeys == Keyboard.Modifiers;
-        }
-        return false;
+        return inputEventArgs is KeyEventArgs eventArgs && eventArgs.Key != Key.None && Key == eventArgs.Key && ModifierKeys == Keyboard.Modifiers;
     }
-
-    private Key _key;
-    private ModifierKeys _modifierKeys;
-    private ExtendedMouseAction _mouseAction;
-    private GestureType _gestureType;
 
     /// <summary>
     /// Extracts an <see cref="ExtendedMouseAction"/> from <see cref="InputEventArgs"/>.

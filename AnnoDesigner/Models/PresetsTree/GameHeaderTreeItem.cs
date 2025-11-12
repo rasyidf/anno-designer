@@ -6,8 +6,6 @@ namespace AnnoDesigner.Models.PresetsTree;
 [DebuggerDisplay("{" + nameof(Header) + ",nq}")]
 public class GameHeaderTreeItem : GenericTreeItem
 {
-    private GameVersion _gameVersion;
-
     public GameHeaderTreeItem() : base(null)
     {
         GameVersion = GameVersion.Unknown;
@@ -15,7 +13,7 @@ public class GameHeaderTreeItem : GenericTreeItem
 
     public GameVersion GameVersion
     {
-        get => _gameVersion;
-        set => UpdateProperty(ref _gameVersion, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 }

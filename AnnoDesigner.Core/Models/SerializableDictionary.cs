@@ -18,7 +18,7 @@ public class SerializableDictionary<T>
     protected SerializableDictionary(SerializationInfo info, StreamingContext context)
     {
         Dict = [];
-        foreach (var entry in info)
+        foreach (SerializationEntry entry in info)
         {
             Dict.Add(entry.Name, (T)Convert.ChangeType(entry.Value, typeof(T)));
         }
@@ -26,7 +26,7 @@ public class SerializableDictionary<T>
 
     public void GetObjectData(SerializationInfo info, StreamingContext context)
     {
-        foreach (var key in Dict.Keys)
+        foreach (string key in Dict.Keys)
         {
             info.AddValue(key, Dict[key]);
         }
@@ -34,13 +34,6 @@ public class SerializableDictionary<T>
 
     public T this[string key]
     {
-        get
-        {
-            return Dict.ContainsKey(key) ? Dict[key] : default;
-        }
-        set
-        {
-            Dict[key] = value;
-        }
+        get => Dict.ContainsKey(key) ? Dict[key] : default; set => Dict[key] = value;
     }
 }

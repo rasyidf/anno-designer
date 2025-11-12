@@ -1,7 +1,7 @@
-﻿using System;
-using AnnoDesigner.Undo;
+﻿using AnnoDesigner.Undo;
 using AnnoDesigner.Undo.Operations;
 using Moq;
+using System;
 using Xunit;
 
 namespace AnnoDesigner.Tests.Undo
@@ -21,7 +21,7 @@ namespace AnnoDesigner.Tests.Undo
             }
         }
 
-        private UndoManager _undoManager;
+        private readonly UndoManager _undoManager;
 
         public UndoManagerTests()
         {
@@ -37,7 +37,7 @@ namespace AnnoDesigner.Tests.Undo
         public void IsDirty_SetIsDirtyToTrue_ShouldThrowException()
         {
             // Arrange/Act/Assert
-            Assert.Throws<ArgumentException>(() => _undoManager.IsDirty = true);
+            _ = Assert.Throws<ArgumentException>(() => _undoManager.IsDirty = true);
         }
 
         [Fact]
@@ -167,7 +167,7 @@ namespace AnnoDesigner.Tests.Undo
         public void Undo_EmptyStack_ShouldNotThrow()
         {
             // Arrange/Act
-            var ex = Record.Exception(() => _undoManager.Undo());
+            Exception ex = Record.Exception(_undoManager.Undo);
 
             // Assert
             Assert.Null(ex);
@@ -191,7 +191,7 @@ namespace AnnoDesigner.Tests.Undo
         public void Undo_StackHasSingleOperation_ShouldInvokeUndoOnOperation()
         {
             // Arrange
-            var operationMock = new Mock<IOperation>();
+            Mock<IOperation> operationMock = new();
             _undoManager.UndoStack.Push(operationMock.Object);
 
             // Act
@@ -215,7 +215,7 @@ namespace AnnoDesigner.Tests.Undo
 
             // Assert
             Assert.Empty(_undoManager.UndoStack);
-            Assert.Single(_undoManager.RedoStack);
+            _ = Assert.Single(_undoManager.RedoStack);
         }
 
         #endregion
@@ -226,7 +226,7 @@ namespace AnnoDesigner.Tests.Undo
         public void Redo_EmptyStack_ShouldNotThrow()
         {
             // Arrange/Act
-            var ex = Record.Exception(() => _undoManager.Redo());
+            Exception ex = Record.Exception(_undoManager.Redo);
 
             // Assert
             Assert.Null(ex);
@@ -250,7 +250,7 @@ namespace AnnoDesigner.Tests.Undo
         public void Redo_StackHasSingleOperation_ShouldInvokeRedoOnOperation()
         {
             // Arrange
-            var operationMock = new Mock<IOperation>();
+            Mock<IOperation> operationMock = new();
             _undoManager.RedoStack.Push(operationMock.Object);
 
             // Act
@@ -274,7 +274,7 @@ namespace AnnoDesigner.Tests.Undo
 
             // Assert
             Assert.Empty(_undoManager.RedoStack);
-            Assert.Single(_undoManager.UndoStack);
+            _ = Assert.Single(_undoManager.UndoStack);
         }
 
         #endregion

@@ -1,5 +1,6 @@
-﻿using System;
-using AnnoDesigner.Core.Presets.Loader;
+﻿using AnnoDesigner.Core.Presets.Loader;
+using AnnoDesigner.Core.Presets.Models;
+using System;
 using Xunit;
 
 namespace AnnoDesigner.Core.Tests
@@ -13,21 +14,21 @@ namespace AnnoDesigner.Core.Tests
         public void Load_ParameterIsNullOrWhiteSpace_ShouldThrowArgumentException(string jsonString)
         {
             // Arrange
-            var loader = new IconMappingPresetsLoader();
+            IconMappingPresetsLoader loader = new();
 
             // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => loader.Load(jsonString));
+            _ = Assert.Throws<ArgumentNullException>(() => loader.Load(jsonString));
         }
 
         [Fact]
         public void Load_ParameterContainsOnlyWhiteSpaceChararcters_ShouldThrow()
         {
             // Arrange
-            var jsonString = @"\t\t\t    \t";
-            var loader = new IconMappingPresetsLoader();
+            string jsonString = @"\t\t\t    \t";
+            IconMappingPresetsLoader loader = new();
 
             // Act/Assert
-            Assert.ThrowsAny<Exception>(() => loader.Load(jsonString));
+            _ = Assert.ThrowsAny<Exception>(() => loader.Load(jsonString));
         }
 
         [Theory]
@@ -37,24 +38,24 @@ namespace AnnoDesigner.Core.Tests
         public void Load_FilePathIsNullOrWhiteSpace_ShouldThrow(string filePath)
         {
             // Arrange
-            var loader = new IconMappingPresetsLoader();
+            IconMappingPresetsLoader loader = new();
 
             // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => loader.LoadFromFile(filePath));
+            _ = Assert.Throws<ArgumentNullException>(() => loader.LoadFromFile(filePath));
         }
 
         [Fact]
         public void Load_FileHasNoVersionAndOneMapping_ShouldReturnListWithOneMapping()
         {
             // Arrange
-            var loader = new IconMappingPresetsLoader();
-            var content = "[{\"IconFilename\":\"icon.png\",\"Localizations\":{\"eng\":\"mapped name\"}}]";
+            IconMappingPresetsLoader loader = new();
+            string content = "[{\"IconFilename\":\"icon.png\",\"Localizations\":{\"eng\":\"mapped name\"}}]";
 
             // Act
-            var result = loader.Load(content);
+            IconMappingPresets result = loader.Load(content);
 
             // Assert
-            Assert.Single(result.IconNameMappings);
+            _ = Assert.Single(result.IconNameMappings);
             Assert.Equal(string.Empty, result.Version);
         }
 
@@ -62,14 +63,14 @@ namespace AnnoDesigner.Core.Tests
         public void Load_FileHasVersionAndOneMapping_ShouldReturnListWithOneMapping()
         {
             // Arrange
-            var loader = new IconMappingPresetsLoader();
-            var content = "{\"Version\":\"0.1\",\"IconNameMappings\":[{\"IconFilename\":\"icon.png\",\"Localizations\":{\"eng\":\"mapped name\"}}]}";
+            IconMappingPresetsLoader loader = new();
+            string content = "{\"Version\":\"0.1\",\"IconNameMappings\":[{\"IconFilename\":\"icon.png\",\"Localizations\":{\"eng\":\"mapped name\"}}]}";
 
             // Act
-            var result = loader.Load(content);
+            IconMappingPresets result = loader.Load(content);
 
             // Assert
-            Assert.Single(result.IconNameMappings);
+            _ = Assert.Single(result.IconNameMappings);
             Assert.Equal("0.1", result.Version);
         }
     }

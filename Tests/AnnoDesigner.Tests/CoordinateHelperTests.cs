@@ -1,7 +1,7 @@
-﻿using Xunit;
-using System.Windows;
+﻿using AnnoDesigner.Core.Models;
 using AnnoDesigner.Helper;
-using AnnoDesigner.Core.Models;
+using System.Windows;
+using Xunit;
 
 namespace AnnoDesigner.Tests
 {
@@ -17,12 +17,12 @@ namespace AnnoDesigner.Tests
         public void Rotate_ShouldReturnCorrectResult(double width, double height)
         {
             // Arrange
-            var helper = new CoordinateHelper();
-            var inputSize = new Size(width, height);
-            var expectedSize = new Size(height, width);
+            CoordinateHelper helper = new();
+            Size inputSize = new(width, height);
+            Size expectedSize = new(height, width);
 
             // Act
-            var result = helper.Rotate(inputSize);
+            Size result = helper.Rotate(inputSize);
 
             // Assert
             Assert.Equal(expectedSize, result);
@@ -36,7 +36,7 @@ namespace AnnoDesigner.Tests
         public void RotateDirection_ShouldReturnCorrectResult(GridDirection before, GridDirection expected)
         {
             // Arrange/ Act
-            var result = new CoordinateHelper().Rotate(before);
+            GridDirection result = new CoordinateHelper().Rotate(before);
 
             // Assert
             Assert.Equal(expected, result);
@@ -56,12 +56,12 @@ namespace AnnoDesigner.Tests
         public void GetCenterPoint_ShouldReturnCorrectResult(double x, double y, double width, double height, double expectedX, double expectedY)
         {
             // Arrange
-            var helper = new CoordinateHelper();
-            var inputRect = new Rect(x, y, width, height);
-            var expectedPoint = new Point(expectedX, expectedY);
+            CoordinateHelper helper = new();
+            Rect inputRect = new(x, y, width, height);
+            Point expectedPoint = new(expectedX, expectedY);
 
             // Act
-            var result = helper.GetCenterPoint(inputRect);
+            Point result = helper.GetCenterPoint(inputRect);
 
             // Assert
             Assert.Equal(expectedPoint, result);
@@ -100,10 +100,10 @@ namespace AnnoDesigner.Tests
         public void ScreenToGrid_Double_ShouldReturnCorrectResult(double screenLength, int gridStep, double expectedResult)
         {
             // Arrange
-            var helper = new CoordinateHelper();
+            CoordinateHelper helper = new();
 
             // Act
-            var result = helper.ScreenToGrid(screenLength, gridStep);
+            double result = helper.ScreenToGrid(screenLength, gridStep);
 
             // Assert
             Assert.Equal(expectedResult, result);
@@ -130,10 +130,10 @@ namespace AnnoDesigner.Tests
         public void GridToScreen_Double_ShouldReturnCorrectResult(double gridLength, int gridStep, double expectedResult)
         {
             // Arrange
-            var helper = new CoordinateHelper();
+            CoordinateHelper helper = new();
 
             // Act
-            var result = helper.GridToScreen(gridLength, gridStep);
+            double result = helper.GridToScreen(gridLength, gridStep);
 
             // Assert
             Assert.Equal(expectedResult, result);
@@ -158,12 +158,12 @@ namespace AnnoDesigner.Tests
         public void GridToScreen_Size_ShouldReturnCorrectResult(double width, double height, int gridStep, double expectedWidth, double expectedHeight)
         {
             // Arrange
-            var helper = new CoordinateHelper();
-            var inputSize = new Size(width, height);
-            var expectedSize = new Size(expectedWidth, expectedHeight);
+            CoordinateHelper helper = new();
+            Size inputSize = new(width, height);
+            Size expectedSize = new(expectedWidth, expectedHeight);
 
             // Act
-            var result = helper.GridToScreen(inputSize, gridStep);
+            Size result = helper.GridToScreen(inputSize, gridStep);
 
             // Assert
             Assert.Equal(expectedSize, result);
@@ -190,12 +190,12 @@ namespace AnnoDesigner.Tests
         public void GridToScreen_Point_ShouldReturnCorrectResult(double x, double y, int gridStep, double expectedX, double expectedY)
         {
             // Arrange
-            var helper = new CoordinateHelper();
-            var inputPoint = new Point(x, y);
-            var expectedPoint = new Point(expectedX, expectedY);
+            CoordinateHelper helper = new();
+            Point inputPoint = new(x, y);
+            Point expectedPoint = new(expectedX, expectedY);
 
             // Act
-            var result = helper.GridToScreen(inputPoint, gridStep);
+            Point result = helper.GridToScreen(inputPoint, gridStep);
 
             // Assert
             Assert.Equal(expectedPoint, result);
@@ -219,12 +219,12 @@ namespace AnnoDesigner.Tests
         public void RoundScreenToGrid_Point_ShouldReturnCorrectResult(double x, double y, int gridStep, double expectedX, double expectedY)
         {
             // Arrange
-            var helper = new CoordinateHelper();
-            var inputPoint = new Point(x, y);
-            var expectedPoint = new Point(expectedX, expectedY);
+            CoordinateHelper helper = new();
+            Point inputPoint = new(x, y);
+            Point expectedPoint = new(expectedX, expectedY);
 
             // Act
-            var result = helper.RoundScreenToGrid(inputPoint, gridStep);
+            Point result = helper.RoundScreenToGrid(inputPoint, gridStep);
 
             // Assert
             Assert.Equal(expectedPoint, result);

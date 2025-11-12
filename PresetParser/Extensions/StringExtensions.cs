@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using AnnoDesigner.Core.Presets.Models;
+﻿using AnnoDesigner.Core.Presets.Models;
+using System.Collections.Generic;
 
 namespace PresetParser.Extensions;
 

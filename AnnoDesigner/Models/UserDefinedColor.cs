@@ -7,8 +7,6 @@ namespace AnnoDesigner.Models;
 public class UserDefinedColor : Notify
 {
     private readonly ILocalizationHelper _localizationHelper;
-
-    private UserDefinedColorType _type;
     private SerializableColor _color;
 
     /// <summary>
@@ -24,8 +22,8 @@ public class UserDefinedColor : Notify
 
     public UserDefinedColorType Type
     {
-        get => _type;
-        set => UpdateProperty(ref _type, value);
+        get;
+        set => UpdateProperty(ref field, value);
     }
 
     public string DisplayName()
