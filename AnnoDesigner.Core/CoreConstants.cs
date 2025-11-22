@@ -36,27 +36,27 @@ namespace AnnoDesigner.Core
             /// <summary>
             /// Json encoded file containing the color presets.
             /// </summary>
-            public const string ColorPresetsFile = "colors.json";
+            public const string ColorPresetsFile = "Assets/colors.json";
 
             /// <summary>
             /// Json encoded file containing the building presets.
             /// </summary>
-            public const string BuildingPresetsFile = "presets.json";
+            public const string BuildingPresetsFile = "Assets/presets.json";
 
             /// <summary>
             /// Json encoded file containing the localized names for the icons.
             /// </summary>
-            public const string IconNameFile = "icons.json";
+            public const string IconNameFile = "Assets/icons.json";
 
             /// <summary>
             /// Json encoded file containing the detailed informations for building presets.
             /// </summary>
-            public const string WikiBuildingInfoPresetsFile = "wikiBuildingInfo.json";
+            public const string WikiBuildingInfoPresetsFile = "Assets/wikiBuildingInfo.json";
 
             /// <summary>
             /// Json encoded file containing the localization for the presets tree.
             /// </summary>
-            public const string TreeLocalizationFile = "treeLocalization.json";
+            public const string TreeLocalizationFile = "Assets/treeLocalization.json";
         }
 
         [Flags]

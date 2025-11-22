@@ -35,7 +35,7 @@ namespace AnnoDesigner.Core.RecentFiles
                     return savedList;
                 }
 
-                savedList = deserializedList.Where(x => !string.IsNullOrWhiteSpace(x.Path)).ToList();
+                savedList = [.. deserializedList.Where(x => !string.IsNullOrWhiteSpace(x.Path))];
             }
             catch (Exception ex)
             {
