@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -35,7 +35,7 @@ namespace AnnoDesigner.Core.Models
         public IReadOnlyList<string> GetFileDropList()
         {
             var clipboardData = Clipboard.GetFileDropList();
-            return clipboardData is null ? null : (IReadOnlyList<string>)new ReadOnlyCollection<string>(clipboardData.Cast<string>().ToList());
+            return clipboardData is null ? null : (IReadOnlyList<string>)new ReadOnlyCollection<string>([.. clipboardData.Cast<string>()]);
         }
 
         public string GetText()

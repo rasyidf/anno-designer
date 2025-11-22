@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Input;
 using AnnoDesigner.Core.Controls;
 using AnnoDesigner.Core.Models;

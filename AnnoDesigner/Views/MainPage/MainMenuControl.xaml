@@ -1,0 +1,548 @@
+<UserControl
+    x:Class="AnnoDesigner.Views.MainMenuControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:l="clr-namespace:AnnoDesigner.Localization"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:viewModel="clr-namespace:AnnoDesigner.ViewModels"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+
+    <UserControl.Resources>
+        <Style x:Key="RecentFileItemStyle" TargetType="MenuItem">
+            <Setter Property="Header" Value="{Binding Path, Mode=OneTime}" />
+            <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.OpenRecentFileCommand}" />
+            <Setter Property="CommandParameter" Value="{Binding}" />
+        </Style>
+
+        <Style x:Key="LanguageItemStyle" TargetType="MenuItem">
+            <Setter Property="Header" Value="{Binding Name}" />
+            <Setter Property="IsCheckable" Value="True" />
+            <Setter Property="IsChecked" Value="{Binding IsSelected, Mode=TwoWay}" />
+            <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.LanguageSelectedCommand}" />
+            <Setter Property="CommandParameter" Value="{Binding}" />
+            <Setter Property="Icon">
+                <Setter.Value>
+                    <Image Height="22" Source="{Binding FlagPath}" />
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Menu Name="MainMenu" VerticalAlignment="Top">
+
+        <ui:MenuItem Header="{l:Localize File}" TabIndex="10">
+
+            <ui:MenuItem
+                Command="ApplicationCommands.New"
+                CommandTarget="{Binding ElementName=annoCanvas}"
+                Header="{l:Localize NewCanvas}"
+                InputGestureText="Ctrl+N">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="DocumentAdd24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <ui:MenuItem
+                Command="ApplicationCommands.Open"
+                CommandTarget="{Binding ElementName=annoCanvas}"
+                Header="{l:Localize Open}"
+                InputGestureText="Ctrl+O">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="FolderOpen24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <Separator />
+
+            <ui:MenuItem Header="{l:Localize Import}">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="ArrowImport24" />
+                </ui:MenuItem.Icon>
+                <ui:MenuItem Command="{Binding LoadLayoutFromJsonCommand}" Header="{l:Localize FromJson}">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="Braces24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem
+                    Command="{Binding ImportStampCommand}"
+                    Header="{l:Localize FromStamps}"
+                    IsEnabled="False">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="Stack24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+            </ui:MenuItem>
+
+            <Separator />
+
+            <ui:MenuItem
+                Command="ApplicationCommands.Save"
+                CommandTarget="{Binding ElementName=annoCanvas}"
+                Header="{l:Localize Save}"
+                InputGestureText="Ctrl+S">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Save24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <ui:MenuItem
+                Command="ApplicationCommands.SaveAs"
+                CommandTarget="{Binding ElementName=annoCanvas}"
+                Header="{l:Localize SaveAs}"
+                InputGestureText="Ctrl+Shift+S">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="SaveCopy24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <Separator />
+
+            <ui:MenuItem Header="{l:Localize Export}" TabIndex="11">
+
+                <ui:MenuItem Command="{Binding ExportLayoutToJsonCommand}" Header="{l:Localize ToJson}">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="Braces24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem
+                    Command="{Binding ExportLayoutToStampCommand}"
+                    Header="{l:Localize ToStamps}"
+                    IsEnabled="False">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="Stack24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+
+                <Separator />
+
+                <ui:MenuItem
+                    Command="{Binding ExportImageCommand}"
+                    Header="{l:Localize ToImage}"
+                    InputGestureText="Ctrl+E">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="Image24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem Command="{Binding CopyLayoutToClipboardCommand}" Header="{l:Localize CopyToClipboard}">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="ClipboardImage24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+
+                <Separator />
+
+                <ui:MenuItem Header="{l:Localize ExportSettings}" IsEnabled="True">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="Settings24" />
+                    </ui:MenuItem.Icon>
+                    <ui:MenuItem
+                        Header="{l:Localize UseCurrentZoomOnExportedImage}"
+                        IsCheckable="True"
+                        IsChecked="{Binding UseCurrentZoomOnExportedImageValue}" />
+                    <ui:MenuItem
+                        Header="{l:Localize RenderSelectionHighlightsOnExportedImage}"
+                        IsCheckable="True"
+                        IsChecked="{Binding RenderSelectionHighlightsOnExportedImageValue}" />
+                    <ui:MenuItem
+                        Header="{l:Localize RenderVersionOnExportedImage}"
+                        IsCheckable="True"
+                        IsChecked="{Binding RenderVersionOnExportedImageValue}" />
+                </ui:MenuItem>
+            </ui:MenuItem>
+
+            <Separator />
+
+            <ui:MenuItem
+                Header="{l:Localize RecentFiles}"
+                IsEnabled="{Binding HasRecentFiles}"
+                ItemContainerStyle="{StaticResource RecentFileItemStyle}"
+                ItemsSource="{Binding RecentFiles}">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="History24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <Separator />
+
+            <ui:MenuItem
+                Command="{Binding CloseWindowCommand}"
+                CommandParameter="{Binding ElementName=mainWindow}"
+                Header="{l:Localize Exit}"
+                InputGestureText="Alt+F4">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="DismissCircle24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+        </ui:MenuItem>
+
+        <ui:MenuItem Header="{l:Localize Edit}" TabIndex="20">
+            <ui:MenuItem
+                Command="ApplicationCommands.Undo"
+                CommandTarget="{Binding ElementName=annoCanvas}"
+                Header="{l:Localize Undo}"
+                InputGestureText="Ctrl+Z">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="ArrowUndo24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <ui:MenuItem
+                Command="ApplicationCommands.Redo"
+                CommandTarget="{Binding ElementName=annoCanvas}"
+                Header="{l:Localize Redo}"
+                InputGestureText="Ctrl+Y">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="ArrowRedo24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <Separator />
+
+            <ui:MenuItem
+                Command="ApplicationCommands.Cut"
+                CommandTarget="{Binding ElementName=annoCanvas}"
+                Header="{l:Localize Cut}"
+                InputGestureText="Ctrl+X">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Cut24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <ui:MenuItem
+                Command="ApplicationCommands.Copy"
+                CommandTarget="{Binding ElementName=annoCanvas}"
+                Header="{l:Localize Copy}"
+                InputGestureText="Ctrl+C">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Copy24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <ui:MenuItem
+                Command="ApplicationCommands.Paste"
+                CommandTarget="{Binding ElementName=annoCanvas}"
+                Header="{l:Localize Paste}"
+                InputGestureText="Ctrl+V">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="ClipboardPaste24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <Separator />
+
+            <ui:MenuItem
+                Command="{Binding SelectAllCommand}"
+                Header="{l:Localize SelectAll}"
+                InputGestureText="Ctrl+A">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="SelectAllOn24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <ui:MenuItem
+                Command="{Binding DeleteSelectionCommand}"
+                Header="{l:Localize DeleteSelected}"
+                InputGestureText="Del">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Delete24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+        </ui:MenuItem>
+
+        <!--<ui:MenuItem Header="{l:Localize Layout}" TabIndex="25">
+            <ui:MenuItem
+                Command="{Binding RotateCommand}"
+                CommandParameter="Clockwise"
+                Header="{l:Localize RotateCW}"
+                InputGestureText="R">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="ArrowRotateClockwise24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <ui:MenuItem
+                Command="{Binding RotateCommand}"
+                CommandParameter="CounterClockwise"
+                Header="{l:Localize RotateCCW}"
+                InputGestureText="Shift+R">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="ArrowRotateCounterclockwise24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <ui:MenuItem Header="{l:Localize Flip}">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="ArrowSwap24" />
+                </ui:MenuItem.Icon>
+                <ui:MenuItem
+                    Command="{Binding FlipCommand}"
+                    CommandParameter="Horizontal"
+                    Header="{l:Localize FlipHorizontal}">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="FlipHorizontal24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem
+                    Command="{Binding FlipCommand}"
+                    CommandParameter="Vertical"
+                    Header="{l:Localize FlipVertical}">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="FlipVertical24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+            </ui:MenuItem>
+
+            <Separator />
+
+            <ui:MenuItem Header="{l:Localize Order}">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Layer24" />
+                </ui:MenuItem.Icon>
+                <ui:MenuItem
+                    Command="{Binding ZOrderCommand}"
+                    CommandParameter="BringToFront"
+                    Header="{l:Localize BringToFront}"
+                    InputGestureText="Ctrl+Shift+]">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="PositionToFront24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem
+                    Command="{Binding ZOrderCommand}"
+                    CommandParameter="SendToBack"
+                    Header="{l:Localize SendToBack}"
+                    InputGestureText="Ctrl+Shift+[">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="PositionToBack24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <Separator />
+                <ui:MenuItem
+                    Command="{Binding ZOrderCommand}"
+                    CommandParameter="BringForward"
+                    Header="{l:Localize BringForward}"
+                    InputGestureText="Ctrl+]">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="ArrowUp24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem
+                    Command="{Binding ZOrderCommand}"
+                    CommandParameter="SendBackward"
+                    Header="{l:Localize SendBackward}"
+                    InputGestureText="Ctrl+[">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="ArrowDown24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+            </ui:MenuItem>
+
+            <Separator />
+
+            <ui:MenuItem Header="{l:Localize Align}">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="AlignLeft24" />
+                </ui:MenuItem.Icon>
+                <ui:MenuItem
+                    Command="{Binding AlignCommand}"
+                    CommandParameter="Left"
+                    Header="{l:Localize AlignLeft}">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="AlignLeft24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem
+                    Command="{Binding AlignCommand}"
+                    CommandParameter="Center"
+                    Header="{l:Localize AlignCenter}">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="AlignCenterHorizontal24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem
+                    Command="{Binding AlignCommand}"
+                    CommandParameter="Right"
+                    Header="{l:Localize AlignRight}">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="AlignRight24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <Separator />
+                <ui:MenuItem
+                    Command="{Binding AlignCommand}"
+                    CommandParameter="Top"
+                    Header="{l:Localize AlignTop}">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="AlignTop24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem
+                    Command="{Binding AlignCommand}"
+                    CommandParameter="Middle"
+                    Header="{l:Localize AlignMiddle}">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="AlignCenterVertical24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem
+                    Command="{Binding AlignCommand}"
+                    CommandParameter="Bottom"
+                    Header="{l:Localize AlignBottom}">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="AlignBottom24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+            </ui:MenuItem>
+
+            <ui:MenuItem Header="{l:Localize Distribute}">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="AlignSpaceEvenlyHorizontal24" />
+                </ui:MenuItem.Icon>
+                <ui:MenuItem
+                    Command="{Binding DistributeCommand}"
+                    CommandParameter="Horizontal"
+                    Header="{l:Localize DistributeHorizontally}" />
+                <ui:MenuItem
+                    Command="{Binding DistributeCommand}"
+                    CommandParameter="Vertical"
+                    Header="{l:Localize DistributeVertically}" />
+            </ui:MenuItem>
+
+            <Separator />
+
+            <ui:MenuItem
+                Command="{Binding GroupCommand}"
+                Header="{l:Localize Group}"
+                InputGestureText="Ctrl+G">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Group24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <ui:MenuItem
+                Command="{Binding UngroupCommand}"
+                Header="{l:Localize Ungroup}"
+                InputGestureText="Ctrl+Shift+G">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="GroupDismiss20" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+        </ui:MenuItem>-->
+
+        <ui:MenuItem Header="{l:Localize View}" TabIndex="30">
+
+            <ui:MenuItem Header="Zoom">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="ZoomIn24" />
+                </ui:MenuItem.Icon>
+                <ui:MenuItem Command="{Binding CanvasResetZoomCommand}" Header="{l:Localize ResetZoomView}" />
+            </ui:MenuItem>
+
+            <Separator />
+
+            <ui:MenuItem Header="{l:Localize CanvasOverlays}">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Layer24" />
+                </ui:MenuItem.Icon>
+                <ui:MenuItem
+                    Header="{l:Localize ShowGrid}"
+                    IsCheckable="True"
+                    IsChecked="{Binding CanvasShowGrid}" />
+                <ui:MenuItem
+                    Header="{l:Localize ShowLabels}"
+                    IsCheckable="True"
+                    IsChecked="{Binding CanvasShowLabels}" />
+                <ui:MenuItem
+                    Header="{l:Localize ShowIcons}"
+                    IsCheckable="True"
+                    IsChecked="{Binding CanvasShowIcons}" />
+            </ui:MenuItem>
+
+            <ui:MenuItem Header="{l:Localize InfluenceRanges}">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Target24" />
+                </ui:MenuItem.Icon>
+                <ui:MenuItem
+                    Header="{l:Localize ShowInfluences}"
+                    IsCheckable="True"
+                    IsChecked="{Binding CanvasShowInfluences}" />
+                <ui:MenuItem
+                    Header="{l:Localize ShowTrueInfluenceRange}"
+                    IsCheckable="True"
+                    IsChecked="{Binding CanvasShowTrueInfluenceRange}" />
+            </ui:MenuItem>
+
+            <Separator />
+
+            <ui:MenuItem Header="{l:Localize Statistics}" TabIndex="31">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="DataHistogram24" />
+                </ui:MenuItem.Icon>
+                <ui:MenuItem
+                    Command="{Binding ShowStatisticsCommand}"
+                    Header="{l:Localize ShowStatsPanel}"
+                    IsCheckable="True"
+                    IsChecked="{Binding StatisticsViewModel.IsVisible}" />
+                <ui:MenuItem
+                    Command="{Binding ShowStatisticsBuildingCountCommand}"
+                    Header="{l:Localize BuildingCount}"
+                    IsCheckable="True"
+                    IsChecked="{Binding StatisticsViewModel.ShowStatisticsBuildingCount}"
+                    IsEnabled="{Binding StatisticsViewModel.IsVisible, Mode=OneWay}" />
+            </ui:MenuItem>
+        </ui:MenuItem>
+
+        <ui:MenuItem Header="{l:Localize Tools}" TabIndex="40">
+            <ui:MenuItem Header="{l:Localize CanvasManagement}">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Toolbox24" />
+                </ui:MenuItem.Icon>
+                <ui:MenuItem Command="{Binding CanvasNormalizeCommand}" Header="{l:Localize NormalizeLayout}" />
+                <ui:MenuItem Command="{Binding MergeRoadsCommand}" Header="{l:Localize OptimizeRoads}" />
+            </ui:MenuItem>
+
+            <Separator />
+
+            <ui:MenuItem Command="{Binding ShowPreferencesWindowCommand}" Header="{l:Localize Preferences, StringFormat='\{0\}...'}">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Settings24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <ui:MenuItem
+                Header="{l:Localize Language}"
+                ItemContainerStyle="{StaticResource LanguageItemStyle}"
+                ItemsSource="{Binding Languages}"
+                TabIndex="41">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="LocalLanguage24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+        </ui:MenuItem>
+
+        <ui:MenuItem Header="{l:Localize Help}" TabIndex="50">
+            <ui:MenuItem Command="{Binding OpenProjectHomepageCommand}" Header="{l:Localize GoToProjectHomepage}">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Globe24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <ui:MenuItem Command="{Binding ShowWelcomeWindowCommand}" Header="{l:Localize OpenWelcomePage}">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Home24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+
+            <Separator />
+
+            <ui:MenuItem Command="{Binding ShowAboutWindowCommand}" Header="{l:Localize AboutAnnoDesigner}">
+                <ui:MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Info24" />
+                </ui:MenuItem.Icon>
+            </ui:MenuItem>
+        </ui:MenuItem>
+
+    </Menu>
+</UserControl>

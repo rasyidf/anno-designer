@@ -11,6 +11,12 @@ namespace AnnoDesigner.CommandLine
     {
         private readonly IConsole _console;
         private readonly IFileSystem _fileSystem;
+        private ConsoleManager.LazyConsole lazyConsole;
+
+        public ArgumentParser(ConsoleManager.LazyConsole lazyConsole)
+        {
+            this.lazyConsole = lazyConsole;
+        }
 
         public ArgumentParser(IConsole consoleToUse, IFileSystem fileSystemToUse)
         {
@@ -35,7 +41,7 @@ namespace AnnoDesigner.CommandLine
             };
             root.SetHandler(() => parsedArgs = new EmptyArgs());
 
-            _ = root.Invoke(arguments.ToArray(), _console);
+            _ = root.Invoke([.. arguments], _console);
 
             return parsedArgs;
         }

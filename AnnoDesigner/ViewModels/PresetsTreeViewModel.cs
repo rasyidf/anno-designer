@@ -12,7 +12,8 @@ using AnnoDesigner.Core.Extensions;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Comparer;
 using AnnoDesigner.Core.Presets.Models;
-using AnnoDesigner.Models;
+using AnnoDesigner.Extensions;
+using AnnoDesigner.Models.Interface;
 using AnnoDesigner.Models.PresetsTree;
 using NLog;
 

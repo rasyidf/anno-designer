@@ -1,6 +1,8 @@
 MIT License
 
-Copyright (c) 2011 - 2013 jc.bernak, 2019 Agmas, Sting_McRay
+Copyright (c) 2011 - 2013 jc.bernak
+Copyright (c) 2019 Agmas
+Copyright (c) 2019 Sting_McRay
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +21,49 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+---
+Third-party components included with this project
+---
+
+This project includes or depends on the following third-party packages and assets. Their licenses and copyright notices are listed here for convenience. For the full text of each license please consult the linked project or the files distributed with the package.
+
+- Material Design Icons
+  - License: Apache-2.0
+  - URL: https://github.com/google/material-design-icons/blob/master/LICENSE
+  - Notes: Several icon assets are distributed with this project (e.g. icon images).
+
+- Extended WPF Toolkit (Xceed.Wpf.Toolkit)
+  - License: Microsoft Public License (Ms-PL)
+  - URL: https://github.com/xceedsoftware/wpftoolkit
+
+- Newtonsoft.Json (Json.NET)
+  - License: MIT
+  - URL: https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md
+
+- NLog
+  - License: BSD-3-Clause
+  - URL: https://github.com/NLog/NLog/blob/master/LICENSE.md
+
+- Octokit.NET
+  - License: MIT
+  - URL: https://github.com/octokit/octokit.net/blob/master/LICENSE
+
+- Microsoft.Bcl.HashCode, Microsoft.Xaml.Behaviors, System.CommandLine, System.* runtime assemblies, etc.
+  - Licenses: MIT or as specified in each project's repository
+  - Runtime assemblies: https://github.com/dotnet/runtime/blob/main/LICENSE.TXT
+
+- System.IO.Abstractions
+  - License: MIT
+  - URL: https://github.com/TestableIO/System.IO.Abstractions/blob/master/LICENSE
+
+- WikiClientLibrary (used by FandomParser)
+  - License: MIT
+  - URL: https://github.com/CXuesong/WikiClientLibrary/blob/master/LICENSE
+
+- Wpf UI / Wpf.Ui controls (used for message boxes and UI helpers)
+  - License: MIT (verify with referenced package)
+  - URL: https://github.com/wildgums/ModernWpf or package repository
+
+If you need additional license details or the original license texts for any of the included packages, please check the URLs above or the package contents in the build artifacts.

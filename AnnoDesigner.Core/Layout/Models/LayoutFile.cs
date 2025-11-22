@@ -19,7 +19,7 @@ namespace AnnoDesigner.Core.Layout.Models
         public LayoutFile(IEnumerable<AnnoObject> objects)
         {
             FileVersion = CoreConstants.LayoutFileVersion;
-            Objects = objects.ToList();
+            Objects = [.. objects];
         }
     }
 }
