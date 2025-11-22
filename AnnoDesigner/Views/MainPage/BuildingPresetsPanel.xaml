@@ -1,0 +1,134 @@
+<UserControl
+    x:Class="AnnoDesigner.Views.BuildingPresetsPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:l="clr-namespace:AnnoDesigner.Localization"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:modelPresetsTree="clr-namespace:AnnoDesigner.Models.PresetsTree"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:viewModel="clr-namespace:AnnoDesigner.ViewModels"
+    d:DesignWidth="358.066"
+    mc:Ignorable="d">
+    <DockPanel
+        x:Name="PresetsPanel"
+        Margin="5,0,5,0"
+        LastChildFill="True">
+        <GroupBox
+            x:Name="GroupBoxSearchPresets"
+            Height="Auto"
+            HorizontalAlignment="Stretch"
+            DockPanel.Dock="Top"
+            IsEnabled="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <ui:AutoSuggestBox
+                    x:Name="TextBoxSearchPresets"
+                    Margin="5,0"
+                    VerticalContentAlignment="Center"
+                    DisplayMemberPath="Name"
+                    ItemsSource="{Binding PresetsTreeSearchViewModel.SuggestionsList}"
+                    KeyUp="TextBoxSearchPresetsKeyUp"
+                    PlaceholderText="{l:Localize SearchPlaceholder}"
+                    Text="{Binding PresetsTreeSearchViewModel.SearchText, UpdateSourceTrigger=PropertyChanged}"
+                    ToolTip="{l:Localize SearchToolTip}">
+
+                    <b:Interaction.Triggers>
+                        <b:EventTrigger EventName="GotFocus">
+                            <b:InvokeCommandAction Command="{Binding PresetsTreeSearchViewModel.GotFocusCommand}" />
+                        </b:EventTrigger>
+                        <b:EventTrigger EventName="LostFocus">
+                            <b:InvokeCommandAction Command="{Binding PresetsTreeSearchViewModel.LostFocusCommand}" />
+                        </b:EventTrigger>
+                    </b:Interaction.Triggers>
+                    <ui:AutoSuggestBox.InputBindings>
+                        <KeyBinding
+                            Key="Esc"
+                            Command="{Binding PresetsTreeSearchViewModel.ClearSearchTextCommand}"
+                            CommandParameter="{Binding ElementName=TextBoxSearchPresets}" />
+                    </ui:AutoSuggestBox.InputBindings>
+                </ui:AutoSuggestBox>
+
+
+                <WrapPanel
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Margin="5"
+                    Orientation="Horizontal">
+
+                    <ItemsControl MinWidth="200" ItemsSource="{Binding PresetsTreeSearchViewModel.GameVersionFilters}">
+
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel IsItemsHost="True" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ToggleButton
+                                    Margin="0,0,5,5"
+                                    Padding="8,3"
+                                    Content="{Binding Name}"
+                                    IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Button
+                        Margin="1"
+                        Padding="8,3"
+                        Command="{Binding PresetsTreeSearchViewModel.ClearGameVersionFilterCommand}"
+                        Content="Clear" />
+
+                </WrapPanel>
+            </Grid>
+        </GroupBox>
+
+        <ui:CardExpander
+            x:Name="GroupBoxPresets"
+            Width="{Binding ActualWidth, ElementName=PresetsPanel, Mode=OneWay}"
+            Height="{Binding ActualHeight, ElementName=PresetsPanel, Mode=OneWay}"
+            VerticalAlignment="Stretch"
+            DockPanel.Dock="Top"
+            Header="{Binding PresetsSectionHeader}"
+            IsEnabled="True"
+            IsExpanded="True">
+            <ui:DynamicScrollViewer MaxHeight="600" VerticalAlignment="Stretch">
+
+                <TreeView x:Name="PresetsTree" ItemsSource="{Binding PresetsTreeViewModel.FilteredItems}">
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type modelPresetsTree:GameHeaderTreeItem}" ItemsSource="{Binding Children}">
+                            <TextBlock FontWeight="SemiBold" Text="{Binding Header}" />
+                        </HierarchicalDataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type modelPresetsTree:GenericTreeItem}" ItemsSource="{Binding Children}">
+                            <TextBlock Text="{Binding Header}" />
+                        </HierarchicalDataTemplate>
+                    </TreeView.Resources>
+                    <TreeView.InputBindings>
+                        <KeyBinding
+                            Key="Return"
+                            Command="{Binding PresetsTreeViewModel.ReturnKeyPressedCommand}"
+                            CommandParameter="{Binding SelectedItem, ElementName=PresetsTree}" />
+                    </TreeView.InputBindings>
+                    <b:Interaction.Triggers>
+                        <b:EventTrigger EventName="MouseDoubleClick">
+                            <b:InvokeCommandAction Command="{Binding PresetsTreeViewModel.DoubleClickCommand}" CommandParameter="{Binding SelectedItem, ElementName=PresetsTree}" />
+                        </b:EventTrigger>
+                    </b:Interaction.Triggers>
+                    <TreeView.ItemContainerStyle>
+                        <Style BasedOn="{StaticResource {x:Type TreeViewItem}}" TargetType="{x:Type TreeViewItem}">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}, Mode=TwoWay}" />
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                </TreeView>
+            </ui:DynamicScrollViewer>
+        </ui:CardExpander>
+    </DockPanel>
+</UserControl>

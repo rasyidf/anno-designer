@@ -2,13 +2,13 @@
   <PropertyGroup>
     <RootNamespace>AnnoDesigner</RootNamespace>
     <AssemblyName>AnnoDesigner</AssemblyName>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows8.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <UseWPF>true</UseWPF>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -16,10 +16,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Update="About.xaml.cs">
+    <Compile Update="Views\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
-    <Compile Update="InputWindow.xaml.cs">
+    <Compile Update="Views\InputWindow.xaml.cs">
       <DependentUpon>InputWindow.xaml</DependentUpon>
     </Compile>
     <Compile Update="Properties\Settings.Designer.cs">
@@ -27,13 +27,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Update="StatisticsView.xaml.cs">
+    <Compile Update="Views\MainPage\StatisticsView.xaml.cs">
       <DependentUpon>StatisticsView.xaml</DependentUpon>
     </Compile>
-    <Compile Update="UpdateWindow.xaml.cs">
+    <Compile Update="Views\UpdateWindow.xaml.cs">
       <DependentUpon>UpdateWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Welcome.xaml.cs">
+    <Compile Update="Views\Welcome.xaml.cs">
       <DependentUpon>Welcome.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
@@ -42,18 +42,24 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Presets\colors.json">
-      <Link>colors.json</Link>
+      <Link>Assets\colors.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\Presets\icons.json">
-      <Link>icons.json</Link>
+      <Link>Assets\icons.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\Presets\presets.json">
-      <Link>presets.json</Link>
+      <Link>Assets\presets.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\Presets\treeLocalization.json" Link="treeLocalization.json">
+    <None Include="..\Presets\treeLocalization.json" Link="Assets\treeLocalization.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\locales\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="nlog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Properties\Settings.settings">
@@ -62,24 +68,34 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="icon.ico" />
-    <Resource Include="Images\Icons\chevron-down.png" />
-    <Resource Include="Images\Icons\left-click.png" />
-    <Resource Include="Images\Icons\middle-click.png" />
-    <Resource Include="Images\Icons\right-click.png" />
-    <Resource Include="Images\Icons\icon64.png" />
-    <Resource Include="Flags\*.png" />
+    <Resource Include="Assets\icon.ico" />
+    <Resource Include="Assets\Icons\chevron-down.png" />
+    <Resource Include="Assets\Icons\left-click.png" />
+    <Resource Include="Assets\Icons\middle-click.png" />
+    <Resource Include="Assets\Icons\right-click.png" />
+    <Resource Include="Assets\Icons\icon64.png" />
+    <Resource Include="Assets\Flags\*.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AnnoDesigner.Core\AnnoDesigner.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="AvalonDock.Themes.WPFUI" />
     <PackageReference Include="Extended.Wpf.Toolkit" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+    <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Octokit" />
+    <PackageReference Include="PixiEditor.ColorPicker" />
     <PackageReference Include="System.CommandLine" />
+    <PackageReference Include="NLog" />
+    <PackageReference Include="WPF-UI" /> 
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\Images\" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo create directory for icons &quot;$(TargetDir)icons&quot;&#xD;&#xA;if not exist &quot;$(TargetDir)icons&quot; md &quot;$(TargetDir)icons&quot;&#xD;&#xA;&#xD;&#xA;rem ROBOCOPY exits with &quot;success codes&quot; which are under 8. See: http://support.microsoft.com/kb/954404&#xD;&#xA;rem This means that:&#xD;&#xA;&#xD;&#xA;rem robocopy exit code 0 = no files copied&#xD;&#xA;rem robocopy exit code 1 = files copied&#xD;&#xA;rem When the result is 1, this becomes an error exit code in visual studio.&#xD;&#xA;&#xD;&#xA;echo copy icons from &quot;$(ProjectDir)\icons&quot; to &quot;$(TargetDir)icons&quot;&#xD;&#xA;ROBOCOPY &quot;$(ProjectDir)\icons&quot; &quot;$(TargetDir)icons&quot; *.* /E /NFL /NDL /NJH /NJS /nc /ns /np&#xD;&#xA;&#xD;&#xA;if %2525ERRORLEVEL%2525 GEQ 8 goto failed&#xD;&#xA;&#xD;&#xA;rem end of batch&#xD;&#xA;goto success&#xD;&#xA;&#xD;&#xA;:failed&#xD;&#xA;exit -1&#xD;&#xA;&#xD;&#xA;:success&#xD;&#xA;exit 0" />
+    <Exec Command="echo create directory for game_icons &quot;$(TargetDir)Assets\game_icons&quot;&#xD;&#xA;if not exist &quot;$(TargetDir)Assets\game_icons&quot; md &quot;$(TargetDir)Assets\game_icons&quot;&#xD;&#xA;&#xD;&#xA;rem ROBOCOPY exits with &quot;success codes&quot; which are under 8. See: http://support.microsoft.com/kb/954404&#xD;&#xA;rem This means that:&#xD;&#xA;&#xD;&#xA;rem robocopy exit code 0 = no files copied&#xD;&#xA;rem robocopy exit code 1 = files copied&#xD;&#xA;rem When the result is 1, this becomes an error exit code in visual studio.&#xD;&#xA;&#xD;&#xA;echo copy game icons from &quot;$(ProjectDir)Assets\game_icons&quot; to &quot;$(TargetDir)Assets\game_icons&quot;&#xD;&#xA;ROBOCOPY &quot;$(ProjectDir)Assets\game_icons&quot; &quot;$(TargetDir)Assets\game_icons&quot; *.* /E /NFL /NDL /NJH /NJS /nc /ns /np&#xD;&#xA;&#xD;&#xA;if %2525ERRORLEVEL%2525 GEQ 8 goto failed&#xD;&#xA;&#xD;&#xA;rem end of batch&#xD;&#xA;goto success&#xD;&#xA;&#xD;&#xA;:failed&#xD;&#xA;exit -1&#xD;&#xA;&#xD;&#xA;:success&#xD;&#xA;exit 0" />
   </Target>
 </Project>

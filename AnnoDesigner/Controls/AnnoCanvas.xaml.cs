@@ -910,14 +910,14 @@ namespace AnnoDesigner
                 CurrentMode == MouseMode.PlaceObjects ||
                 CurrentMode == MouseMode.DeleteObject)
             {
-                objectsToDraw = PlacedObjects.GetItemsIntersecting(viewPortAbsolute).ToList();
+                objectsToDraw = [.. PlacedObjects.GetItemsIntersecting(viewPortAbsolute)];
                 _lastObjectsToDraw = objectsToDraw;
                 _lastPlacedObjects = PlacedObjects;
                 _lastViewPortAbsolute = viewPortAbsolute;
 
-                borderlessObjects = objectsToDraw.Where(_ => _.WrappedAnnoObject.Borderless).ToList();
+                borderlessObjects = [.. objectsToDraw.Where(_ => _.WrappedAnnoObject.Borderless)];
                 _lastBorderlessObjectsToDraw = borderlessObjects;
-                borderedObjects = objectsToDraw.Where(_ => !_.WrappedAnnoObject.Borderless).ToList();
+                borderedObjects = [.. objectsToDraw.Where(_ => !_.WrappedAnnoObject.Borderless)];
                 _lastBorderedObjectsToDraw = borderedObjects;
 
                 //quick fix deleting objects via keyboard instead of right click
@@ -1602,7 +1602,7 @@ namespace AnnoDesigner
             if (RenderTrueInfluenceRange && PlacedObjects.Count > 0)
             {
                 var placedObjects = PlacedObjects.Concat(objects).ToHashSet();
-                placedAnnoObjects = placedObjects.Select(o => o.WrappedAnnoObject).ToList();
+                placedAnnoObjects = [.. placedObjects.Select(o => o.WrappedAnnoObject)];
                 var placedObjectDictionary = placedObjects.ToDictionaryWithCapacity(o => o.WrappedAnnoObject);
 
                 void Highlight(AnnoObject objectInRange)
@@ -1831,7 +1831,7 @@ namespace AnnoDesigner
         /// Add the objects to SelectedObjects, optionally also add all objects which match one of their identifiers.
         /// </summary>
         /// <param name="includeSameObjects"> 
-        /// If <see langword="true"> then apply to objects whose identifier matches one of those in <see cref="objectsToAdd"/>.
+        /// If <see langword="true"/> then apply to objects whose identifier matches one of those in <see href="objectsToAdd"/>.
         /// </param>
         private void AddSelectedObjects(IEnumerable<LayoutObject> objectsToAdd, bool includeSameObjects)
         {
@@ -1850,7 +1850,7 @@ namespace AnnoDesigner
         /// Remove the objects from SelectedObjects, optionally also remove all objects which match one of their identifiers.
         /// </summary>
         /// <param name="includeSameObjects"> 
-        /// If <see langword="true"/> then apply to objects whose identifier matches one of those in <see cref="objectsToRemove"/>.
+        /// If <see langword="true"/> then apply to objects whose identifier matches one of those in <see href="objectsToRemove"/>.
         /// </param>
         private void RemoveSelectedObjects(IEnumerable<LayoutObject> objectsToRemove, bool includeSameObjects)
         {
@@ -1877,7 +1877,7 @@ namespace AnnoDesigner
         /// Add a single object to SelectedObjects, optionally also add all objects with the same identifier.
         /// </summary>
         /// <param name="includeSameObjects"> 
-        /// If <see langword="true"> then apply to objects whose identifier match that of <see cref="objectToAdd">.
+        /// If <see langword="true"/> then apply to objects whose identifier match that of <see href="objectToAdd"/>.
         /// </param>
         private void AddSelectedObject(LayoutObject objectToAdd, bool includeSameObjects = false)
         {
@@ -1888,7 +1888,7 @@ namespace AnnoDesigner
         /// Remove a single object from SelectedObjects, optionally also remove all objects with the same identifier.
         /// </summary>
         /// <param name="includeSameObjects"> 
-        /// If <see langword="true"> then apply to objects whose identifier match that of <see cref="objectToRemove">.
+        /// If <see langword="true"/> then apply to objects whose identifier match that of <see href="objectToRemove"/>.
         /// </param>
         private void RemoveSelectedObject(LayoutObject objectToRemove, bool includeSameObjects = false)
         {
@@ -1928,7 +1928,7 @@ namespace AnnoDesigner
 
         /// <summary>
         /// Reindexes given objects in the <see cref="PlacedObjects"/>. This is potentially a very expensive operation.
-        /// Calling this method when the LayoutObjects in <paramref name="newPositions"/> and <paramref name="oldPositions"/> do not
+        /// Calling this method when the LayoutObjects in <see name="newPositions"/> and <see name="oldPositions"/> do not
         /// match can cause object duplication.
         /// </summary>
         /// <remarks>
@@ -2204,7 +2204,7 @@ namespace AnnoDesigner
                                     if (ShouldAffectObjectsWithIdentifier())
                                     {
                                         RemoveSelectedObjects(
-                                            SelectedObjects.Where(_ => _.CalculateScreenRect(GridSize).IntersectsWith(_selectionRect)).ToList(),
+                                            [.. SelectedObjects.Where(_ => _.CalculateScreenRect(GridSize).IntersectsWith(_selectionRect))],
                                             true
                                         );
                                     }
@@ -2251,7 +2251,7 @@ namespace AnnoDesigner
                                 offsetCollisionRect.Offset(dx, dy);
 
                                 //Its causing slowdowns when dragging large numbers of objects
-                                _unselectedObjects = PlacedObjects.GetItemsIntersecting(offsetCollisionRect).Where(_ => !SelectedObjects.Contains(_)).ToList();
+                                _unselectedObjects = [.. PlacedObjects.GetItemsIntersecting(offsetCollisionRect).Where(_ => !SelectedObjects.Contains(_))];
                                 var collisionsExist = false;
                                 // temporarily move each object and check if collisions with unselected objects exist
                                 foreach (var curLayoutObject in SelectedObjects)
@@ -2501,7 +2501,7 @@ namespace AnnoDesigner
         /// <summary>
         /// Checks whether the user is pressing the control key.
         /// </summary>
-        /// <returns><see langword="true"> if the control key is pressed, otherwise <see langword="false">.</returns>
+        /// <returns><see langword="true"/> if the control key is pressed, otherwise <see langword="false"/>.</returns>
         private static bool IsControlPressed()
         {
             return (Keyboard.Modifiers & ModifierKeys.Control) != 0;
@@ -2510,7 +2510,7 @@ namespace AnnoDesigner
         /// <summary>
         /// Checks whether the user is pressing the shift key.
         /// </summary>
-        /// <returns><see langword="true"> if the shift key is pressed, otherwise <see langword="false">.</returns>
+        /// <returns><see langword="true"/> if the shift key is pressed, otherwise <see langword="false"/>.</returns>
         private static bool IsShiftPressed()
         {
             return (Keyboard.Modifiers & ModifierKeys.Shift) != 0;
@@ -2519,7 +2519,7 @@ namespace AnnoDesigner
         /// <summary>
         /// Checks whether actions should affect all objects with the same identifier.
         /// </summary>
-        /// <returns><see langword="true"> if all objects with same identifier should be affected, otherwise <see langword="false">.</returns>
+        /// <returns><see langword="true"/> if all objects with same identifier should be affected, otherwise <see langword="false"/>.</returns>
         private static bool ShouldAffectObjectsWithIdentifier()
         {
             return IsShiftPressed() && IsControlPressed();
@@ -2748,11 +2748,11 @@ namespace AnnoDesigner
 
         #region New/Save/Load/Export methods
 
-        public void CheckUnsavedChangesBeforeCrash()
+        public async Task CheckUnsavedChangesBeforeCrash()
         {
             if (UndoManager.IsDirty)
             {
-                var save = _messageBoxService.ShowQuestion(
+                var save = await _messageBoxService.ShowQuestion(
                     _localizationHelper.GetLocalization("SaveUnsavedChanges"),
                     _localizationHelper.GetLocalization("UnsavedChangedBeforeCrash")
                 );
@@ -2768,11 +2768,11 @@ namespace AnnoDesigner
         /// Checks for unsaved changes. Shows Yes/No/Cancel dialog to let user decide what to do.
         /// </summary>
         /// <returns>True if changes were saved or discarded. False if operation should be cancelled.</returns>
-        public bool CheckUnsavedChanges()
+        public async Task<bool> CheckUnsavedChanges()
         {
             if (UndoManager.IsDirty)
             {
-                var save = _messageBoxService.ShowQuestionWithCancel(
+                var save = await _messageBoxService.ShowQuestionWithCancel(
                     _localizationHelper.GetLocalization("SaveUnsavedChanges"),
                     _localizationHelper.GetLocalization("UnsavedChanged")
                 );
@@ -2793,9 +2793,9 @@ namespace AnnoDesigner
         /// <summary>
         /// Removes all objects from the grid.
         /// </summary>
-        public void NewFile()
+        public async Task NewFile()
         {
-            if (!CheckUnsavedChanges())
+            if (!await CheckUnsavedChanges())
             {
                 return;
             }
@@ -2854,9 +2854,9 @@ namespace AnnoDesigner
         /// <summary>
         /// Opens a dialog and loads the given file.
         /// </summary>
-        public void OpenFile()
+        public async Task OpenFile()
         {
-            if (!CheckUnsavedChanges())
+            if (!await CheckUnsavedChanges())
             {
                 return;
             }
@@ -2989,7 +2989,7 @@ namespace AnnoDesigner
             var objects = ClipboardService.Paste();
             if (objects.Count > 0)
             {
-                CurrentObjects = objects.Select(x => new LayoutObject(x, _coordinateHelper, _brushCache, _penCache)).ToList();
+                CurrentObjects = [.. objects.Select(x => new LayoutObject(x, _coordinateHelper, _brushCache, _penCache))];
             }
         }
 

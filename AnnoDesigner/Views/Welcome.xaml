@@ -19,7 +19,7 @@
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="705"
     d:DesignWidth="525"
-    Icon="icon.ico"
+    Icon="/Assets/icon.ico"
     Left="{Binding Source={x:Static properties:Settings.Default}, Path=WelcomeLeft, Mode=TwoWay}"
     ResizeMode="NoResize"
     Top="{Binding Source={x:Static properties:Settings.Default}, Path=WelcomeTop, Mode=TwoWay}"
@@ -42,7 +42,7 @@
             Margin="10,10,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Source="Images/Icons/icon64.png"
+            Source="/Assets/Icons/icon64.png"
             Stretch="Fill" />
         <TextBlock
             Width="433"

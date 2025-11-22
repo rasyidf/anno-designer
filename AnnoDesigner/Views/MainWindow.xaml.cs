@@ -10,15 +10,17 @@ using AnnoDesigner.CommandLine;
 using AnnoDesigner.CommandLine.Arguments;
 using AnnoDesigner.Core.Layout;
 using AnnoDesigner.Core.Models;
+using AnnoDesigner.Extensions;
 using AnnoDesigner.ViewModels;
 using NLog;
-
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 namespace AnnoDesigner
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, ICloseable
+    public partial class MainWindow : FluentWindow, ICloseable
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -31,6 +33,7 @@ namespace AnnoDesigner
 
         public MainWindow(IAppSettings appSettingsToUse)
         {
+            SystemThemeWatcher.Watch(this);
             InitializeComponent();
 
             _appSettings = appSettingsToUse;
@@ -65,9 +68,10 @@ namespace AnnoDesigner
             }
 
             // load color presets
-            colorPicker.StandardColors.Clear();
+            // moved colorPicker into PropertiesPanel user control
+            propertiesPanel.ColorPicker.StandardColors.Clear();
             //This is currently disabled
-            colorPicker.ShowStandardColors = false;
+            propertiesPanel.ColorPicker.ShowStandardColors = false;
             //try
             //{
             //    ColorPresetsLoader loader = new ColorPresetsLoader();
@@ -92,7 +96,7 @@ namespace AnnoDesigner
             else if (App.StartupArguments is ExportArgs exportArgs && !string.IsNullOrEmpty(exportArgs.LayoutFilePath) && !string.IsNullOrEmpty(exportArgs.ExportedImageFilePath))
             {
                 var layout = new LayoutLoader().LoadLayout(exportArgs.LayoutFilePath);
-                _mainViewModel.PrepareCanvasForRender(layout.Objects, Enumerable.Empty<AnnoObject>(), Math.Max(exportArgs.Border, 0), new Models.CanvasRenderSetting()
+                _mainViewModel.PrepareCanvasForRender(layout.Objects, [], Math.Max(exportArgs.Border, 0), new Models.CanvasRenderSetting()
                 {
                     GridSize = exportArgs.GridSize,
                     RenderGrid = exportArgs.RenderGrid ?? (!exportArgs.UseUserSettings || _appSettings.ShowGrid),
@@ -130,31 +134,20 @@ namespace AnnoDesigner
 
         private void ToggleStatisticsView(bool showStatisticsView)
         {
-            colStatisticsView.MinWidth = showStatisticsView ? 100 : 0;
-            colStatisticsView.Width = showStatisticsView ? GridLength.Auto : new GridLength(0);
+            //colStatisticsView.MinWidth = showStatisticsView ? 100 : 0;
+            //colStatisticsView.Width = showStatisticsView ? GridLength.Auto : new GridLength(0);
 
             statisticsView.Visibility = showStatisticsView ? Visibility.Visible : Visibility.Collapsed;
             statisticsView.MinWidth = showStatisticsView ? 100 : 0;
 
-            splitterStatisticsView.Visibility = showStatisticsView ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        private void TextBoxSearchPresetsKeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Escape)
-            {
-                //used to fix issue with misplaced caret in TextBox
-                TextBoxSearchPresets.UpdateLayout();
-                _ = TextBoxSearchPresets.Dispatcher.Invoke(DispatcherPriority.Render, new Action(() => { }));
-                //TextBoxSearchPresets.InvalidateVisual();                
-            }
+            //splitterStatisticsView.Visibility = showStatisticsView ? Visibility.Visible : Visibility.Collapsed;
         }
 
         #endregion
 
-        private void WindowClosing(object sender, CancelEventArgs e)
+        private async void WindowClosing(object sender, CancelEventArgs e)
         {
-            if (!annoCanvas.CheckUnsavedChanges())
+            if (!await annoCanvas.CheckUnsavedChanges())
             {
                 e.Cancel = true;
                 return;

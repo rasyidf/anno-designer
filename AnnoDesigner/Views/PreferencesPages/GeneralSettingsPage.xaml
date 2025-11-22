@@ -13,7 +13,7 @@
       mc:Ignorable="d"
       d:DesignHeight="450"
       d:DesignWidth="800"
-      Background="White"
+      d:Background="White"
       d:DataContext="{d:DesignInstance Type=viewModels:GeneralSettingsViewModel, IsDesignTimeCreatable=False}">
     <Page.Resources>
         <coreConverters:BoolToVisibilityConverter x:Key="converterBoolToVisibilityCollapsed"
@@ -54,7 +54,7 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-
+            
             <xctk:ColorPicker Grid.Column="2"
                               Margin="10,0,0,0"
                               Width="140"

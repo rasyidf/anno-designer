@@ -17,6 +17,7 @@ using AnnoDesigner.Core.Presets.Loader;
 using AnnoDesigner.Core.Presets.Models;
 using AnnoDesigner.Core.RecentFiles;
 using AnnoDesigner.Core.Services;
+using AnnoDesigner.Helper;
 using AnnoDesigner.Models;
 using AnnoDesigner.Services;
 using AnnoDesigner.ViewModels;
@@ -43,6 +44,23 @@ namespace AnnoDesigner
         public new MainWindow MainWindow { get => base.MainWindow as MainWindow; set => base.MainWindow = value; }
         static App()
         {
+            try
+            {
+                var configPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "nlog.config");
+                if (File.Exists(configPath))
+                {
+                    LogManager.Setup().LoadConfigurationFromFile(configPath);
+                }
+                else
+                {
+                    // try to load from basedir fallback
+                    LogManager.Setup().LoadConfigurationFromFile("nlog.config");
+                }
+            }
+            catch
+            {
+                // ignore any logging setup errors here; LogManager.Configuration may still be null
+            }
             _commons = Commons.Instance;
             _appSettings = AppSettings.Instance;
             _messageBoxService = new MessageBoxService();

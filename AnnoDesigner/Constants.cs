@@ -65,7 +65,7 @@ namespace AnnoDesigner
         /// <summary>
         /// The folder containing all icon files.
         /// </summary>
-        public const string IconFolder = "icons";
+        public const string IconFolder = "Assets\\game_icons";
 
         /// <summary>
         /// File extension used for saved layouts.

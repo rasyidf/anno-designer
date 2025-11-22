@@ -1,0 +1,176 @@
+﻿<ui:FluentWindow
+    x:Class="AnnoDesigner.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:controls="clr-namespace:AnnoDesigner.Controls"
+    xmlns:converters="clr-namespace:AnnoDesigner.Converters"
+    xmlns:coreConverters="clr-namespace:AnnoDesigner.Core.Converters;assembly=AnnoDesigner.Core"
+    xmlns:coreModels="clr-namespace:AnnoDesigner.Core.Models;assembly=AnnoDesigner.Core"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:l="clr-namespace:AnnoDesigner.Localization"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:modelPresetsTree="clr-namespace:AnnoDesigner.Models.PresetsTree"
+    xmlns:my="clr-namespace:AnnoDesigner"
+    xmlns:myBehaviors="clr-namespace:AnnoDesigner.Behaviors"
+    xmlns:properties="clr-namespace:AnnoDesigner.Properties"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:viewModel="clr-namespace:AnnoDesigner.ViewModels"
+    xmlns:views="clr-namespace:AnnoDesigner.Views"
+    xmlns:wpfui="clr-namespace:AvalonDock.Themes.WPFUI;assembly=AvalonDock.Themes.WPFUI"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    x:Name="mainWindow"
+    Width="{Binding MainWindowWidth, Mode=TwoWay}"
+    Height="{Binding MainWindowHeight, Mode=TwoWay}"
+    MinWidth="640"
+    MinHeight="480"
+    d:Background="White"
+    d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel,
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="716.412"
+    d:DesignWidth="1042.219"
+    d:Foreground="Black"
+    Closing="WindowClosing"
+    ExtendsContentIntoTitleBar="True"
+    Left="{Binding MainWindowLeft, Mode=TwoWay}"
+    Loaded="WindowLoaded"
+    Top="{Binding MainWindowTop, Mode=TwoWay}"
+    WindowBackdropType="Tabbed"
+    WindowState="{Binding MainWindowWindowState, Mode=TwoWay}"
+    mc:Ignorable="d">
+    <ui:FluentWindow.Resources>
+        <!--  AvalonDock theme resource  -->
+        <wpfui:WPFUITheme x:Key="adWpfUITheme" />
+        <HierarchicalDataTemplate DataType="{x:Type coreModels:AnnoObject}">
+            <TextBlock Text="{Binding Label}" />
+        </HierarchicalDataTemplate>
+    </ui:FluentWindow.Resources>
+    <ui:FluentWindow.Title>
+        <MultiBinding Converter="{StaticResource converterUnsavedChanges}">
+            <Binding Path="MainWindowTitle" />
+            <Binding Path="AnnoCanvas.UndoManager.IsDirty" />
+        </MultiBinding>
+    </ui:FluentWindow.Title>
+    <xctk:BusyIndicator x:Name="busyIndicator">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="100" />
+            </Grid.ColumnDefinitions>
+
+            <ui:TitleBar
+                x:Name="titleBar"
+                Grid.Row="0"
+                Grid.ColumnSpan="3"
+                Margin="2">
+                <ui:TitleBar.Icon>
+                    <ui:ImageIcon Source="/Assets/icon.ico" />
+                </ui:TitleBar.Icon>
+                <ui:TitleBar.Title>
+                    <MultiBinding Converter="{StaticResource converterUnsavedChanges}">
+                        <Binding Path="MainWindowTitle" />
+                        <Binding Path="AnnoCanvas.UndoManager.IsDirty" />
+                    </MultiBinding>
+                </ui:TitleBar.Title>
+                <ui:TitleBar.Header>
+                    <!--  Extracted main menu to a UserControl  -->
+                    <views:MainMenuControl x:Name="mainMenuControl" />
+                </ui:TitleBar.Header>
+                <ui:TitleBar.TrailingContent>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:Button Command="{Binding ShowPreferencesWindowCommand}">
+                            <ui:Button.Icon>
+                                <ui:SymbolIcon Symbol="Settings24" />
+                            </ui:Button.Icon>
+                        </ui:Button>
+                    </StackPanel>
+                </ui:TitleBar.TrailingContent>
+            </ui:TitleBar>
+
+
+            <DockingManager
+                x:Name="dockManager"
+                Grid.Row="1"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Theme="{StaticResource adWpfUITheme}">
+                <LayoutRoot>
+                    <LayoutPanel Orientation="Horizontal">
+                        <LayoutAnchorablePane DockWidth="320">
+                            <LayoutAnchorable
+                                Title="Building Presets"
+                                AutoHideMinWidth="300"
+                                CanClose="False"
+                                CanDockAsTabbedDocument="False"
+                                CanHide="False"
+                                ContentId="PresetsPane">
+                                <views:BuildingPresetsPanel x:Name="buildingPresetsPanel" />
+                            </LayoutAnchorable>
+                        </LayoutAnchorablePane>
+
+                        <LayoutDocumentPane>
+                            <LayoutDocument
+                                Title="{Binding MainWindowTitle, FallbackValue=Designer}"
+                                CanClose="False"
+                                CanFloat="False"
+                                ContentId="MainDocument">
+                                <ScrollViewer
+                                    CanContentScroll="True"
+                                    Focusable="False"
+                                    HorizontalScrollBarVisibility="{Binding ShowScrollbars}"
+                                    VerticalScrollBarVisibility="{Binding ShowScrollbars}">
+                                    <my:AnnoCanvas x:Name="annoCanvas" />
+                                </ScrollViewer>
+                            </LayoutDocument>
+                        </LayoutDocumentPane>
+                        <LayoutPanel DockWidth="380" Orientation="Vertical">
+                            <LayoutAnchorablePane DockHeight="1*">
+                                <LayoutAnchorable
+                                    Title="{l:Localize ManageStats}"
+                                    CanAutoHide="False"
+                                    CanClose="False"
+                                    CanDockAsTabbedDocument="False"
+                                    CanHide="False"
+                                    ContentId="StatisticsPane">
+                                    <my:StatisticsView x:Name="statisticsView" DataContext="{Binding StatisticsViewModel}" />
+                                </LayoutAnchorable>
+                            </LayoutAnchorablePane>
+                            <LayoutAnchorablePane DockHeight="3*">
+                                <LayoutAnchorable
+                                    Title="Properties"
+                                    CanAutoHide="False"
+                                    CanClose="False"
+                                    CanDockAsTabbedDocument="False"
+                                    CanHide="False"
+                                    ContentId="PropertiesPane">
+                                    <views:PropertiesPanel x:Name="propertiesPanel" />
+                                </LayoutAnchorable>
+                            </LayoutAnchorablePane>
+                        </LayoutPanel>
+
+                    </LayoutPanel>
+                </LayoutRoot>
+            </DockingManager>
+            <ui:Card
+                Grid.Row="2"
+                Grid.ColumnSpan="3"
+                Margin="0"
+                Padding="0">
+
+                <StatusBar Padding="2">
+
+                    <StatusBarItem Content="{l:Localize StatusBarControls}" />
+                    <StatusBarItem Margin="4,0,0,0" Content="{Binding StatusMessage}" />
+                    <StatusBarItem
+                        Margin="4,0,0,0"
+                        HorizontalAlignment="Right"
+                        Content="{Binding StatusMessageClipboard}" />
+                </StatusBar>
+            </ui:Card>
+        </Grid>
+    </xctk:BusyIndicator>
+</ui:FluentWindow>

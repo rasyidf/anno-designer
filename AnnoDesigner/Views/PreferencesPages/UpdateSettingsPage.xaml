@@ -9,10 +9,11 @@
       xmlns:l="clr-namespace:AnnoDesigner.Localization"
       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
       mc:Ignorable="d"
-      d:DesignHeight="450"
+      d:DesignHeight="545.861"
       d:DesignWidth="800"
       d:DataContext="{d:DesignInstance Type=viewModels:UpdateSettingsViewModel, IsDesignTimeCreatable=False}"
-      Background="White">
+
+      d:Background="White">
     <Page.Resources>
         <coreConverters:BoolToVisibilityConverter x:Key="converterBoolToVisibilityCollapsed"
                                                   TrueValue="Visible"
