@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows8.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
@@ -8,4 +8,4 @@
     <ProjectReference Include="..\AnnoDesigner.Core\AnnoDesigner.Core.csproj" />
   </ItemGroup>
   <PropertyGroup />
-</Project>
+</Project> 

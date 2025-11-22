@@ -247,7 +247,7 @@ namespace PresetParser
                     {
                         var loadedPresets = SerializationHelper.LoadFromFile<BuildingPresets>(filePathToValidate);
 
-                        ValidateBuildings(loadedPresets.Buildings.Cast<IBuildingInfo>().ToList());
+                        ValidateBuildings([.. loadedPresets.Buildings.Cast<IBuildingInfo>()]);
                         _ = Console.ReadLine();
                         Environment.Exit(0);
                     }
@@ -495,7 +495,7 @@ namespace PresetParser
             #endregion
 
             #region Write preset.json and icon.json files
-            var presets = new BuildingPresets() { Version = BUILDING_PRESETS_VERSION, Buildings = buildings.Cast<BuildingInfo>().ToList() };
+            var presets = new BuildingPresets() { Version = BUILDING_PRESETS_VERSION, Buildings = [.. buildings.Cast<BuildingInfo>()] };
 
             Console.WriteLine();
             if (!testVersion)

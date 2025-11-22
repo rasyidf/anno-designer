@@ -131,11 +131,12 @@ namespace AnnoDesigner.Tests
                 IsSelected = true
             };
 
-            // Act
+            // Act - command should not directly toggle the value (the UI does this),
+            // it should only notify the view model that selection changed.
             viewModel.GameVersionFilterChangedCommand.Execute(gameVersionFilter);
 
-            // Assert
-            Assert.False(gameVersionFilter.IsSelected);
+            // Assert - IsSelected should remain unchanged (true)
+            Assert.True(gameVersionFilter.IsSelected);
         }
 
         [Fact]
